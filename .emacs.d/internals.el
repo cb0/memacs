@@ -1,10 +1,14 @@
 ;;;; BACKUP SECTION START
 ;;Save all backup files to /tmp instead of current directory
-;;from: http://emacswiki.org/emacs/AutoSave
-(setq backup-directory-alist
-          `((".*" . ,temporary-file-directory)))
-    (setq auto-save-file-name-transforms
-          `((".*" ,temporary-file-directory t)))
+;;from: http://emacswiki.org/emacs/BackupDirectory
+(setq
+   backup-by-copying-when-linked t      ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "~/.emacs_backup_files"))    ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)
 
 ;;Remove backuped temp files that haven't been accessed in a week
 ;;from: http://www.emacswiki.org/emacs/BackupDirectory
