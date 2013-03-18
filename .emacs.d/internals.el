@@ -1,10 +1,11 @@
 ;;;; BACKUP SECTION START
 ;;Save all backup files to /tmp instead of current directory
 ;;from: http://emacswiki.org/emacs/BackupDirectory
+;(defconst memacs_backup_directory )
+
 (setq
    backup-by-copying-when-linked t      ; don't clobber symlinks
-   backup-directory-alist
-    '(("." . "~/.emacs_backup_files"))    ; don't litter my fs tree
+   backup-directory-alist '(("~/.emacs_backup_files"))    ; don't litter my fs tree
    delete-old-versions t
    kept-new-versions 6
    kept-old-versions 2
