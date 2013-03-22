@@ -11,6 +11,8 @@
 
 ;;customize ido
 (load "~/.emacs.d/customize_ido.el")
+;; on top of IDO, history/frequency command usage  
+(load "~/.emacs.d/customize_smex.el")
 
 ;;emacs internals that override the default behaviour. (e.g. Relocate auto-saved files)
 (load "~/.emacs.d/internals.el")
