@@ -23,8 +23,6 @@ Uses `current-date-time-format' for the formatting the date/time."
 ;; key bindings
 (setq mac-command-modifier 'meta)
 (setq ns-function-modifier 'super)
-
-
 ;;(global-set-key [kp-delete] 'delete-char)
 ;; sets fn-delete to be right-delete
 
