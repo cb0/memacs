@@ -42,3 +42,6 @@
          (ido-completing-read
           "M-x "
           (all-completions "" obarray 'commandp))))))
+
+;;Ignore Mac .DS_Store files
+(add-to-list 'ido-ignore-files "\\.DS_Store")

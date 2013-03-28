@@ -14,3 +14,20 @@ Uses `current-date-time-format' for the formatting the date/time."
        )
 
 (global-set-key "\C-c\C-d" 'insert-current-date-time)
+
+;; THIS IS NOT WORKING IN OS X Terminal ;(
+;; setting Super Hyper keys for the Mac keyboard, for emacs running in OS X
+;; from: http://ergoemacs.org/emacs/emacs_hyper_super_keys.html
+;; (setq mac-option-modifier 'super) ; sets the Option key as Super
+;; (setq mac-command-modifier 'meta) ; sets the Command key as Meta
+;; key bindings
+;;(setq mac-option-modifier 'control)
+(setq mac-command-modifier 'meta)
+;;ns-function-modifier
+(setq ns-function-modifier 'super)
+;;(setq ns-function-modifier 'super)
+
+
+;;(global-set-key [kp-delete] 'delete-char)
+;; sets fn-delete to be right-delete
+

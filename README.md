@@ -1,7 +1,7 @@
 My emacs configuration alias MeMACS
 
 ### History: 
-I'm a frequent emacs user for nrealy over 8 years now. I started using emacs when I was working for a company that used LaTEX to transform mainly medical technical literature into nice looking papers. They had what felt like a quadrillion shortcuts, scripts and other stuff that did nearly all the work when executed in the right place. And it somtimes felt like magic.
+I'm a frequent emacs user for nrealy over 8 years now. I started using emacs when I was working for a company that used LaTeX to transform mainly medical technical literature into nice looking papers. They had what felt like a quadrillion shortcuts, scripts and other stuff that did nearly all the work when executed in the right place. And it somtimes felt like magic.
 After I changed workplace I regulary used emacs to do all kinds of stuff. Mainly for editing server config files on remote servers in locations I'll never been to.
 However I think I never even touched the superpowers that lay behind this 'rule them all' editor.
 

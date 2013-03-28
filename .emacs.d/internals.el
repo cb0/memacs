@@ -46,3 +46,6 @@
     (setq backup-each-save-filter-function 'backup-each-save-filter)
  
 ;;;; BACKUP SECTION END
+
+;; Confirm Quit
+(setq confirm-kill-emacs 'y-or-n-p)
