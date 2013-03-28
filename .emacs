@@ -14,7 +14,6 @@
 (load "~/.emacs.d/customize_ido.el")
 ;; on top of IDO, history/frequency command usage  
 (load "~/.emacs.d/customize_smex.el")
-
 ;;org mode stuff
 (load "~/.emacs.d/org.el")
 
@@ -22,6 +21,20 @@
 (load "~/.emacs.d/internals.el")
 (load "~/.emacs.d/key_bindings.el")
 
-(load "~/.emacs.d/backup-each-save.el")
+;;egg init
+(load "~/.emacs.d/egg.el")
 
-;;(setq ns-alternate-modifier (quote none))
+(load "~/.emacs.d/backup-each-save.el")
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ns-right-alternate-modifier (quote none))
+ '(vc-handled-backends (quote (RCS CVS SVN SCCS Bzr Hg Mtn Arch))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

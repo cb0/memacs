@@ -1,4 +1,4 @@
-
+;; load .org and .notes files in org-mode
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode)) ; not needed since Emacs 22.2
 (add-to-list 'auto-mode-alist '("\\.notes\\'" . org-mode))
 
@@ -9,5 +9,5 @@
 (global-set-key "\C-cc" 'org-capture)
 ;; List ToDos, Timeline & more
 (global-set-key "\C-ca" 'org-agenda)
-;; 
+;; Fast org buffer switch
 (global-set-key "\C-cb" 'org-iswitchb)
