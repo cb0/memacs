@@ -1,10 +1,12 @@
-((("ns-function-modifier" .
+((("load" .
+   [1 0 0 0])
+  ("ns-function-modifier" .
    [2 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0])
   ("defun" .
    [0 0 0 2 0])
   ("global-set-key" .
    [1 0 0 0 0 0 0 0 0 0 0 0 0 0])
   ("setq" .
-   [1 0 0 0])
+   [3 0 0 0])
   ("super" .
    [0 0 0 1 0])))

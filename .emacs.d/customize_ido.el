@@ -1,12 +1,8 @@
 (require 'ido)
 (ido-mode t)
 
-(custom-set-variables
- ;; If there is more than one, they won't work right.
- '(ido-enable-flex-matching t))
-(custom-set-faces
- ;; If there is more than one, they won't work right.
- )
+(setq ido-enable-flex-matching t)
+(setq ido-enable-flex-matching t)
 
 ;; Display ido results vertically, rather than horizontally
 (setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))

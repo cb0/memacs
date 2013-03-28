@@ -22,18 +22,6 @@
 (load "~/.emacs.d/internals.el")
 (load "~/.emacs.d/key_bindings.el")
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ido-enable-flex-matching t)
- '(ns-alternate-modifier (quote none))
- '(ns-auto-hide-menu-bar nil)
- '(ns-function-modifier (quote super)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+(load "~/.emacs.d/backup-each-save.el")
+
+;;(setq ns-alternate-modifier (quote none))

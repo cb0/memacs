@@ -21,11 +21,8 @@ Uses `current-date-time-format' for the formatting the date/time."
 ;; (setq mac-option-modifier 'super) ; sets the Option key as Super
 ;; (setq mac-command-modifier 'meta) ; sets the Command key as Meta
 ;; key bindings
-;;(setq mac-option-modifier 'control)
 (setq mac-command-modifier 'meta)
-;;ns-function-modifier
 (setq ns-function-modifier 'super)
-;;(setq ns-function-modifier 'super)
 
 
 ;;(global-set-key [kp-delete] 'delete-char)
