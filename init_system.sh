@@ -1,32 +1,29 @@
 #!/bin/bash
 ############################
 # .make.sh
-# This script creates symlinks from the home directory to any desired dotfiles in ~/dotfiles
+# This script creates symlinks from the emacs files that came with this git checkout
+# and stores them into you home directory under /Users/$(whoami)/
 ############################
 
 ########## Variables
+user=$(whoami)
+directory_for_dotfile=/Users/$user
+backup_directory=/Users/$user/.backup_memacs
 
-dir=~/Documents/dotfiles                    # dotfiles directory
-olddir=~/Documents/dotfiles_old             # old dotfiles backup directory
 #ToDo: Maybe this should created dynamical.
 files="emacs emacs.d"    # list of files/folders to symlink in homedir
 
 ##########
 
-# create dotfiles_old in homedir
-echo "Creating $olddir for backup of any existing dotfiles in ~"
-mkdir -p $olddir
-echo "...done"
+##check if backup diretory exists
+[[ ! -d $backup_directory ]] && echo "Creating Backup diretory $backup_directory" && mkdir $backup_directory
 
-# change to the dotfiles directory
-echo "Changing to the $dir directory"
-cd $dir
-echo "...done"
+##check if emacs file exists and copy to backup and remove afterwards
+[[ -f $directory_for_dotfile/.emacs ]] && echo "Backup old .emacs file." && cp $directory_for_dotfile/.emacs $backup_directory && rm $directory_for_dotfile/.emacs
+[[ -d $directory_for_dotfile/.emacs.d ]] && echo "Backup old .emacs.d directory." && cp -R $directory_for_dotfile/.emacs.d $backup_directory && rm -rf $directory_for_dotfile/.emacs.d
 
-# move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
-for file in $files; do
-    echo "Moving any existing dotfiles from ~ to $olddir"
-    mv ~/.$file $olddir/
-    echo "Creating symlink to $file in home directory."
-    ln -s $dir/.$file ~/.$file
-done
+##now link files to home diretory
+ln -s $(pwd)/.emacs $directory_for_dotfile && echo "Linked .emacs file to ~"
+ln -s $(pwd)/.emacs.d $directory_for_dotfile && echo "Linked .emacs.d directory to ~"
+
+echo "Finish, you can now enjoy you new emacs installation."
