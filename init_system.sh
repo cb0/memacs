@@ -23,7 +23,7 @@ files="emacs emacs.d"    # list of files/folders to symlink in homedir
 [[ -d $directory_for_dotfile/.emacs.d ]] && echo "Backup old .emacs.d directory." && cp -R $directory_for_dotfile/.emacs.d $backup_directory && rm -rf $directory_for_dotfile/.emacs.d
 
 ##now link files to home diretory
-ln -s $(pwd)/.emacs $directory_for_dotfile && echo "Linked .emacs file to ~"
-ln -s $(pwd)/.emacs.d $directory_for_dotfile && echo "Linked .emacs.d directory to ~"
+ln -s $(pwd)/.emacs $directory_for_dotfile/.emacs && echo "Linked .emacs file to ~"
+ln -s $(pwd)/.emacs.d $directory_for_dotfile/.emacs.d && echo "Linked .emacs.d directory to ~"
 
 echo "Finish, you can now enjoy you new emacs installation."
