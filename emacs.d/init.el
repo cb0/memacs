@@ -8,7 +8,7 @@
 (load-library "installer")
 
 ;; load org mode and org customisations
-(load-library "org")
+(load-library "orgCfg")
 
 ;; On thy fly syntax checking (http://www.emacswiki.org/emacs/FlyMake)
 (load-library "flymake")
