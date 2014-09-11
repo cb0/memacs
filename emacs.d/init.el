@@ -79,6 +79,7 @@
 (package-require 'auto-complete)
 (package-require 'git)
 (require 'git)
+(auto-complete-mode 1)
 
 ; syntax highlighting everywhere
 (global-font-lock-mode 1)
