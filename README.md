@@ -20,15 +20,16 @@ There will be a documentation but for now please be aware that this is not what 
 
 
 ### Content:
-    |->.emacs
-    |	The main file '.emacs' which will load up all other files.
+    |->emacs
+    |	The main file that shall be linked to '~/.emacs' and will load all other files.
     |
-    |->.emacs.d
-    |	Directory containing all additional config files. E.g. customize modes, reset standard bindings and more.
+    |->emacs.d
+    |	Directory containing config files and that will be linked to ~/.emacs.d.
     |
     |->README.md
     |	You are looking at it right now.
     |
-    |->init_system.sh
-	This is just a helper script which must be run on systems you want to 'install' this configuartion. 
-	NOT usable at the moment, it's only a stub.
+    |->(init_system.sh) setup script that will be added in the future
+    	What it basically does is to link the file 'emacs' and folder 'emacs.d' to you home directory.
+	After that it'll call 
+	emacs -batch ~/.emacs.d/init.el --eval="(eval-buffer)" 
