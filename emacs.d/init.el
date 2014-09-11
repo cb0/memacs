@@ -77,6 +77,8 @@
 ;; Inline auto completion and suggestions
 (package-require 'flymake)
 (package-require 'auto-complete)
+(package-require 'git)
+(require 'git)
 
 ; syntax highlighting everywhere
 (global-font-lock-mode 1)
@@ -89,10 +91,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; auto install (http://www.emacswiki.org/emacs/AutoInstall)
-(package-require 'auto-install)
-(setq auto-install-directory "~/.emacs.d/auto-install/")
-(auto-install-update-emacswiki-package-name t)
-(auto-install-from-url "https://raw.github.com/aki2o/org-ac/master/org-ac.el")
+;;(package-require 'auto-install)
+;;(setq auto-install-directory "~/.emacs.d/auto-install/")
+;;(auto-install-update-emacswiki-package-name t)
+;;(auto-install-from-url "https://raw.github.com/aki2o/org-ac/master/org-ac.el")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
