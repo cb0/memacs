@@ -25,8 +25,7 @@
 
 ;; load flyspell and aspell
 (load-library "aspell")
-
-;; load chord (keyboard shortcuts without C-/M- modifiers)
+;;chord (keyboard shortcuts without C-/M- modifiers)
 (load-library "chord")
 
 ;; load fullscreen support by binding to f11
@@ -45,7 +44,6 @@
 ;;(progn (print 'starting helm search'))
 (load-library "helmCfg")
 ;;(progn (print 'finish helm search'))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;; Load custom configuartions for allday use ;;;;;;;;;;;;;;;;;
@@ -72,12 +70,12 @@
 ; Use the system clipboard
 (setq x-select-enable-clipboard t)
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; load/install other usefull packages that do not reqire a great amount of configuration
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Inline auto completion and suggestions
+(package-require 'flymake)
 (package-require 'auto-complete)
 
 ; syntax highlighting everywhere
@@ -85,6 +83,16 @@
 
 ; Add proper word wrapping
 (global-visual-line-mode t)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; auto install and auto-install components 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; auto install (http://www.emacswiki.org/emacs/AutoInstall)
+(package-require 'auto-install)
+(setq auto-install-directory "~/.emacs.d/auto-install/")
+(auto-install-update-emacswiki-package-name t)
+(auto-install-from-url "https://raw.github.com/aki2o/org-ac/master/org-ac.el")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -126,4 +134,9 @@ And make sure that it really shows up!"
   (dolist (mode mode-list)
     (add-hook (intern (concat (symbol-name mode) "-mode-hook")) something)))
 (add-something-to-mode-hooks '(c++ tcl emacs-lisp python text markdown latex) 'fic-ext-mode)
+
+;;;;;; tools & other misc
+(eval-after-load "dired-aux"
+   '(add-to-list 'dired-compress-file-suffixes 
+                 '("\\.zip\\'" ".zip" "unzip")))
 

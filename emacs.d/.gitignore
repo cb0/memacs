@@ -5,3 +5,5 @@ auto-save-list/
 .emacs.desktop
 .emacs-places
 .emacs.desktop.lock
+auto-install
+ac-comphist.dat
