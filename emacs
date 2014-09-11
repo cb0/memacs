@@ -2,8 +2,12 @@
 (server-start)
 
 ;;; set custom path
-(setq load-path
-      (cons (expand-file-name "~/.emacs.d/custom/") load-path))
+
+;;(setq load-path
+;;      (cons (expand-file-name "~/.emacs.d/custom/") load-path))
+
+(add-to-list 'load-path "~/.emacs.d/")
+(load-library "init")
 
 
 ;;; DESK TOP (Session Management)

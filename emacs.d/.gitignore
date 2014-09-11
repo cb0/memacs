@@ -1,4 +1,7 @@
 elpa/
 saved-places
+.gitignore.swp
+auto-save-list/
 .emacs.desktop
 .emacs-places
+.emacs.desktop.lock

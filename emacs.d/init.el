@@ -5,6 +5,7 @@
 (add-to-list 'load-path "~/.emacs.d/custom/")
 
 ;; load org.el containing customizations for org-mode
+;; uncomment this line will force the package repository to update
 (load-library "installer")
 
 ;; load org mode and org customisations
@@ -41,8 +42,9 @@
 (load-library "smexCfg")
 
 ;; helm (command-completion-helper)
-(package-require 'helm)
-(global-set-key (kbd "C-c h") 'helm-mini)
+;;(progn (print 'starting helm search'))
+(load-library "helmCfg")
+;;(progn (print 'finish helm search'))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -124,5 +126,4 @@ And make sure that it really shows up!"
   (dolist (mode mode-list)
     (add-hook (intern (concat (symbol-name mode) "-mode-hook")) something)))
 (add-something-to-mode-hooks '(c++ tcl emacs-lisp python text markdown latex) 'fic-ext-mode)
-
 

@@ -23,6 +23,7 @@ Usage: (package-require 'package)"
     ; if we cannot require it, it does not exist, yet. So install it.
     (error (package-install package))))
 
+;;;;;;
 ;; Initialize installed packages
 (package-initialize)  
 ;; package init not needed, since it is done anyway in emacs 24 after reading the init
