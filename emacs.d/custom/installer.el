@@ -1,3 +1,5 @@
+(require 'package)
+
 ;; use packages from marmalade
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 ;; and the old elpa repo
