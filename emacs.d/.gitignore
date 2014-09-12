@@ -7,3 +7,4 @@ auto-save-list/
 .emacs.desktop.lock
 auto-install
 ac-comphist.dat
+org-clock-save.el
