@@ -69,4 +69,6 @@
 
 (package-require 'org-ac)
 
-
+;; To save the clock history across Emacs sessions:
+(setq org-clock-persist 'history)
+(org-clock-persistence-insinuate)

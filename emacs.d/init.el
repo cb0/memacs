@@ -78,7 +78,13 @@
 (package-require 'flymake)
 (package-require 'auto-complete)
 (package-require 'git)
+(package-require 'js2-mode)
+
+;; git and magit 
 (require 'git)
+(package-require 'magit)
+
+
 (auto-complete-mode 1)
 
 ; syntax highlighting everywhere
@@ -87,6 +93,8 @@
 ; Add proper word wrapping
 (global-visual-line-mode t)
 
+; enable org table minor mode 
+(add-hook 'message-mode-hook 'turn-on-orgtbl)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; auto install and auto-install components 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -115,6 +123,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; custom short function for all day use
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Fenster rückwärts springen   
+(defun other-window-backward (n)
+  "Select Nth previous window."
+  (interactive "p")
+  (other-window (- n)))
+(global-set-key [(shift down)] 'other-window)
+(global-set-key [(shift up)] 'other-window-backward)
+
+
+;;show frame. May be deleted if not used.
 (defun show-frame (&optional frame)
   "Show the current Emacs frame or the FRAME given as argument.
 
