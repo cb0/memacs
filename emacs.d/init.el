@@ -60,6 +60,8 @@
 (allout-mode)
 (type-break-mode)
 
+(linum-mode)
+
 ;; enable for all programming modes
 (add-hook 'prog-mode-hook 'subword-mode)
 
@@ -80,10 +82,10 @@
 (package-require 'git)
 (package-require 'js2-mode)
 
-;; git and magit 
+;; git and magit (Magit rules!!!!)
 (require 'git)
 (package-require 'magit)
-
+(global-set-key (kbd "C-x g") 'magit-status)
 
 (auto-complete-mode 1)
 
@@ -133,6 +135,18 @@
 (global-set-key [(shift down)] 'other-window)
 (global-set-key [(shift up)] 'other-window-backward)
 
+;; Font size
+(define-key global-map (kbd "C-+") 'text-scale-increase)
+(define-key global-map (kbd "C--") 'text-scale-decrease)
+
+;; Use regex searches by default.
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "\C-r") 'isearch-backward-regexp)
+(global-set-key (kbd "C-M-s") 'isearch-forward)
+(global-set-key (kbd "C-M-r") 'isearch-backward)
+
+;; cycle through buffers
+(global-set-key (kbd "<C-tab>") 'bury-buffer)
 
 ;;show frame. May be deleted if not used.
 (defun show-frame (&optional frame)
