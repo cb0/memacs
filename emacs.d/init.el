@@ -65,6 +65,9 @@
 ;; enable for all programming modes
 (add-hook 'prog-mode-hook 'subword-mode)
 
+;; enable "tail -f" like view of log files (using auto-mode-alist)
+(add-to-list 'auto-mode-alist '("\\.log\\'" . auto-revert-mode))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; set linux system  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
