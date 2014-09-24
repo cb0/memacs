@@ -22,12 +22,23 @@
         (desktop-save desktop-dirname)))
   (add-hook 'auto-save-hook 'my-desktop-save)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+;; (custom-set-variables
+;;  ;; custom-set-variables was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(jiralib-url "http://jira.app.activate.de/rpc/xmlrpc")
+;;  '(org-agenda-files (quote ("~/todo.org")))
+;;  '(org-agenda-ndays 7)
+;;  '(org-agenda-show-all-dates t)
+;;  '(org-agenda-skip-deadline-if-done t)
+;;  '(org-agenda-skip-scheduled-if-done t)
+;;  '(org-agenda-start-on-weekday nil)
+;;  '(org-deadline-warning-days 14)
+;;  '(org-default-notes-file "~/notes.org")
+;;  '(org-fast-tag-selection-single-key (quote expert))
+;;  '(org-reverse-note-order t))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

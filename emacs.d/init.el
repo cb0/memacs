@@ -60,7 +60,7 @@
 (allout-mode)
 (type-break-mode)
 
-(linum-mode)
+(global-linum-mode 1)
 
 ;; enable for all programming modes
 (add-hook 'prog-mode-hook 'subword-mode)
@@ -90,7 +90,9 @@
 (package-require 'magit)
 (global-set-key (kbd "C-x g") 'magit-status)
 
-(auto-complete-mode 1)
+(auto-complete-mode)
+
+(whitespace-mode)
 
 ; syntax highlighting everywhere
 (global-font-lock-mode 1)
@@ -98,10 +100,74 @@
 ; Add proper word wrapping
 (global-visual-line-mode t)
 
-; enable org table minor mode 
+; enable org table minor mode
 (add-hook 'message-mode-hook 'turn-on-orgtbl)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; auto install and auto-install components 
+;; web mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(package-require 'web-mode)
+
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[gj]sp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+
+;;turn auto indent on
+(local-set-key (kbd "RET") 'newline-and-indent)
+
+;; ;;smart parens
+;; (defun my-web-mode-hook ()
+;;   (setq web-mode-enable-auto-pairing nil))
+;; (add-hook 'web-mode-hook 'my-web-mode-hook)
+;; (defun sp-web-mode-is-code-context (id action context)
+;;   (when (and (eq action 'insert)
+;; 	     (not (or (get-text-property (point) 'part-side)
+;; 		      (get-text-property (point) 'block-side)))) t))
+;; (sp-local-pair 'web-mode "<" nil :when '(sp-web-mode-is-code-context))
+
+;; (setq web-mode-ac-sources-alist
+;;       '(("css" . (ac-source-css-property))
+;; 	("html" . (ac-source-words-in-buffer ac-source-abbrev)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; web mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(package-require 'php-mode)
+;;(package-require 'php-completion)
+(package-require 'php-eldoc)
+(package-require 'php-extras)
+
+;; use web and php mode at the same time
+(add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
+(add-to-list 'auto-mode-alist '("\\.blade\\.php\\'" . web-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; el doc
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; smartparens
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(package-require 'smartparens)
+(require 'smartparens-config)
+;; (package-require 'paredit)
+;; (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+;; (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+;; (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+;; (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+;; (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+;; (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+;; (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; auto install and auto-install components
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; auto install (http://www.emacswiki.org/emacs/AutoInstall)
@@ -110,9 +176,8 @@
 ;;(auto-install-update-emacswiki-package-name t)
 ;;(auto-install-from-url "https://raw.github.com/aki2o/org-ac/master/org-ac.el")
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; customize backup stategy
+;; customize backup stategy 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq backup-by-copying t      ; don't clobber symlinks
@@ -122,8 +187,6 @@
       kept-new-versions 6
       kept-old-versions 2
       version-control t)       ; use versioned backups
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; custom short function for all day use
@@ -162,6 +225,19 @@ And make sure that it really shows up!"
   ; additional magic.
   (select-frame-set-input-focus (selected-frame))
   (select-frame-set-input-focus (selected-frame)))
+
+;; replace in region
+(defun replace-regexp-in-region (start end)
+  (interactive "*r")
+  (save-excursion
+    (save-restriction
+      (let ((regexp (read-string "Regexp: "))
+	    (to-string (read-string "Replacement: ")))
+	(narrow-to-region start end)
+	(goto-char (point-min))
+	(while (re-search-forward regexp nil t)
+	  (replace-match to-string nil nil))))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TRAMP for president (switch to edit file as root on remote machines)
@@ -282,4 +358,7 @@ And make sure that it really shows up!"
 (eval-after-load "dired-aux"
    '(add-to-list 'dired-compress-file-suffixes 
                  '("\\.zip\\'" ".zip" "unzip")))
+
+;; Require IEdit (e.g. rename variables)
+(package-require 'iedit)
 
