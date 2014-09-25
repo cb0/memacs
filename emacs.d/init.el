@@ -362,3 +362,6 @@ And make sure that it really shows up!"
 ;; Require IEdit (e.g. rename variables)
 (package-require 'iedit)
 
+;;package typing for typing tests
+(package-require 'typing)
+
