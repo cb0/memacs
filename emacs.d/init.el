@@ -83,6 +83,7 @@
 (package-require 'flymake)
 (package-require 'auto-complete)
 (package-require 'git)
+(package-require 'gist)
 (package-require 'js2-mode)
 
 ;; git and magit (Magit rules!!!!)

@@ -103,6 +103,15 @@
  '(org-reverse-note-order t)
  '(org-fast-tag-selection-single-key (quote expert)))
 
+(global-set-key "\C-cr" 'org-capture)
+
+;; Org Capture
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline (concat org-directory "/gtd.org") "Tasks")
+         "* TODO %?\n %i\n")
+        ("l" "Link" plain (file (concat org-directory "/links.org"))
+         "- %?\n %x\n")))
+
 
 ;; (custom-set-variables
 ;;  '(org-agenda-files (quote ("~/todo.org")))
@@ -144,3 +153,4 @@
 ;; To save the clock history across Emacs sessions:
 (setq org-clock-persist 'history)
 (org-clock-persistence-insinuate)
+(setq org-clock-continuously t)
