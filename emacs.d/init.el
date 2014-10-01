@@ -1,3 +1,8 @@
+;; remove scroll/tool/menu bar
+;;(if (fboundp 'scroll-bar-mode) (scroll-bar-mode 1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+
 ;;; this loads the package manager
 (require 'package)
 
@@ -55,6 +60,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; load modes other/minor modes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;make other minor modes do not clutter the modeline
+(package-require 'diminish)
+(diminish 'wrap-region-mode)
+(diminish 'yas/minor-mode)
 
 ; use allout minor mode to have outlining everywhere.
 (allout-mode)
@@ -90,6 +99,22 @@
 (require 'git)
 (package-require 'magit)
 (global-set-key (kbd "C-x g") 'magit-status)
+
+;;taken from http://tullo.ch/articles/modern-emacs-setup/
+(defadvice magit-status (around magit-fullscreen activate)
+  "Make magit-status run alone in a frame."
+  (window-configuration-to-register :magit-fullscreen)
+  ad-do-it
+  (delete-other-windows))
+
+(defun magit-quit-session ()
+  "Restore the previous window configuration and kill the magit buffer."
+  (interactive)
+  (kill-buffer)
+  (jump-to-register :magit-fullscreen))
+ 
+(define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+
 
 (auto-complete-mode)
 
