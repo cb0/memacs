@@ -410,7 +410,7 @@ And make sure that it really shows up!"
 (package-require 'jira)
 (require 'jira)
 
-(setq jiralib-url "http://jira.app.activate.de/secure") 
+(setq jiralib-url "http://URL") 
 ;; you need make sure whether the "/jira" at the end is 
 ;; necessary or not, see discussion at the end of this page
 
