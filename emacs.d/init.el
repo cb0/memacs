@@ -57,13 +57,28 @@
 ;; Navigation contains loading of packages (goto-chg) that help moving around easier
 (load-library "navigation")
 
+;;use undo-tree
+(package-require 'undo-tree)
+(global-undo-tree-mode 1)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; load modes other/minor modes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;make other minor modes do not clutter the modeline
 (package-require 'diminish)
-(diminish 'wrap-region-mode)
-(diminish 'yas/minor-mode)
+;;(diminish 'wrap-region-mode)
+;;(diminish 'yas/minor-mode)
+
+;; rename-modeline to support diminish
+(defmacro rename-modeline (package-name mode new-name)
+  `(eval-after-load ,package-name
+     '(defadvice ,mode (after rename-modeline activate)
+        (setq mode-name ,new-name))))
+
+;;(rename-modeline "js2-mode" js2-mode "JS2")
+;;(rename-modeline "clojure-mode" clojure-mode "Clj")
+;;(rename-modeline "global-undo-tree-mode" global-undo-tree-mode "uTr")
+(rename-modeline "undo-tree-mode" undo-tree-mode "uTm")
+
 
 ; use allout minor mode to have outlining everywhere.
 (allout-mode)
@@ -391,3 +406,14 @@ And make sure that it really shows up!"
 ;;package typing for typing tests
 (package-require 'typing)
 
+;;; test jira
+(package-require 'jira)
+(require 'jira)
+
+(setq jiralib-url "http://jira.app.activate.de/secure") 
+;; you need make sure whether the "/jira" at the end is 
+;; necessary or not, see discussion at the end of this page
+
+(package-require 'org-jira)
+(require 'org-jira) 
+;; jiralib is not explicitly required, since org-jira will load it.

@@ -45,3 +45,20 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'narrow-to-region 'disabled nil)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(jira-url "http://jira.app.activate.de/rpc/xmlrpc")
+ '(org-agenda-files (quote ("~/todo.org")))
+ '(org-agenda-ndays 7)
+ '(org-agenda-show-all-dates t)
+ '(org-agenda-skip-deadline-if-done t)
+ '(org-agenda-skip-scheduled-if-done t)
+ '(org-agenda-start-on-weekday nil)
+ '(org-deadline-warning-days 14)
+ '(org-default-notes-file "~/notes.org")
+ '(org-fast-tag-selection-single-key (quote expert))
+ '(org-reverse-note-order t))
