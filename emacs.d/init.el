@@ -17,8 +17,9 @@
 (load-library "orgCfg")
 
 ;; On thy fly syntax checking (http://www.emacswiki.org/emacs/FlyMake)
-;; Check if and why not availiable on OS X 10.9.*
-;;(load-library "flymake")
+;; ToDo: It'll work on os x only if you install flymake  through package-install-packages. Determine why package-require is not working.
+(package-require 'flymake)
+(load-library "flymakeCfg")
 
 ;; load ido mode (interactivly do things :)
 (load-library "idoCfg")
@@ -418,3 +419,11 @@ And make sure that it really shows up!"
 (package-require 'org-jira)
 (require 'org-jira) 
 ;; jiralib is not explicitly required, since org-jira will load it.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; wordpress integration (first try)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(package-require 'xml-rpc)
+(package-require 'metaweblog)
+(package-require 'org2blog)
+(package-require 'htmlize)
