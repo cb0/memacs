@@ -17,7 +17,8 @@
 (load-library "orgCfg")
 
 ;; On thy fly syntax checking (http://www.emacswiki.org/emacs/FlyMake)
-(load-library "flymake")
+;; Check if and why not availiable on OS X 10.9.*
+;;(load-library "flymake")
 
 ;; load ido mode (interactivly do things :)
 (load-library "idoCfg")
