@@ -410,10 +410,31 @@ And make sure that it really shows up!"
 (package-require 'jira)
 (require 'jira)
 
-(setq jiralib-url "http://URL") 
+(setq jiralib-url "http://jira.app.activate.de") 
 ;; you need make sure whether the "/jira" at the end is 
 ;; necessary or not, see discussion at the end of this page
 
 (package-require 'org-jira)
 (require 'org-jira) 
 ;; jiralib is not explicitly required, since org-jira will load it.
+
+
+;;;;;;;;;;
+(defun uniq-lines (beg end)
+  "Unique lines in region.
+Called from a program, there are two arguments:
+BEG and END (region to sort)."
+  (interactive "r")
+  (save-excursion
+    (save-restriction
+      (narrow-to-region beg end)
+      (goto-char (point-min))
+      (while (not (eobp))
+        (kill-line 1)
+        (yank)
+        (let ((next-line (point)))
+          (while
+              (re-search-forward
+               (format "^%s" (regexp-quote (car kill-ring))) nil t)
+            (replace-match "" nil nil))
+          (goto-char next-line))))))

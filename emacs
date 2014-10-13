@@ -62,3 +62,5 @@
  '(org-default-notes-file "~/notes.org")
  '(org-fast-tag-selection-single-key (quote expert))
  '(org-reverse-note-order t))
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
