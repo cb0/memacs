@@ -419,10 +419,8 @@ And make sure that it really shows up!"
 (package-require 'org-jira)
 (require 'org-jira) 
 ;; jiralib is not explicitly required, since org-jira will load it.
-<<<<<<< variant A
 
-
-;;;;;;;;;;
+;;;;;;;;;; custom functions
 (defun uniq-lines (beg end)
   "Unique lines in region.
 Called from a program, there are two arguments:
@@ -441,7 +439,6 @@ BEG and END (region to sort)."
                (format "^%s" (regexp-quote (car kill-ring))) nil t)
             (replace-match "" nil nil))
           (goto-char next-line))))))
->>>>>>> variant B
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; wordpress integration (first try)
@@ -450,5 +447,3 @@ BEG and END (region to sort)."
 (package-require 'metaweblog)
 (package-require 'org2blog)
 (package-require 'htmlize)
-####### Ancestor
-======= end
