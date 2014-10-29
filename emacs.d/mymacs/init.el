@@ -1,3 +1,5 @@
+;; init GC after we allocated 20MB of memory
+(setq gc-cons-threshold 20000000)
 ;; remove scroll/tool/menu bar
 ;;(if (fboundp 'scroll-bar-mode) (scroll-bar-mode 1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
