@@ -6,7 +6,7 @@
 ;;(setq load-path
 ;;      (cons (expand-file-name "~/.emacs.d/custom/") load-path))
 
-(add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path "~/.emacs.d/mymacs/")
 (load-library "init")
 
 
@@ -51,6 +51,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes (quote ("4eaad15465961fd26ef9eef3bee2f630a71d8a4b5b0a588dc851135302f69b16" default)))
  '(jira-url "http://jira.app.activate.de/rpc/xmlrpc")
  '(org-agenda-files (quote ("~/todo.org")))
  '(org-agenda-ndays 7)
