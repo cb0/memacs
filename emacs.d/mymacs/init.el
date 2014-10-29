@@ -110,6 +110,14 @@
 (require 'guru-mode)
 (guru-global-mode +1)
 
+;;projectile
+(package-require 'projectile)
+(projectile-global-mode)
+(setq projectile-indexing-method 'alien)
+(setq projectile-switch-project-action 'projectile-dired)
+(setq projectile-enable-caching t)
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; set linux system  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
