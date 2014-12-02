@@ -285,6 +285,8 @@
 (global-set-key (kbd "C-x C-;") 'comment-region)
 (global-set-key (kbd "C-x C-:") 'uncomment-region)
 
+;;imenu for fast infile naviation
+(global-set-key (kbd "C-c i") 'imenu)
 
 ;; cycle through buffers
 (global-set-key (kbd "<C-tab>") 'bury-buffer)
