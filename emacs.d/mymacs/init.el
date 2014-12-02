@@ -291,6 +291,9 @@
 ;; cycle through buffers
 (global-set-key (kbd "<C-tab>") 'bury-buffer)
 
+;; quick line jump
+(global-set-key (kbd "\e\el") 'goto-line)
+
 ;;show frame. May be deleted if not used.
 (defun show-frame (&optional frame)
   "Show the current Emacs frame or the FRAME given as argument.
