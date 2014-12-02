@@ -105,10 +105,10 @@
 ;; enable "tail -f" like view of log files (using auto-mode-alist)
 (add-to-list 'auto-mode-alist '("\\.log\\'" . auto-revert-mode))
 
-;;enable guru mode to start emacs mastery
-(package-require 'guru-mode)
-(require 'guru-mode)
-(guru-global-mode +1)
+;;uncomment to enable guru mode 
+;;(package-require 'guru-mode)
+;;(require 'guru-mode)
+;;(guru-global-mode +1)
 
 ;;projectile
 (package-require 'projectile)
