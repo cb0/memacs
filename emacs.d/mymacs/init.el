@@ -539,3 +539,7 @@ BEG and END (region to sort)."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (package-require 'zenburn-theme)
 (load-theme 'zenburn t)
+
+;; some other tests
+(require 'on-screen)
+(on-screen-global-mode +1)
