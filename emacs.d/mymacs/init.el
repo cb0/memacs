@@ -158,8 +158,16 @@
  
 (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
 
+;;we want global-auto-complete-mode to work everywhere but not in minibuffer
+;;to do this we have to redeclare auto-complete-mode-maybe which is used by
+;;global-auto-complete-mode
+(defun auto-complete-mode-maybe ()
+  "No maybe for you. Only AC!"
+  (unless (minibufferp (current-buffer))
+    (auto-complete-mode 1)))
 
-(auto-complete-mode)
+;; turn on autocomplete globally 
+(global-auto-complete-mode t)
 
 (whitespace-mode)
 
@@ -621,4 +629,4 @@ See URL `http://php.net/manual/en/features.commandline.php'."
 
 ;; add discovery mode (http://www.masteringemacs.org/article/discoverel-discover-emacs-context-menus)
 (package-require 'discover)
-(global-discovery-mode 1)
+(global-discover-mode 1)
