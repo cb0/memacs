@@ -610,8 +610,6 @@ See URL `http://php.net/manual/en/features.commandline.php'."
 (define-key global-map (kbd "C-c C-n") 'elscreen-next)
 (define-key global-map (kbd "C-c C-p") 'elscreen-previous)
 
-
-
 ;; ace jump
 (package-require 'ace-jump-mode)
 (define-key global-map (kbd "C-c j") 'ace-jump-mode) 
@@ -619,3 +617,7 @@ See URL `http://php.net/manual/en/features.commandline.php'."
 (package-require 'git-gutter-fringe+)
 (require 'git-gutter-fringe+)
 (git-gutter+-toggle-fringe)
+
+;; add discovery mode (http://www.masteringemacs.org/article/discoverel-discover-emacs-context-menus)
+(package-require 'discover)
+(global-discovery-mode 1)
