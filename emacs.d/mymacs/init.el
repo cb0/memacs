@@ -606,8 +606,16 @@ See URL `http://php.net/manual/en/features.commandline.php'."
 ;; elscreen
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (package-require 'elscreen)
+(define-key global-map (kbd "C-c C-c") 'elscreen-create)
+(define-key global-map (kbd "C-c C-n") 'elscreen-next)
+(define-key global-map (kbd "C-c C-p") 'elscreen-previous)
+
+
 
 ;; ace jump
 (package-require 'ace-jump-mode)
 (define-key global-map (kbd "C-c j") 'ace-jump-mode) 
 
+(package-require 'git-gutter-fringe+)
+(require 'git-gutter-fringe+)
+(git-gutter+-toggle-fringe)
