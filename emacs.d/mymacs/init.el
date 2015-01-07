@@ -616,8 +616,9 @@ See URL `http://php.net/manual/en/features.commandline.php'."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (package-require 'elscreen)
 (define-key global-map (kbd "C-c C-c") 'elscreen-create)
-(define-key global-map (kbd "C-c C-n") 'elscreen-next)
-(define-key global-map (kbd "C-c C-p") 'elscreen-previous)
+(define-key global-map (kbd "C-c C-<right>") 'elscreen-next)
+(define-key global-map (kbd "C-c C-<left>") 'elscreen-previous)
+(define-key global-map (kbd "C-c C-k") 'elscreen-kill)
 
 ;; ace jump
 (package-require 'ace-jump-mode)
@@ -630,3 +631,11 @@ See URL `http://php.net/manual/en/features.commandline.php'."
 ;; add discovery mode (http://www.masteringemacs.org/article/discoverel-discover-emacs-context-menus)
 (package-require 'discover)
 (global-discover-mode 1)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; resize window
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "S-C-<up>") 'shrink-window)
+(global-set-key (kbd "S-C-<down>") 'enlarge-window)
