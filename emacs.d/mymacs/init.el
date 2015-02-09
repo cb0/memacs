@@ -21,7 +21,7 @@
 ;; On thy fly syntax checking (http://www.emacswiki.org/emacs/FlyMake)
 ;; ToDo: It'll work on os x only if you install flymake  through package-install-packages. Determine why package-require is not working.
 (package-require 'flymake)
-(load-library "flymakeCfg")
+;;(load-library "flymakeCfg")
 
 ;; load ido mode (interactivly do things :)
 (load-library "idoCfg")
@@ -31,6 +31,7 @@
 
 ;; load special rules for german umlaute 
 (load-library "german")
+
 
 ;; load flyspell and aspell
 (load-library "aspell")
@@ -130,11 +131,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Inline auto completion and suggestions
-(package-require 'flymake)
+;;(package-require 'flymake)
+
 (package-require 'auto-complete)
+
 (package-require 'git)
 (package-require 'git-timemachine)
-(package-require 'gist)
+;;(package-require 'gist)
+(package-require 'yagist)
+(require 'yagist)
 (package-require 'js2-mode)
 
 ;; git and magit (Magit rules!!!!)
@@ -167,7 +172,7 @@
     (auto-complete-mode 1)))
 
 ;; turn on autocomplete globally 
-(global-auto-complete-mode t)
+;;(global-auto-complete-mode t)
 
 (whitespace-mode)
 
@@ -547,6 +552,7 @@ BEG and END (region to sort)."
 (load-theme 'zenburn t)
 
 ;; some other tests
+(package-require 'on-screen)
 (require 'on-screen)
 (on-screen-global-mode +1)
 
@@ -620,7 +626,7 @@ See URL `http://php.net/manual/en/features.commandline.php'."
 (define-key global-map (kbd "C-c C-<left>") 'elscreen-previous)
 (define-key global-map (kbd "C-c C-k") 'elscreen-kill)
 
-;; ace jump
+;; Ace jump
 (package-require 'ace-jump-mode)
 (define-key global-map (kbd "C-c j") 'ace-jump-mode) 
 
