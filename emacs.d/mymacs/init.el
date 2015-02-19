@@ -21,6 +21,7 @@
 ;; On thy fly syntax checking (http://www.emacswiki.org/emacs/FlyMake)
 ;; ToDo: It'll work on os x only if you install flymake  through package-install-packages. Determine why package-require is not working.
 (package-require 'flymake)
+;;(require 'flymake)
 ;;(load-library "flymakeCfg")
 
 ;; load ido mode (interactivly do things :)
@@ -166,10 +167,10 @@
 ;;we want global-auto-complete-mode to work everywhere but not in minibuffer
 ;;to do this we have to redeclare auto-complete-mode-maybe which is used by
 ;;global-auto-complete-mode
-(defun auto-complete-mode-maybe ()
-  "No maybe for you. Only AC!"
-  (unless (minibufferp (current-buffer))
-    (auto-complete-mode 1)))
+;; (defun auto-complete-mode-maybe ()
+;;   "No maybe for you. Only AC!"
+;;   (unless (minibufferp (current-buffer))
+;;     (auto-complete-mode 1)))
 
 ;; turn on autocomplete globally 
 ;;(global-auto-complete-mode t)
@@ -599,23 +600,23 @@ BEG and END (region to sort)."
 (package-require 'exec-path-from-shell)
 
 ;; redefine flycheck to work inside web-mode
-(flycheck-define-checker my-php
-  "A PHP syntax checker using the PHP command line interpreter.
+;; (flycheck-define-checker my-php
+;;   "A PHP syntax checker using the PHP command line interpreter.
 
-See URL `http://php.net/manual/en/features.commandline.php'."
-  :command ("php" "-l" "-d" "error_reporting=E_ALL" "-d" "display_errors=1"
-            "-d" "log_errors=0" source)
-  :error-patterns
-  ((error line-start (or "Parse" "Fatal" "syntax") " error" (any ":" ",") " "
-          (message) " in " (file-name) " on line " line line-end))
-  :modes (php-mode php+-mode web-mode))
+;; See URL `http://php.net/manual/en/features.commandline.php'."
+;;   :command ("php" "-l" "-d" "error_reporting=E_ALL" "-d" "display_errors=1"
+;;             "-d" "log_errors=0" source)
+;;   :error-patterns
+;;   ((error line-start (or "Parse" "Fatal" "syntax") " error" (any ":" ",") " "
+;;           (message) " in " (file-name) " on line " line line-end))
+;;   :modes (php-mode php+-mode web-mode))
 
-(setq web-mode-ac-sources-alist
-      '(("css" . (ac-source-words-in-buffer ac-source-css-property))
-        ("html" . (ac-source-words-in-buffer ac-source-abbrev))
-        ("php" . (ac-source-words-in-buffer
-                  ac-source-words-in-same-mode-buffers
-                  ac-source-dictionary))))
+;; (setq web-mode-ac-sources-alist
+;;       '(("css" . (ac-source-words-in-buffer ac-source-css-property))
+;;         ("html" . (ac-source-words-in-buffer ac-source-abbrev))
+;;         ("php" . (ac-source-words-in-buffer
+;;                   ac-source-words-in-same-mode-buffers
+;;                   ac-source-dictionary))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; elscreen
@@ -645,3 +646,64 @@ See URL `http://php.net/manual/en/features.commandline.php'."
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<up>") 'shrink-window)
 (global-set-key (kbd "S-C-<down>") 'enlarge-window)
+
+
+
+
+;; rst
+(defun rst-validate-buffer ()
+  "Tests to see if buffer is valid reStructured Text."
+  (interactive)
+  (if (eq major-mode 'rst-mode)         ; only runs in rst-mode
+      (let ((name (buffer-name))
+            (filename (buffer-file-name)))
+        (cond
+         ((not (file-exists-p "/usr/bin/rst2pseudoxml")) ; check that the program used to process file is present
+              (error "Docutils programs not available."))
+         ((not (file-exists-p filename)) ; check that the file of the buffer exists
+              (error "Buffer '%s' is not visiting a file!" name))
+         (t                             ; ok, process the file, producing pseudoxml output
+          (let* ((pseudoxml (split-string (shell-command-to-string (concat "rst2pseudoxml " filename)) "\n"))
+                 (firstline (car pseudoxml)) ; take first line of output
+                 (lastline (nth (- (length pseudoxml) 2) pseudoxml))) ; take last line of output text
+            (if (or (string-match "ERROR/" firstline)
+                    (string-match "WARNING/" firstline)
+                    ;; for reasons I don't understand, sometimes the warnings/errors are at the end of output
+                    (string-match "ERROR/" lastline)
+                    (string-match "WARNING/" lastline))
+                (progn (ding)
+                       (message "There's an problem in this buffer."))
+              (message "Buffer is valid reStructured Text."))))))))
+
+(add-hook 'rst-mode-hook
+          (lambda()
+	    (add-hook 'after-save-hook 'rst-validate-buffer)))
+
+
+;; nXml mode folding
+(require 'hideshow)
+(require 'sgml-mode)
+(require 'nxml-mode)
+
+(add-to-list 'hs-special-modes-alist
+             '(nxml-mode
+               "<!--\\|<[^/>]*[^/]>"
+               "-->\\|</[^/>]*[^/]>"
+
+               "<!--"
+               sgml-skip-tag-forward
+               nil))
+
+
+
+(add-hook 'nxml-mode-hook 'hs-minor-mode)
+
+;; optional key bindings, easier than hs defaults
+(define-key nxml-mode-map (kbd "C-c h") 'hs-toggle-hiding)
+
+;; correct the umlaute problem \334 etc.
+(standard-display-european 1)
+
+(package-require 'sql-indent)
+ (eval-after-load "sql"
+      (load-library "sql-indent"))

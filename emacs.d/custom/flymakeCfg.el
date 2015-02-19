@@ -7,4 +7,4 @@
 ;;   "Flymake message face")
 
 ;; ; show the flymake errors in the minibuffer
-;; (package-require 'flymake-cursor)  
+(package-require 'flymake-cursor)  
