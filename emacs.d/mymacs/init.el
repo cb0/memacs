@@ -373,6 +373,8 @@ And make sure that it really shows up!"
 
 (define-key dired-mode-map [s-return] 'sudo-edit-current-file)
 
+(setq tramp-default-method "ssh")
+
 ;;----------------------------------------------------
 ;; tramp root edit warning
 ;;----------------------------------------------------
@@ -761,3 +763,16 @@ directory to make multiple eshell windows easier."
     (if (and arg (not (= 1 arg))) (message "%d lines copied" arg)))
 
 (global-set-key (kbd "C-c C-a") 'copy-line)
+
+;; yasnippets
+(package-require 'yasnippet)
+(require 'yasnippet)
+(yas-global-mode 1)
+
+;; force UTF8 everywhere
+(prefer-coding-system       'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+

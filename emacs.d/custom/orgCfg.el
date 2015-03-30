@@ -61,7 +61,11 @@
 
 (define-key global-map "\C-cl" 'org-store-link)
 (define-key global-map "\C-ca" 'org-agenda)
+;; add a timestamp when we close an item
 (setq org-log-done t)
+;; include a closing note when close an todo item
+(setq org-log-done 'note)
+
 ;;(global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-cc" 'org-capture)
 ;;(global-set-key "\C-ca" 'org-agenda)
