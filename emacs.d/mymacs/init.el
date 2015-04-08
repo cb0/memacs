@@ -767,7 +767,12 @@ directory to make multiple eshell windows easier."
 ;; yasnippets
 (package-require 'yasnippet)
 (require 'yasnippet)
+(setq yas-snippet-dirs
+      '("~/.emacs.d/snippets"               ;; personal snippets
+        "~/projects/yasnippet-snippets"     ;; the default collection
+        ))
 (yas-global-mode 1)
+
 
 ;; force UTF8 everywhere
 (prefer-coding-system       'utf-8)
@@ -776,3 +781,16 @@ directory to make multiple eshell windows easier."
 (set-keyboard-coding-system 'utf-8)
 (setq default-buffer-file-coding-system 'utf-8)
 
+
+;; display german calendar week
+;; (thanks to http://stackoverflow.com/questions/21364948/how-to-align-the-calendar-with-week-number-as-the-intermonth-text)
+(setq calendar-week-start-day 1)
+(setq calendar-intermonth-text
+      '(propertize
+        (format "%2d"
+                (car
+                 (calendar-iso-from-absolute
+                  (calendar-absolute-from-gregorian (list month day year)))))
+        'font-lock-face 'font-lock-warning-face))
+(setq calendar-intermonth-header
+      (propertize "KW" 'font-lock-face 'font-lock-keyword-face))
