@@ -1,3 +1,5 @@
+(setq user-full-name "Marcus Puchalla"
+      user-mail-address "marcus.puchalla@gmail.com")
 ;; init GC after we allocated 20MB of memory
 (setq gc-cons-threshold 20000000)
 ;; remove scroll/tool/menu bar
@@ -820,3 +822,11 @@ directory to make multiple eshell windows easier."
         'font-lock-face 'font-lock-warning-face))
 (setq calendar-intermonth-header
       (propertize "KW" 'font-lock-face 'font-lock-keyword-face))
+
+;; versor setup
+;; (add-to-list 'load-path "/home/mpuchalla/projects/emacs-versor/lisp/path/to/versor/lisp")
+
+;; (require 'versor)
+;; (require 'languide)
+
+;; (versor-setup)
