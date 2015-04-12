@@ -2,6 +2,8 @@
 
 ;; use packages from marmalade
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+;;the orgmode elpa
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 ;; and the old elpa repo
 (add-to-list 'package-archives '("elpa-old" . "http://tromey.com/elpa/"))
 
@@ -28,5 +30,12 @@ Usage: (package-require 'package)"
 (package-initialize)  
 ;; package init not needed, since it is done anyway in emacs 24 after reading the init
 ;; but we have to load the list of available packages
-(package-refresh-contents)
+(unless package-archive-contents
+  (package-refresh-contents))
+
+(setq package-load-list '(all))
+
+(unless (package-installed-p 'org)  ;; Make sure the Org package is
+  (package-install 'org))           ;; installed, install it if not
+(package-initialize) 
 

@@ -52,9 +52,10 @@
    (shen)
    (sql)
    (sqlite)))
-
+;;set org diretrory to owncloud sync
+(setq org-directory "~/ownCloud/org")
 ; and some more org stuff
-
+(setq org-list-allow-alphabetical t)
 
 (setq org-todo-keywords
       '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")))

@@ -166,6 +166,14 @@
  
 (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
 
+;;magit update recommendation
+;;Note from update: Before running Git, Magit by default reverts all unmodified buffers which visit files tracked in the current repository. This can potentially lead to dataloss so you might want to disable this by adding the following line to your init file:
+(setq magit-auto-revert-mode nil)
+
+;;prevent magit update message 1.4
+(setq magit-last-seen-setup-instructions "1.4.0")
+
+
 ;;we want global-auto-complete-mode to work everywhere but not in minibuffer
 ;;to do this we have to redeclare auto-complete-mode-maybe which is used by
 ;;global-auto-complete-mode
@@ -528,12 +536,42 @@ BEG and END (region to sort)."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Wordpress integration (first try)
+;; Wordpress integration 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (package-require 'xml-rpc)
-;; (package-require 'metaweblog)
-;; (package-require 'org2blog)
-;; (package-require 'htmlize)
+(package-require 'xml-rpc)
+(package-require 'metaweblog)
+(package-require 'org2blog)
+(package-require 'htmlize)
+
+(require 'org2blog-autoloads)
+(require 'netrc)
+
+(setq wp-0xcb0 (netrc-machine (netrc-parse "~/.netrc") "wp-0xcb0" t))
+
+(setq org2blog/wp-blog-alist
+      '(("0xcb0"
+         :url "http://www.0xcb0.com/xmlrpc.php"
+         :username (netrc-get wp-0xcb0 "login")
+         :password (netrc-get wp-0xcb0 "password")
+         :default-title "Hello World"
+         :default-categories ("org2blog" "emacs")
+         :tags-as-categories nil)
+        ))
+
+(setq org2blog/wp-use-sourcecode-shortcode 't)
+;; removed light="true"
+(setq org2blog/wp-sourcecode-default-params nil)
+;; target language needs to be in here
+(setq org2blog/wp-sourcecode-langs
+      '("actionscript3" "bash" "coldfusion" "cpp" "csharp" "css" "delphi"
+        "erlang" "fsharp" "diff" "groovy" "javascript" "java" "javafx" "matlab"
+        "objc" "perl" "php" "text" "powershell" "python" "ruby" "scala" "sql"
+        "vb" "xml"
+        "sh" "emacs-lisp" "lisp" "lua"))
+
+;; this will use emacs syntax higlighting in your #+BEGIN_SRC
+;; <language> <your-code> #+END_SRC code blocks.
+(setq org-src-fontify-natively t)
 
 ;; (package-require 'anything)
 ;; (package-require 'anything-config)
