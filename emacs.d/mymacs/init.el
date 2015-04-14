@@ -681,6 +681,8 @@ BEG and END (region to sort)."
 (package-require 'git-gutter-fringe+)
 (require 'git-gutter-fringe+)
 (git-gutter+-toggle-fringe)
+(setq global-git-gutter+-mode t)
+(package-require 'git-link)
 
 ;; add discovery mode (http://www.masteringemacs.org/article/discoverel-discover-emacs-context-menus)
 (package-require 'discover)
