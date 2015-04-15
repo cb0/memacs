@@ -752,7 +752,7 @@ BEG and END (region to sort)."
 (define-key nxml-mode-map (kbd "C-c h") 'hs-toggle-hiding)
 
 ;; correct the umlaute problem \334 etc.
-(standard-display-european 1)
+;;(standard-display-european 1)
 
 (package-require 'sql-indent)
  (eval-after-load "sql"
@@ -883,3 +883,7 @@ directory to make multiple eshell windows easier."
   (interactive)
   (shell-command screensaver-command))
 (global-set-key (kbd "C-c C-x C-s") 'activate-screen-saver)
+
+
+;;modes that look interesting but there is so less time
+;;https://github.com/ShingoFukuyama/helm-swoop
