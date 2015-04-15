@@ -12,7 +12,8 @@
 
 ;; add load path for custom scripts
 (add-to-list 'load-path "~/.emacs.d/custom/")
-
+;; tell emacs where to read abbrev
+(setq abbrev-file-name "~/projects/emacs_abbrev_defs/general.abbrev.txt")   
 ;; load org.el containing customizations for org-mode
 ;; uncomment this line will force the package repository to update
 (load-library "installer")
@@ -875,3 +876,10 @@ directory to make multiple eshell windows easier."
 ;; (require 'languide)
 
 ;; (versor-setup)
+
+;; Screensaver command
+(defvar screensaver-command "xscreensaver-command -lock")
+(defun activate-screen-saver ()
+  (interactive)
+  (shell-command screensaver-command))
+(global-set-key (kbd "C-c C-x C-s") 'activate-screen-saver)
