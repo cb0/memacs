@@ -107,8 +107,6 @@
 (allout-mode)
 (type-break-mode)
 
-(global-linum-mode 1)
-
 ;; enable for all programming modes
 (add-hook 'prog-mode-hook 'subword-mode)
 
