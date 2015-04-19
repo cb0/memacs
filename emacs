@@ -56,11 +56,11 @@
  '(custom-safe-themes
    (quote
     ("9dae95cdbed1505d45322ef8b5aa90ccb6cb59e0ff26fef0b8f411dfc416c552" "4eaad15465961fd26ef9eef3bee2f630a71d8a4b5b0a588dc851135302f69b16" default)))
- '(fci-rule-color "#383838")
- '(jira-url "http://jira.app.activate.de/rpc/xmlrpc")
- '(org-agenda-files
+ '(exec-path
    (quote
     ("~/Dokumente/Tasks/JT-1929/JT-1929.org" "~/Dokumente/Tasks/traso.org" "~/todo.org")))
+    ("/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin-x86_64-10_9" "/Applications/Emacs.app/Contents/MacOS/libexec-x86_64-10_9" "/Applications/Emacs.app/Contents/MacOS/libexec" "/Applications/Emacs.app/Contents/MacOS/bin" "/usr/local/bin/")))
+ '(fci-rule-color "#383838")
  '(org-agenda-ndays 7)
  '(org-agenda-show-all-dates t)
  '(org-agenda-skip-deadline-if-done t)

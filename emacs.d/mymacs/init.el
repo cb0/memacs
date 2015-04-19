@@ -69,6 +69,24 @@
       mac-command-modifier 'meta
       x-select-enable-clipboard t)
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; gpg and authentication integration
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'epa-file)
+(epa-file-enable)
+(setq epa-file-select-keys nil)
+;; check OS type and load additional gpg path
+(cond
+ ((string-equal system-type "darwin")
+  (progn
+    (message "loading Mac OS X specific path settings")
+    (add-to-list 'exec-path "/usr/local/bin")
+    )))
+
+(load-library "secrets")
+(require 'secrets)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;; Load custom configuartions for allday use ;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -557,11 +575,11 @@ BEG and END (region to sort)."
 (setq
  org2blog/wp-confirm-post t
  org2blog/wp-blog-alist
- '(
+ `(
    ("0xcb0"
     :url "http://www.0xcb0.com/xmlrpc.php"
-    :username (netrc-get wp-0xcb0 "login")
-    :password (netrc-get wp-0xcb0 "password")
+    :username ,0xcb0-username
+    :password ,0xcb0-password
     :default-title "Hello, World!"
     :default-categories ("Uncategorized")
     :tags-as-categories nil)
