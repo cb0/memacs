@@ -23,9 +23,10 @@
 (require 'org-compat)
 ;; On thy fly syntax checking (http://www.emacswiki.org/emacs/FlyMake)
 ;; ToDo: It'll work on os x only if you install flymake  through package-install-packages. Determine why package-require is not working.
-(package-require 'flymake)
-;;(require 'flymake)
+;;(package-require 'flymake)
 ;;(load-library "flymakeCfg")
+(package-require 'flymake-cursor)  
+(require 'flymake)
 
 ;; load ido mode (interactivly do things :)
 (load-library "idoCfg")
