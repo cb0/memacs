@@ -90,7 +90,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;; Load custom configuartions for allday use ;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;(desktop-read)
 ;; Navigation contains loading of packages (goto-chg) that help moving around easier
 (load-library "navigation")
 
@@ -123,7 +123,7 @@
 
 ; use allout minor mode to have outlining everywhere.
 (allout-mode)
-(type-break-mode)
+;;(type-break-mode)
 
 ;; enable for all programming modes
 (add-hook 'prog-mode-hook 'subword-mode)
@@ -572,18 +572,18 @@ BEG and END (region to sort)."
 (setq debug-on-error t)
 (setq wp-0xcb0 (netrc-machine (netrc-parse "~/.netrc") "wp-0xcb0" t))
 
-(setq
- org2blog/wp-confirm-post t
- org2blog/wp-blog-alist
- `(
-   ("0xcb0"
-    :url "http://www.0xcb0.com/xmlrpc.php"
-    :username ,0xcb0-username
-    :password ,0xcb0-password
-    :default-title "Hello, World!"
-    :default-categories ("Uncategorized")
-    :tags-as-categories nil)
-    ))
+;; (setq
+;;  org2blog/wp-confirm-post t
+;;  org2blog/wp-blog-alist
+;;  `(
+;;    ("0xcb0"
+;;     :url "http://www.0xcb0.com/xmlrpc.php"
+;;     :username ,0xcb0-username
+;;     :password ,0xcb0-password
+;;     :default-title "Hello, World!"
+;;     :default-categories ("Uncategorized")
+;;     :tags-as-categories nil)
+;;     ))
 
 (setq org2blog/wp-use-sourcecode-shortcode 't)
 ;; removed light="true"
@@ -657,7 +657,7 @@ BEG and END (region to sort)."
   (setq web-mode-code-indent-offset 4)
   (setq web-mode-css-indent-offset 2)
   (setq web-mode-markup-indent-offset 2)
-  (flycheck-select-checker my-php)
+;;  (flycheck-select-checker my-php)
   (flycheck-mode t))
 
 (add-to-list 'auto-mode-alist '("\\.php$" . my-setup-php))

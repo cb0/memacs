@@ -95,3 +95,4 @@
  '(vc-annotate-very-old-color "#DC8CC3"))
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
+
