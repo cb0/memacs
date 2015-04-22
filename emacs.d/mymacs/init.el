@@ -13,7 +13,7 @@
 ;; add load path for custom scripts
 (add-to-list 'load-path "~/.emacs.d/custom/")
 ;; tell emacs where to read abbrev
-(setq abbrev-file-name "~/projects/emacs_abbrev_defs/general.abbrev.txt")   
+(setq abbrev-file-name "~/projects/emacs_abbrev_defs/general.abbrev.txt")
 ;; load org.el containing customizations for org-mode
 ;; uncomment this line will force the package repository to update
 (load-library "installer")

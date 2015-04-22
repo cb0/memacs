@@ -163,12 +163,13 @@
 ;; we want some non standard todo types
 (setq org-todo-keywords
       '((sequence
-	 "TODO" "BUG" "WAIT_FOR_FEEDBACK" "FIXED" "TO_BE_MERGE" "MERGED" "WAIT" "|" "CANCELED" "DONE")))
+	 "TODO" "BUG" "WAIT_FOR_FEEDBACK" "DISCUSSION" "FIXED" "TO_BE_MERGE" "MERGED" "WAIT" "|" "CANCELED" "DONE")))
 
 (setq org-todo-keyword-faces
       '(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
 	("BUG" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
 	("WAIT_FOR_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	("DISCUSSION" :background "red2" :foreground "orange" :weight bold :box (:line-width 2 :style released-button))
 	("FIXED" :background "orange" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
 	("TO_BE_MERGE" :background "gold" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
 	("MERGED" :background "gold" :foreground "grey" :weight bold :box (:line-width 2 :style released-button))
