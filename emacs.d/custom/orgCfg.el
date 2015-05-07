@@ -176,3 +176,18 @@
 	("WAIT" :background "gray" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
 	("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
 	("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
+
+;; dont ask when executing code
+(setq org-confirm-babel-evaluate nil)
+
+(defface org-block-begin-line
+  '((t (:underline "#A7A6AA" :foreground "#040404" :background "#9a9a9a")))
+  "Face used for the line delimiting the begin of source blocks.")
+
+(defface org-block-background
+  '((t (:background "#4F4F4F")))
+  "Face used for the source block background.")
+
+(defface org-block-end-line
+  '((t (:overline "#A7A6AA" :foreground "#000000" :background "#9a9a9a")))
+  "Face used for the line delimiting the end of source blocks.")

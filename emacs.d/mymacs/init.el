@@ -101,6 +101,8 @@
 ;; enable subword mode for all programming modes (treating camel case the right way)
 (add-hook 'prog-mode-hook 'subword-mode)
 
+(package-require 'lorem-ipsum)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; load modes other/minor modes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -685,10 +687,7 @@ BEG and END (region to sort)."
 ;;         ("php" . (ac-source-words-in-buffer
 ;;                   ac-source-words-in-same-mode-buffers
 ;;                   ac-source-dictionary))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; elscreen
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(package-require 'yasnippet)
 (package-require 'elscreen)
 (define-key global-map (kbd "C-c C-c") 'elscreen-create)
 (define-key global-map (kbd "C-c C-<right>") 'elscreen-next)
@@ -907,3 +906,10 @@ directory to make multiple eshell windows easier."
 
 ;;modes that look interesting but there is so less time
 ;;https://github.com/ShingoFukuyama/helm-swoop
+(package-require 'rainbow-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; cl and slime 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(package-require 'slime)
+(package-require 'ac-slime)
