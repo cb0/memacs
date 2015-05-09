@@ -623,18 +623,18 @@ BEG and END (region to sort)."
 (setq debug-on-error t)
 (setq wp-0xcb0 (netrc-machine (netrc-parse "~/.netrc") "wp-0xcb0" t))
 
-;; (setq
-;;  org2blog/wp-confirm-post t
-;;  org2blog/wp-blog-alist
-;;  `(
-;;    ("0xcb0"
-;;     :url "http://www.0xcb0.com/xmlrpc.php"
-;;     :username ,0xcb0-username
-;;     :password ,0xcb0-password
-;;     :default-title "Hello, World!"
-;;     :default-categories ("Uncategorized")
-;;     :tags-as-categories nil)
-;;     ))
+(setq
+ org2blog/wp-confirm-post t
+ org2blog/wp-blog-alist
+ `(
+   ("0xcb0"
+    :url "http://www.0xcb0.com/xmlrpc.php"
+    :username ,0xcb0-username
+    :password ,0xcb0-password
+    :default-title "Hello, World!"
+    :default-categories ("Uncategorized")
+    :tags-as-categories nil)
+    ))
 
 (setq org2blog/wp-use-sourcecode-shortcode 't)
 ;; removed light="true"
