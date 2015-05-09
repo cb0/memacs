@@ -19,6 +19,7 @@
     (abort-recursive-edit)))
 (key-chord-define-global "xk"     'kill-this-buffer-if-not-modified)
 ; file actions
-(key-chord-define-global "bf"     'ido-switch-buffer)
+(key-chord-define-global "xb"     'ido-switch-buffer)
+(key-chord-define-global "xd"     'ido-dired)
 (key-chord-define-global "cf"     'ido-find-file)
 (key-chord-define-global "vc"     'vc-next-action)

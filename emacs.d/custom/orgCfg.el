@@ -162,3 +162,35 @@
 (setq org-clock-persist 'history)
 (org-clock-persistence-insinuate)
 (setq org-clock-continuously t)
+
+;; we want some non standard todo types
+(setq org-todo-keywords
+      '((sequence
+	 "TODO" "BUG" "WAIT_FOR_FEEDBACK" "DISCUSSION" "FIXED" "TO_BE_MERGE" "MERGED" "WAIT" "|" "CANCELED" "DONE")))
+
+(setq org-todo-keyword-faces
+      '(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	("BUG" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	("WAIT_FOR_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	("DISCUSSION" :background "red2" :foreground "orange" :weight bold :box (:line-width 2 :style released-button))
+	("FIXED" :background "orange" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	("TO_BE_MERGE" :background "gold" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	("MERGED" :background "gold" :foreground "grey" :weight bold :box (:line-width 2 :style released-button))
+	("WAIT" :background "gray" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
+	("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
+
+;; dont ask when executing code
+(setq org-confirm-babel-evaluate nil)
+
+(defface org-block-begin-line
+  '((t (:underline "#A7A6AA" :foreground "#040404" :background "#9a9a9a")))
+  "Face used for the line delimiting the begin of source blocks.")
+
+(defface org-block-background
+  '((t (:background "#4F4F4F")))
+  "Face used for the source block background.")
+
+(defface org-block-end-line
+  '((t (:overline "#A7A6AA" :foreground "#000000" :background "#9a9a9a")))
+  "Face used for the line delimiting the end of source blocks.")
