@@ -737,6 +737,10 @@ BEG and END (region to sort)."
 ;;                   ac-source-words-in-same-mode-buffers
 ;;                   ac-source-dictionary))))
 (package-require 'yasnippet)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; elscrenn
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (package-require 'elscreen)
 (define-key global-map (kbd "C-c C-c") 'elscreen-create)
 (define-key global-map (kbd "C-c C-<right>") 'elscreen-next)
