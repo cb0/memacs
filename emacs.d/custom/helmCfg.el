@@ -1,7 +1,5 @@
 (package-require 'helm)
-
 (package-require 'ac-helm)
-
 
 (global-set-key (kbd "C-c m") 'helm-mini)
 (global-set-key (kbd "C-c h") 'helm-command-prefix)
@@ -9,7 +7,7 @@
 
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
 (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-;;(define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+(define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
 
 (when (executable-find "curl")
   (setq helm-google-suggest-use-curl-p t))
@@ -36,6 +34,23 @@
 (package-require 'helm-themes)
 (package-require 'helm-projectile)
 
+;;enable fuzzy matching
+(setq helm-recentf t)
+(setq helm-mini t)
+(setq helm-buffers-list t)
+(setq helm-find-files t)
+(setq helm-locate t)
+(setq helm-M-x t)
+(setq helm-semantic t)
+(setq helm-imenu t)
+(setq helm-apropos t)
+(setq helm-lisp-completion-at-point t)
+
+(setq helm-candidate-number-limit 100)
+
+(image-dired-display-image-mode)
+
+(helm-autoresize-mode 1)
 ;; activate helm mode
 (helm-mode 1)
 

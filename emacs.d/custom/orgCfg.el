@@ -1,6 +1,6 @@
 ; Activate org-mode
 (require 'org)
-
+(require 'ess-site)
 ; http://orgmode.org/guide/Activation.html#Activation
 
 ; The following lines are always needed.  Choose your own keys.
@@ -52,6 +52,9 @@
    (shen)
    (sql)
    (sqlite)))
+;; turn off "evaluate code question" in org-mode code blocks
+(setq org-confirm-babel-evaluate nil)
+
 ;;set org diretrory to owncloud sync
 (setq org-directory "~/ownCloud/org")
 ; and some more org stuff

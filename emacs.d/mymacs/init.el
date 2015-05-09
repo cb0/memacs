@@ -3,10 +3,9 @@
 ;; init GC after we allocated 20MB of memory
 (setq gc-cons-threshold 20000000)
 ;; remove scroll/tool/menu bar
-;;(if (fboundp 'scroll-bar-mode) (scroll-bar-mode 1))
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-
+(scroll-bar-mode 0)
+(tool-bar-mode 0)
+(menu-bar-mode 0)
 ;;; this loads the package manager
 (require 'package)
 
@@ -23,8 +22,8 @@
 (require 'org-compat)
 ;; On thy fly syntax checking (http://www.emacswiki.org/emacs/FlyMake)
 ;; ToDo: It'll work on os x only if you install flymake  through package-install-packages. Determine why package-require is not working.
-;;(package-require 'flymake)
-;;(load-library "flymakeCfg")
+(package-require 'flymake)
+(load-library "flymakeCfg")
 (package-require 'flymake-cursor)  
 (require 'flymake)
 
@@ -70,6 +69,55 @@
       mac-command-modifier 'meta
       x-select-enable-clipboard t)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; emacs stripping (thanks to http://bzg.fr/emacs-strip-tease.html)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Prevent the cursor from blinking
+(blink-cursor-mode 0)
+;; Don't use messages that you don't read
+(setq initial-scratch-message "")
+(setq inhibit-startup-message t)
+;; a visual bell in form of a white sqare in the center of the screen instead  of a sound
+(setq visible-bell t)
+
+;;customize greeting
+(setq inhibit-startup-echo-area-message user-full-name)
+
+;; A small minor mode to use a big fringe
+(defvar bzg-big-fringe-mode nil)
+(define-minor-mode bzg-big-fringe-mode
+  "Minor mode to use big fringe in the current buffer."
+  :init-value nil
+  :global t
+  :variable bzg-big-fringe-mode
+  :group 'editing-basics
+  (if (not bzg-big-fringe-mode)
+      (set-fringe-style nil)
+    (set-fringe-mode
+     (/ (- (frame-pixel-width)
+           (* 100 (frame-char-width)))
+        4))))
+
+;; Now activate this global minor mode
+(bzg-big-fringe-mode 1)
+
+;; To activate the fringe by default and deactivate it when windows
+;; are split vertically, uncomment this:
+;; (add-hook 'window-configuration-change-hook
+;;           (lambda ()
+;;             (if (delq nil
+;;                       (let ((fw (frame-width)))
+;;                         (mapcar (lambda(w) (< (window-width w) fw))
+;;                                 (window-list))))
+;;                 (bzg-big-fringe-mode 0)
+;;               (bzg-big-fringe-mode 1))))
+
+;; Use a minimal cursor
+;; (setq default-cursor-type 'hbar)
+
+;; Get rid of the indicators in the fringe
+(mapcar (lambda(fb) (set-fringe-bitmap-face fb 'org-hide))
+        fringe-bitmaps)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; gpg and authentication integration
@@ -206,7 +254,7 @@
 ;;     (auto-complete-mode 1)))
 
 ;; turn on autocomplete globally 
-;;(global-auto-complete-mode t)
+(global-auto-complete-mode t)
 
 (whitespace-mode)
 
@@ -591,7 +639,7 @@ BEG and END (region to sort)."
 (setq org2blog/wp-sourcecode-default-params nil)
 ;; target language needs to be in here
 (setq org2blog/wp-sourcecode-langs
-      '("actionscript3" "bash" "coldfusion" "cpp" "csharp" "css" "delphi"
+      '("actionscript3" "bash" "sh" "coldfusion" "cpp" "csharp" "css" "delphi"
         "erlang" "fsharp" "diff" "groovy" "javascript" "java" "javafx" "matlab"
         "objc" "perl" "php" "text" "powershell" "python" "ruby" "scala" "sql"
         "vb" "xml"
@@ -909,3 +957,26 @@ directory to make multiple eshell windows easier."
 
 ;;modes that look interesting but there is so less time
 ;;https://github.com/ShingoFukuyama/helm-swoop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; email section
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq imap-shell-program "dovecot -c ~/.dovecotrc --exec-mail imap")
+(setq gnus-select-method '(nnimap "Mail"
+                                  (nnimap-stream shell)))
+(setq user-mail-address "marcus.puchalla@googlemail.com")
+
+(package-require 'offlineimap)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; statistical prequesition (ess with R uspport for org-mode bable with R support
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(add-to-list 'load-path "~/.emacs.d/src/ess/lisp")
+(require 'ess-site)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; dired modifications
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(load-library "diredCfg")
+(load-library "dired-tar")
