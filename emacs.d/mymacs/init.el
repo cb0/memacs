@@ -96,7 +96,7 @@
     (set-fringe-mode
      (/ (- (frame-pixel-width)
            (* 100 (frame-char-width)))
-        4))))
+        5))))
 
 ;; Now activate this global minor mode
 (bzg-big-fringe-mode 1)
@@ -151,7 +151,9 @@
 (add-hook 'prog-mode-hook 'subword-mode)
 
 (package-require 'lorem-ipsum)
-
+(display-time)
+(setq require-final-newline t)
+(fset 'yes-or-no-p 'y-or-n-p)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; load modes other/minor modes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -742,6 +744,7 @@ BEG and END (region to sort)."
 ;; elscrenn
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (package-require 'elscreen)
+(elscreen-start)
 (define-key global-map (kbd "C-c C-c") 'elscreen-create)
 (define-key global-map (kbd "C-c C-<right>") 'elscreen-next)
 (define-key global-map (kbd "C-c C-<left>") 'elscreen-previous)
@@ -990,4 +993,11 @@ directory to make multiple eshell windows easier."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (package-require 'slime)
 (package-require 'ac-slime)
-
+(setq inferior-lisp-program "/usr/local/bin/sbcl")
+(require 'slime)
+(slime-setup)
+(add-to-list 'slime-contribs 'slime-fancy 'slime-repl)
+(eval-after-load 'slime
+`(define-key slime-prefix-map (kbd "M-h") 'slime-documentation-lookup))
+(setq slime-lisp-implementations
+'((sbcl ("sbcl" "--core" "/Users/cb0/sbcl.core-for-slime"))))
