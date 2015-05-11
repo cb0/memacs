@@ -211,8 +211,6 @@
 ;; Inline auto completion and suggestions
 ;;(package-require 'flymake)
 
-(package-require 'auto-complete)
-
 (package-require 'git)
 (package-require 'git-timemachine)
 ;;(package-require 'gist)
@@ -248,17 +246,74 @@
 ;;prevent magit update message 1.4
 (setq magit-last-seen-setup-instructions "1.4.0")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; auto-complete section
+;; thank to https://github.com/purcell/emacs.d/blob/master/lisp/init-auto-complete.el 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(package-require 'auto-complete)
+(require 'auto-complete-config)
 
 ;;we want global-auto-complete-mode to work everywhere but not in minibuffer
 ;;to do this we have to redeclare auto-complete-mode-maybe which is used by
 ;;global-auto-complete-mode
-;; (defun auto-complete-mode-maybe ()
-;;   "No maybe for you. Only AC!"
-;;   (unless (minibufferp (current-buffer))
-;;     (auto-complete-mode 1)))
+(defun auto-complete-mode-maybe ()
+  "No maybe for you. Only AC!"
+  (unless (minibufferp (current-buffer))
+    (auto-complete-mode 1)))
 
 ;; turn on autocomplete globally 
 (global-auto-complete-mode t)
+
+;; hook AC into completion-at-point
+(defun sanityinc/auto-complete-at-point ()
+  (when (and (not (minibufferp))
+	     (fboundp 'auto-complete-mode)
+	     auto-complete-mode)
+    #'auto-complete))
+(defun sanityinc/never-indent ()
+  (set (make-local-variable 'indent-line-function) (lambda () 'noindent)))
+
+(defun set-auto-complete-as-completion-at-point-function ()
+  (setq completion-at-point-functions
+        (cons 'sanityinc/auto-complete-at-point
+              (remove 'sanityinc/auto-complete-at-point completion-at-point-functions))))
+
+(add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
+
+
+(set-default 'ac-sources
+             '(ac-source-imenu
+               ac-source-dictionary
+               ac-source-words-in-buffer
+               ac-source-words-in-same-mode-buffers
+               ac-source-words-in-all-buffer))
+
+(dolist (mode '(magit-log-edit-mode
+                log-edit-mode org-mode text-mode haml-mode
+                git-commit-mode
+                sass-mode yaml-mode csv-mode espresso-mode haskell-mode
+                html-mode nxml-mode sh-mode smarty-mode clojure-mode
+                lisp-mode textile-mode markdown-mode tuareg-mode
+                js3-mode css-mode less-css-mode sql-mode
+                sql-interactive-mode
+                inferior-emacs-lisp-mode))
+  (add-to-list 'ac-modes mode))
+
+
+;; Exclude very large buffers from dabbrev
+(defun sanityinc/dabbrev-friend-buffer (other-buffer)
+  (< (buffer-size other-buffer) (* 1 1024 1024)))
+
+(setq dabbrev-friend-buffer-function 'sanityinc/dabbrev-friend-buffer)
+
+
+(provide 'init-auto-complete)
+
+
+(setq tab-always-indent 'complete)  ;; use 't when auto-complete is disabled
+(add-to-list 'completion-styles 'initials t)
+;; Stop completion-at-point from popping up completion buffers so eagerly
+(setq completion-cycle-threshold 5)
 
 (whitespace-mode)
 
@@ -322,6 +377,38 @@
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
 (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
+
+(defun eldoc-get-arg-index ()
+  (save-excursion
+    (let ((fn (eldoc-fnsym-in-current-sexp))
+          (i 0))
+      (unless (memq (char-syntax (char-before)) '(32 39)) ; ? , ?'
+        (condition-case err
+            (backward-sexp)             ;for safety
+          (error 1)))
+      (condition-case err
+          (while (not (equal fn (eldoc-current-symbol)))
+            (setq i (1+ i))
+            (backward-sexp))
+        (error 1))
+      (max 0 i))))
+
+(defun eldoc-highlight-nth-arg (doc n)
+  (cond ((null doc) "")
+        ((<= n 0) doc)
+        (t
+         (let ((i 0))
+           (mapconcat
+            (lambda (arg)
+              (if (member arg '("&optional" "&rest"))
+                  arg
+                (prog2
+                    (if (= i n)
+                        (put-text-property 0 (length arg) 'face 'underline arg))
+                    arg
+                  (setq i (1+ i)))))
+            (split-string doc) " ")))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; smartparens
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -749,6 +836,8 @@ BEG and END (region to sort)."
 (define-key global-map (kbd "C-c C-<right>") 'elscreen-next)
 (define-key global-map (kbd "C-c C-<left>") 'elscreen-previous)
 (define-key global-map (kbd "C-c C-k") 'elscreen-kill)
+(setf elscreen-display-tab t)
+(setf elscreen-tab-display-kill-screen nil)
 
 ;; Ace jump
 (package-require 'ace-jump-mode)
@@ -928,6 +1017,7 @@ directory to make multiple eshell windows easier."
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
+
 (setq default-buffer-file-coding-system 'utf-8)
 
 
@@ -1001,3 +1091,8 @@ directory to make multiple eshell windows easier."
 `(define-key slime-prefix-map (kbd "M-h") 'slime-documentation-lookup))
 (setq slime-lisp-implementations
 '((sbcl ("sbcl" "--core" "/Users/cb0/sbcl.core-for-slime"))))
+
+(setq tab-always-indent 'complete)
+(add-to-list 'completion-styles 'initials t)
+
+	     
