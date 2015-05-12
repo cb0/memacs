@@ -839,6 +839,12 @@ BEG and END (region to sort)."
 (setf elscreen-display-tab t)
 (setf elscreen-tab-display-kill-screen nil)
 
+(package-require 'zoom-window)
+(setq zoom-window-use-elscreen t)
+(zoom-window-setup)
+
+(global-set-key (kbd "C-x C-z") 'zoom-window-zoom)
+
 ;; Ace jump
 (package-require 'ace-jump-mode)
 (define-key global-map (kbd "C-c j") 'ace-jump-mode) 
