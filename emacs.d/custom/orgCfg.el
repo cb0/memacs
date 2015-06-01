@@ -1,6 +1,6 @@
 ; Activate org-mode
 (require 'org)
-(require 'ess-site)
+;;(require 'ess-site)
 ; http://orgmode.org/guide/Activation.html#Activation
 
 ; The following lines are always needed.  Choose your own keys.
