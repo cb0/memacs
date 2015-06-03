@@ -196,6 +196,7 @@
 (setq projectile-switch-project-action 'projectile-dired)
 (setq projectile-enable-caching t)
 
+(package-require 'ag)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; set linux system  
@@ -1096,3 +1097,15 @@ directory to make multiple eshell windows easier."
 (add-to-list 'completion-styles 'initials t)
 
 	     
+;; zoom
+(package-require 'zoom-window)
+(setq zoom-window-use-elscreen t)
+(zoom-window-setup)
+
+(global-set-key (kbd "C-x C-z") 'zoom-window-zoom)
+
+(defun switch-to-previous-buffer ()
+      (interactive)
+      (switch-to-buffer (other-buffer (current-buffer) 1)))
+(global-set-key (kbd "C-x C-<left>") 'switch-to-previous-buffer)
+(global-set-key (kbd "C-x C-<right>") 'switch-to-previous-buffer)
