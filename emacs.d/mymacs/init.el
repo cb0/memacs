@@ -845,11 +845,28 @@ BEG and END (region to sort)."
 (package-require 'ace-jump-mode)
 (define-key global-map (kbd "C-c j") 'ace-jump-mode) 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; git
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (package-require 'git-gutter)
 (require 'git-gutter)
 (global-git-gutter-mode t)
 (custom-set-variables
  '(git-gutter:update-interval 2))
+(global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
+(global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
+
+;; Jump to next/previous hunk
+(global-set-key (kbd "C-S-p") 'git-gutter:previous-hunk)
+(global-set-key (kbd "C-S-n") 'git-gutter:next-hunk)
+
+;; Stage current hunk
+(global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
+
+;; Revert current hunk
+(global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
+
 
 (package-require 'git-link)
 ;; add discovery mode (http://www.masteringemacs.org/article/discoverel-discover-emacs-context-menus)
