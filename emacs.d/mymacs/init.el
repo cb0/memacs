@@ -851,7 +851,8 @@ BEG and END (region to sort)."
 
 (package-require 'git-gutter)
 (require 'git-gutter)
-(global-git-gutter-mode t)
+(global-git-gutter-mode +1)
+
 (custom-set-variables
  '(git-gutter:update-interval 2))
 (global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
@@ -866,7 +867,20 @@ BEG and END (region to sort)."
 
 ;; Revert current hunk
 (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
+(add-to-list 'git-gutter:update-hooks 'focus-in-hook)
+(set-face-background 'git-gutter:modified "purple") ;; background color
+(set-face-foreground 'git-gutter:added "green")
+(set-face-foreground 'git-gutter:deleted "red")
+(custom-set-variables
+ '(git-gutter:window-width 2)
+ '(git-gutter:modified-sign "☁")
+ '(git-gutter:added-sign "☀")
+ '(git-gutter:deleted-sign "☂"))
 
+(package-require 'mo-git-blame)
+(autoload 'mo-git-blame-file "mo-git-blame" nil t)
+(autoload 'mo-git-blame-current "mo-git-blame" nil t)
+(global-set-key (kbd "C-S-b") 'mo-git-blame-current)
 
 (package-require 'git-link)
 ;; add discovery mode (http://www.masteringemacs.org/article/discoverel-discover-emacs-context-menus)
