@@ -131,10 +131,11 @@
   (progn
     (message "loading Mac OS X specific path settings")
     (add-to-list 'exec-path "/usr/local/bin")
+    (load-library "secrets")
+    (require 'secrets)
+
     )))
 
-(load-library "secrets")
-(require 'secrets)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;; Load custom configuartions for allday use ;;;;;;;;;;;;;;;;;
@@ -293,7 +294,7 @@
                 log-edit-mode org-mode text-mode haml-mode
                 git-commit-mode
                 sass-mode yaml-mode csv-mode espresso-mode haskell-mode
-                html-mode nxml-mode sh-mode smarty-mode clojure-mode
+                html-mode nxml-mode sh-xmode smarty-mode clojure-mode
                 lisp-mode textile-mode markdown-mode tuareg-mode
                 js3-mode css-mode less-css-mode sql-mode
                 sql-interactive-mode
@@ -713,18 +714,18 @@ BEG and END (region to sort)."
 (setq debug-on-error t)
 (setq wp-0xcb0 (netrc-machine (netrc-parse "~/.netrc") "wp-0xcb0" t))
 
-(setq
- org2blog/wp-confirm-post t
- org2blog/wp-blog-alist
- `(
-   ("0xcb0"
-    :url "http://www.0xcb0.com/xmlrpc.php"
-    :username ,0xcb0-username
-    :password ,0xcb0-password
-    :default-title "Hello, World!"
-    :default-categories ("Uncategorized")
-    :tags-as-categories nil)
-    ))
+;; (setq
+;;  org2blog/wp-confirm-post t
+;;  org2blog/wp-blog-alist
+;;  `(
+;;    ("0xcb0"
+;;     :url "http://www.0xcb0.com/xmlrpc.php"
+;;     :username ,0xcb0-username
+;;     :password ,0xcb0-password
+;;     :default-title "Hello, World!"
+;;     :default-categories ("Uncategorized")
+;;     :tags-as-categories nil)
+;;     ))
 
 (setq org2blog/wp-use-sourcecode-shortcode 't)
 ;; removed light="true"
@@ -844,12 +845,13 @@ BEG and END (region to sort)."
 (package-require 'ace-jump-mode)
 (define-key global-map (kbd "C-c j") 'ace-jump-mode) 
 
-(package-require 'git-gutter-fringe+)
-(require 'git-gutter-fringe+)
-(git-gutter+-toggle-fringe)
-(setq global-git-gutter+-mode t)
-(package-require 'git-link)
+(package-require 'git-gutter)
+(require 'git-gutter)
+(global-git-gutter-mode t)
+(custom-set-variables
+ '(git-gutter:update-interval 2))
 
+(package-require 'git-link)
 ;; add discovery mode (http://www.masteringemacs.org/article/discoverel-discover-emacs-context-menus)
 (package-require 'discover)
 (global-discover-mode 1)
@@ -1068,14 +1070,14 @@ directory to make multiple eshell windows easier."
 ;; statistical prequesition (ess with R uspport for org-mode bable with R support
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(add-to-list 'load-path "~/.emacs.d/src/ess/lisp")
-(require 'ess-site)
+;;(add-to-list 'load-path "~/.emacs.d/src/ess/lisp")
+;;(require 'ess-site)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; dired modifications
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(load-library "diredCfg")
-(load-library "dired-tar")
+;;(load-library "diredCfg")
+;;(load-library "dired-tar")
 
 (package-require 'rainbow-mode)
 
