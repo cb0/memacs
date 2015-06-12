@@ -194,3 +194,5 @@
 (defface org-block-end-line
   '((t (:overline "#A7A6AA" :foreground "#000000" :background "#9a9a9a")))
   "Face used for the line delimiting the end of source blocks.")
+
+(setq org-completion-use-ido t)
