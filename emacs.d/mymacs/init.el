@@ -249,6 +249,8 @@
 (setq magit-last-seen-setup-instructions "1.4.0")
 
 (setq magit-completing-read-function 'magit-ido-completing-read)
+(package-require 'ido-ubiquitous)
+(ido-ubiquitous-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; auto-complete section
