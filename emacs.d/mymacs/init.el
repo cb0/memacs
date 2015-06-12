@@ -248,6 +248,8 @@
 ;;prevent magit update message 1.4
 (setq magit-last-seen-setup-instructions "1.4.0")
 
+(setq magit-completing-read-function 'magit-ido-completing-read)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; auto-complete section
 ;; thank to https://github.com/purcell/emacs.d/blob/master/lisp/init-auto-complete.el 
