@@ -890,11 +890,12 @@ BEG and END (region to sort)."
 (global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
 
 ;; Jump to next/previous hunk
-(global-set-key (kbd "C-x C-p") 'git-gutter:previous-hunk)
-(global-set-key (kbd "C-x C-n") 'git-gutter:next-hunk)
+(define-key git-gutter+-mode-map (kbd "C-x C-n") 'git-gutter+-next-hunk)
+(define-key git-gutter+-mode-map (kbd "C-x C-p") 'git-gutter+-previous-hunk)
 
 ;; Stage current hunk
-(global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
+(global-set-key (kbd "C-x v s") 'git-gutter+-stage-hunks)
+(global-set-key (kbd "C-x v c") 'git-gutter+-commit)
 
 ;; Revert current hunk
 (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
