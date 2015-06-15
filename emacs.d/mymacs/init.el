@@ -1215,3 +1215,18 @@ buffer."
           (add-text-properties left pos (list from nil to prop) object))))))
 
 
+;; company mode
+(package-require 'company)
+(add-hook 'after-init-hook 'global-company-mode)
+(global-set-key "\M- " 'hippie-expand)
+
+;;buffer-move
+(package-require 'buffer-move)
+(package-require 'bm)
+(setq bm-highlight-style 'bm-highlight-only-line) ;;default, the last one in the pic
+(setq bm-highlight-style 'bm-highlight-only-fringe) ;;middle bookmark
+(setq bm-highlight-style 'bm-highlight-line-and-fringe) ;; the first one
+(setq bm-marker 'bm-marker-right)
+(global-set-key (kbd "<M-f7>") 'bm-toggle)
+(global-set-key (kbd "<f7>") 'bm-next)
+(global-set-key (kbd "<S-f7>") 'bm-previous)
