@@ -880,9 +880,13 @@ BEG and END (region to sort)."
 ;; git
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(package-require 'git-gutter)
-(require 'git-gutter)
-(global-git-gutter-mode +1)
+(package-require 'git-gutter+)
+;;(require 'git-gutter)
+(global-git-gutter+-mode t)
+
+(global-set-key (kbd "C-x g") 'git-gutter+-mode) ; Turn on/off in the current buffer
+(global-set-key (kbd "C-x G") 'global-git-gutter+-mode) ; Turn on/off globally
+
 
 (custom-set-variables
  '(git-gutter:update-interval 2))
