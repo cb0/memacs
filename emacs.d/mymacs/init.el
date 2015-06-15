@@ -387,8 +387,8 @@
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
 (add-to-list 'auto-mode-alist '("\\.blade\\.php\\'" . web-mode))
 
-(package-require 'geben)
-(autoload 'geben "geben" "DBGp protocol frontend, a script debugger" t)
+;;(package-require 'geben)
+;;(autoload 'geben "geben" "DBGp protocol frontend, a script debugger" t)
 
 ;; ;; Debug a simple PHP script.
 ;; ;; Change the session key my-php-54 to any session key text you like
