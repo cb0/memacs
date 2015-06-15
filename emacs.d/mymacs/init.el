@@ -235,7 +235,6 @@
 ;; git and magit (Magit rules!!!!)
 (require 'git)
 (package-require 'magit)
-(global-set-key (kbd "C-x g") 'magit-status)
 (global-set-key (kbd "<f5>") 'magit-status)
 
 ;;taken from http://tullo.ch/articles/modern-emacs-setup/
