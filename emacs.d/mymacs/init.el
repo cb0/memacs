@@ -85,21 +85,21 @@
 
 ;; A small minor mode to use a big fringe
 (defvar bzg-big-fringe-mode nil)
-(define-minor-mode bzg-big-fringe-mode
-  "Minor mode to use big fringe in the current buffer."
-  :init-value nil
-  :global t
-  :variable bzg-big-fringe-mode
-  :group 'editing-basics
-  (if (not bzg-big-fringe-mode)
-      (set-fringe-style nil)
-    (set-fringe-mode
-     (/ (- (frame-pixel-width)
-           (* 100 (frame-char-width)))
-        5))))
+;; (define-minor-mode bzg-big-fringe-mode
+;;   "Minor mode to use big fringe in the current buffer."
+;;   :init-value nil
+;;   :global t
+;;   :variable bzg-big-fringe-mode
+;;   :group 'editing-basics
+;;   (if (not bzg-big-fringe-mode)
+;;       (set-fringe-style nil)
+;;     (set-fringe-mode
+;;      (/ (- (frame-pixel-width)
+;;            (* 100 (frame-char-width)))
+;;         5))))
 
-;; Now activate this global minor mode
-(bzg-big-fringe-mode 1)
+;; ;; Now activate this global minor mode
+;; (bzg-big-fringe-mode 1)
 
 ;; To activate the fringe by default and deactivate it when windows
 ;; are split vertically, uncomment this:
@@ -155,6 +155,7 @@
 (display-time)
 (setq require-final-newline t)
 (fset 'yes-or-no-p 'y-or-n-p)
+(show-paren-mode 1)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; load modes other/minor modes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
