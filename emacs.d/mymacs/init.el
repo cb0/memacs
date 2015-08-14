@@ -307,7 +307,6 @@
 
 (dolist (mode '(magit-log-edit-mode
                 log-edit-mode org-mode text-mode haml-mode
-                git-commit-mode
                 sass-mode yaml-mode csv-mode espresso-mode haskell-mode
                 html-mode nxml-mode sh-xmode smarty-mode clojure-mode
                 lisp-mode textile-mode markdown-mode tuareg-mode
@@ -902,7 +901,7 @@ BEG and END (region to sort)."
 
 ;; Revert current hunk
 (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
-(add-to-list 'git-gutter:update-hooks 'focus-in-hook)
+;;(add-to-list 'git-gutter:update-hooks 'focus-in-hook)
 (set-face-background 'git-gutter:modified "purple") ;; background color
 (set-face-foreground 'git-gutter:added "green")
 (set-face-foreground 'git-gutter:deleted "red")
