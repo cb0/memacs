@@ -1,9 +1,0 @@
-[submodule "emacs.d/custom/exwm"]
-	path = emacs.d/custom/exwm
-	url = git@github.com:ch11ng/exwm.git
-[submodule "emacs.d/custom/xelb"]
-	path = emacs.d/custom/xelb
-	url = git@github.com:ch11ng/xelb.git
-[submodule "emacs.d/custom/xelb-util"]
-	path = emacs.d/custom/xelb-util
-	url = git@github.com:ch11ng/xelb-util.git
