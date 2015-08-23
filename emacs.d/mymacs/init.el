@@ -36,6 +36,7 @@
 ;; load special rules for german umlaute 
 (load-library "german")
 
+(load-library "exwm")
 
 ;; load flyspell and aspell
 (load-library "aspell")
@@ -902,9 +903,9 @@ BEG and END (region to sort)."
 ;; Revert current hunk
 (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
 ;;(add-to-list 'git-gutter:update-hooks 'focus-in-hook)
-(set-face-background 'git-gutter:modified "purple") ;; background color
-(set-face-foreground 'git-gutter:added "green")
-(set-face-foreground 'git-gutter:deleted "red")
+;;(set-face-background 'git-gutter:modified "purple") ;; background color
+;;(set-face-foreground 'git-gutter:added "green")
+;;(set-face-foreground 'git-gutter:deleted "red")
 (custom-set-variables
  '(git-gutter:window-width 2)
  '(git-gutter:modified-sign "☁")
@@ -1228,3 +1229,9 @@ buffer."
 (global-set-key (kbd "<M-f7>") 'bm-toggle)
 (global-set-key (kbd "<f7>") 'bm-next)
 (global-set-key (kbd "<S-f7>") 'bm-previous)
+
+;;uniquify
+(require 'uniquify) 
+(setq 
+  uniquify-buffer-name-style 'post-forward
+  uniquify-separator ":")
