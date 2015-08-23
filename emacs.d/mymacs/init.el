@@ -873,7 +873,11 @@ BEG and END (region to sort)."
 
 ;; Ace jump
 (package-require 'ace-jump-mode)
-(define-key global-map (kbd "C-c j") 'ace-jump-mode) 
+;; you can select the key you prefer to
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+(eval-after-load "ace-jump-mode"
+  '(ace-jump-mode-enable-mark-sync))
+(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; git
@@ -1235,3 +1239,9 @@ buffer."
 (setq 
   uniquify-buffer-name-style 'post-forward
   uniquify-separator ":")
+
+(setq debug-on-error t)
+;;sr-speedbar
+(package-require 'sr-speedbar)
+(global-set-key (kbd "<f4>") 'sr-speedbar-toggle)
+(sr-speedbar-open)
