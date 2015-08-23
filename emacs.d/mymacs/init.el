@@ -204,6 +204,7 @@
 (define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
 (define-key projectile-mode-map [?\s-f] 'projectile-find-file)
 (define-key projectile-mode-map [?\s-g] 'projectile-grep)
+(define-key projectile-mode-map (kbd "s-.") 'projectile-recentf)
 
 (package-require 'perspective)
 (package-require 'helm-ag)
