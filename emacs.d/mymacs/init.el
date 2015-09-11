@@ -205,6 +205,7 @@
 (define-key projectile-mode-map [?\s-f] 'projectile-find-file)
 (define-key projectile-mode-map [?\s-g] 'projectile-grep)
 (define-key projectile-mode-map (kbd "s-.") 'projectile-recentf)
+(define-key projectile-mode-map (kbd "s-a") 'projectile-ag)
 
 (package-require 'perspective)
 (package-require 'helm-ag)
@@ -861,16 +862,31 @@ BEG and END (region to sort)."
 (package-require 'yasnippet)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; elscrenn
+;; workgroups2
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(package-require 'elscreen)
-(elscreen-start)
-(define-key global-map (kbd "C-c C-c") 'elscreen-create)
-(define-key global-map (kbd "C-c C-<right>") 'elscreen-next)
-(define-key global-map (kbd "C-c C-<left>") 'elscreen-previous)
-(define-key global-map (kbd "C-c C-k") 'elscreen-kill)
-(setf elscreen-display-tab t)
-(setf elscreen-tab-display-kill-screen nil)
+(package-require 'workgroups2)
+(workgroups-mode 1)
+(setq wg-prefix-key (kbd "C-z"))
+(setq wg-session-file "~/.emacs.d/.emacs_workgroups")
+(global-set-key (kbd "C-c C-c")         'create workgroup)
+(global-set-key (kbd "C-z C-w")         'wg-switch-to-workgroup)
+(global-set-key (kbd "C-z C-r")         'wg-reload-session)
+(global-set-key (kbd "C-z C-k")         'wg-kill-workgroup)
+(global-set-key (kbd "C-c C-<left>")         'wg-switch-to-previous-workgroup)
+(global-set-key (kbd "C-c C-<right>")         'wg-switch-to-next-workgroup)
+
+;; What to do on Emacs exit / workgroups-mode exit?
+(setq wg-emacs-exit-save-behavior           'save)      ; Options: 'save 'ask nil
+(setq wg-workgroups-mode-exit-save-behavior 'save)      ; Options: 'save 'ask nil
+
+;; Mode Line changes
+;; Display workgroups in Mode Line?
+(setq wg-mode-line-display-on t)          ; Default: (not (featurep 'powerline))
+(setq wg-flag-modified t)                 ; Display modified flags as well
+(setq wg-mode-line-decor-left-brace "["
+      wg-mode-line-decor-right-brace "]"  ; how to surround it
+      wg-mode-line-decor-divider ":")
+
 
 ;; Ace jump
 (package-require 'ace-jump-mode)
@@ -1175,7 +1191,7 @@ directory to make multiple eshell windows easier."
 	     
 ;; zoom
 (package-require 'zoom-window)
-(setq zoom-window-use-elscreen t)
+;;(setq zoom-window-use-elscreen t)
 (zoom-window-setup)
 
 (global-set-key (kbd "C-x C-z") 'zoom-window-zoom)
