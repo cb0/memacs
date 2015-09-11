@@ -868,10 +868,10 @@ BEG and END (region to sort)."
 (workgroups-mode 1)
 (setq wg-prefix-key (kbd "C-z"))
 (setq wg-session-file "~/.emacs.d/.emacs_workgroups")
-(global-set-key (kbd "C-c C-c")         'create workgroup)
-(global-set-key (kbd "C-z C-w")         'wg-switch-to-workgroup)
-(global-set-key (kbd "C-z C-r")         'wg-reload-session)
-(global-set-key (kbd "C-z C-k")         'wg-kill-workgroup)
+(global-set-key (kbd "C-c C-c")         'wg-create-workgroup)
+(global-set-key (kbd "C-c w")         'wg-switch-to-workgroup)
+(global-set-key (kbd "C-c C-r")         'wg-rename-workgroup)
+(global-set-key (kbd "C-c C-k")         'wg-kill-workgroup)
 (global-set-key (kbd "C-c C-<left>")         'wg-switch-to-previous-workgroup)
 ;; What to do on Emacs exit / workgroups-mode exit?
 (setq wg-emacs-exit-save-behavior           'save)      ; Options: 'save 'ask nil
