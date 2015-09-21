@@ -162,7 +162,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;make other minor modes do not clutter the modeline
 (package-require 'diminish)
-;;(diminish 'wrap-region-mode)
+;;(diminish 'git-gutter+-mode)
 ;;(diminish 'yas/minor-mode)
 
 ;; rename-modeline to support diminish
@@ -171,10 +171,8 @@
      '(defadvice ,mode (after rename-modeline activate)
         (setq mode-name ,new-name))))
 
-;;(rename-modeline "js2-mode" js2-mode "JS2")
-;;(rename-modeline "clojure-mode" clojure-mode "Clj")
-;;(rename-modeline "global-undo-tree-mode" global-undo-tree-mode "uTr")
-(rename-modeline "undo-tree-mode" undo-tree-mode "uTm")
+(rename-modeline "GitGutter" git-gutter+-mode "gg")
+(rename-modeline "Undo-Tree" undo-tree-mode "uTm")
 
 
 ; use allout minor mode to have outlining everywhere.
