@@ -12,18 +12,22 @@
  'org-babel-load-languages
  ; load all language marked with (lang . t).
  '((C . t)
+   (sh . t)
+   (sql . t)
    (R . t)
+   (ditaa . t)
+   (dot . t)
+   (emacs-lisp . t)
+   (gnuplot . t)
+   (org . t)
+   (python . t)
    (asymptote)
    (awk)
    (calc)
    (clojure)
    (comint)
    (css)
-   (ditaa . t)
-   (dot . t)
-   (emacs-lisp . t)
    (fortran)
-   (gnuplot . t)
    (haskell)
    (io)
    (java)
@@ -37,20 +41,16 @@
    (mscgen)
    (ocaml)
    (octave)
-   (org . t)
    (perl)
    (picolisp)
    (plantuml)
-   (python . t)
    (ref)
    (ruby)
    (sass)
    (scala)
    (scheme)
    (screen)
-   (sh . t)
    (shen)
-   (sql)
    (sqlite)))
 ;; turn off "evaluate code question" in org-mode code blocks
 (setq org-confirm-babel-evaluate nil)
@@ -72,8 +72,13 @@
 
 ;;(global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-cc" 'org-capture)
-;;(global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
+(global-set-key (kbd "<S-i>") 'org-clock-in)
+(global-set-key (kbd "<S-o>") 'org-clock-out)
+(global-set-key (kbd "<S-g>") 'org-clock-goto)
+
+
 
 ;; (eval-after-load "org"
 ;;   '(progn
