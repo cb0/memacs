@@ -28,7 +28,46 @@
 ;; (require 'flymake)
 
 ;; load ido mode (interactivly do things :)
-(load-library "idoCfg")
+;;(load-library "idoCfg")
+;;replace ido with ivy
+
+(package-require 'swiper)
+(package-require 'counsel)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(setq magit-completing-read-function 'ivy-completing-read)
+(setq projectile-completion-system 'ivy)
+
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(global-set-key "\C-s" 'swiper)
+(global-set-key (kbd "C-c C-r") 'ivy-resume)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+(global-set-key (kbd "<f1> l") 'counsel-load-library)
+(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-c k") 'counsel-ag)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(package-require 'helm-rhythmbox)
+(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+
+(defun counsel ()
+  "Elisp completion at point."
+  (interactive)
+  (let* ((bnd (bounds-of-thing-at-point 'symbol))
+         (str (buffer-substring-no-properties (car bnd) (cdr bnd)))
+         (candidates (all-completions str obarray))
+         (ivy-height 7)
+         (res (ivy-read (format "pattern (%s): " str)
+                        candidates)))
+    (when (stringp res)
+      (delete-region (car bnd) (cdr bnd))
+      (insert res))))
+
 
 ;; load printing module
 (load-library "printingCfg")
