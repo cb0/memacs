@@ -1406,3 +1406,59 @@ buffer."
 (global-set-key "\C-x\C-k" 'kill-region)
 
 (package-require 'bbdb)
+
+
+;;from oremacs
+
+(defun ora-terminal ()
+  "Switch to terminal. Launch if nonexistent."
+  (interactive)
+  (if (get-buffer "*ansi-term*")
+      (switch-to-buffer "*ansi-term*")
+    (ansi-term "/bin/bash"))
+    (get-buffer-process "*ansi-term*"))
+
+(defun ora-dired-open-term ()
+  "Open an `ansi-term' that corresponds to current directory."
+  (interactive)
+  (let ((current-dir (dired-current-directory)))
+    (term-send-string
+     (ora-terminal)
+     (if (file-remote-p current-dir)
+         (let ((v (tramp-dissect-file-name current-dir t)))
+           (format "ssh %s@%s\n"
+                   (aref v 1) (aref v 2)))
+       (format "cd '%s'\n" current-dir)))
+    (setq default-directory current-dir)))
+
+(define-key dired-mode-map (kbd "`") 'ora-dired-open-term)
+(add-hook 'term-mode-hook (lambda()
+                (yas-minor-mode -1)))
+(add-hook 'term-mode-hook (lambda()
+        (setq yas-dont-activate t)))
+
+
+(defun counsel-recoll-function (string &rest _unused)
+  "Issue recallq for STRING."
+  (if (< (length string) 3)
+      (counsel-more-chars 3)
+    (counsel--async-command
+     (format "recollq -b '%s'" string))
+    nil))
+
+(defun counsel-recoll (&optional initial-input)
+  "Search for a string in the recoll database.
+You'll be given a list of files that match.
+Selecting a file will launch `swiper' for that file.
+INITIAL-INPUT can be given as the initial minibuffer input."
+  (interactive)
+  (ivy-read "recoll: " 'counsel-recoll-function
+            :initial-input initial-input
+            :dynamic-collection t
+            :history 'counsel-git-grep-history
+            :action (lambda (x)
+                      (when (string-match "file://\\(.*\\)\\'" x)
+                        (let ((file-name (match-string 1 x)))
+                          (find-file file-name)
+                          (unless (string-match "pdf$" x)
+                            (swiper ivy-text)))))))
