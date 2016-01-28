@@ -48,7 +48,7 @@
 
 (setq helm-candidate-number-limit 100)
 
-(image-dired-display-image-mode)
+;;(image-dired-display-image-mode)
 
 (helm-autoresize-mode 1)
 ;; activate helm mode

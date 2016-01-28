@@ -37,13 +37,15 @@
 (load-library "german")
 
 
-;; load flyspell and aspell
-(load-library "aspell")
-;;chord (keyboard shortcuts without C-/M- modifiers)
-(load-library "chord")
+;;(load-library "exwm")
 
-;; load fullscreen support by binding to f11
-(load-library "fullscreen")
+;; load flyspell and aspell
+;;(load-library "aspell")
+;;chord (keyboard shortcuts without C-/M- modifiers)
+;;(load-library "chord")
+
+;;c load fullscreen support by binding to f11
+;;(load-library "fullscreen")
 
 ;; load shell support for C-!
 (load-library "customizeShell")
@@ -85,21 +87,21 @@
 
 ;; A small minor mode to use a big fringe
 (defvar bzg-big-fringe-mode nil)
-(define-minor-mode bzg-big-fringe-mode
-  "Minor mode to use big fringe in the current buffer."
-  :init-value nil
-  :global t
-  :variable bzg-big-fringe-mode
-  :group 'editing-basics
-  (if (not bzg-big-fringe-mode)
-      (set-fringe-style nil)
-    (set-fringe-mode
-     (/ (- (frame-pixel-width)
-           (* 100 (frame-char-width)))
-        5))))
+;; (define-minor-mode bzg-big-fringe-mode
+;;   "Minor mode to use big fringe in the current buffer."
+;;   :init-value nil
+;;   :global t
+;;   :variable bzg-big-fringe-mode
+;;   :group 'editing-basics
+;;   (if (not bzg-big-fringe-mode)
+;;       (set-fringe-style nil)
+;;     (set-fringe-mode
+;;      (/ (- (frame-pixel-width)
+;;            (* 100 (frame-char-width)))
+;;         5))))
 
-;; Now activate this global minor mode
-(bzg-big-fringe-mode 1)
+;; ;; Now activate this global minor mode
+;; (bzg-big-fringe-mode 1)
 
 ;; To activate the fringe by default and deactivate it when windows
 ;; are split vertically, uncomment this:
@@ -131,10 +133,11 @@
   (progn
     (message "loading Mac OS X specific path settings")
     (add-to-list 'exec-path "/usr/local/bin")
+    (load-library "secrets")
+    (require 'secrets)
+
     )))
 
-(load-library "secrets")
-(require 'secrets)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;; Load custom configuartions for allday use ;;;;;;;;;;;;;;;;;
@@ -154,6 +157,7 @@
 (display-time)
 (setq require-final-newline t)
 (fset 'yes-or-no-p 'y-or-n-p)
+(show-paren-mode 1)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; load modes other/minor modes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -195,8 +199,22 @@
 (setq projectile-indexing-method 'alien)
 (setq projectile-switch-project-action 'projectile-dired)
 (setq projectile-enable-caching t)
+(package-require 'ag)
 
+(define-key projectile-mode-map [?\s-d] 'projectile-find-dir)
+(define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
+(define-key projectile-mode-map [?\s-f] 'projectile-find-file)
+(define-key projectile-mode-map [?\s-g] 'projectile-grep)
+(define-key projectile-mode-map (kbd "s-.") 'projectile-recentf)
+(define-key projectile-mode-map (kbd "s-a") 'projectile-ag)
 
+(package-require 'perspective)
+(package-require 'helm-ag)
+(persp-mode)
+(package-require 'persp-projectile)
+(define-key projectile-mode-map (kbd "s-s") 'projectile-persp-switch-project)
+
+(package-require 'project-explorer)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; set linux system  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -221,7 +239,6 @@
 ;; git and magit (Magit rules!!!!)
 (require 'git)
 (package-require 'magit)
-(global-set-key (kbd "C-x g") 'magit-status)
 (global-set-key (kbd "<f5>") 'magit-status)
 
 ;;taken from http://tullo.ch/articles/modern-emacs-setup/
@@ -245,6 +262,10 @@
 
 ;;prevent magit update message 1.4
 (setq magit-last-seen-setup-instructions "1.4.0")
+
+(setq magit-completing-read-function 'magit-ido-completing-read)
+(package-require 'ido-ubiquitous)
+(ido-ubiquitous-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; auto-complete section
@@ -290,9 +311,8 @@
 
 (dolist (mode '(magit-log-edit-mode
                 log-edit-mode org-mode text-mode haml-mode
-                git-commit-mode
                 sass-mode yaml-mode csv-mode espresso-mode haskell-mode
-                html-mode nxml-mode sh-mode smarty-mode clojure-mode
+                html-mode nxml-mode sh-xmode smarty-mode clojure-mode
                 lisp-mode textile-mode markdown-mode tuareg-mode
                 js3-mode css-mode less-css-mode sql-mode
                 sql-interactive-mode
@@ -369,6 +389,21 @@
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
 (add-to-list 'auto-mode-alist '("\\.blade\\.php\\'" . web-mode))
 
+;;(package-require 'geben)
+;;(autoload 'geben "geben" "DBGp protocol frontend, a script debugger" t)
+
+;; ;; Debug a simple PHP script.
+;; ;; Change the session key my-php-54 to any session key text you like
+;; (defun my-php-debug ()
+;;   "Run current PHP script for debugging with geben"
+;;   (interactive)
+;;   (call-interactively 'geben)
+;;   (shell-command
+;;     (concat "XDEBUG_CONFIG='idekey=PHPSTORM_KEY' /usr/bin/php "
+;;     (buffer-file-name) " &"))
+;;   )
+
+;; (global-set-key [f6] 'my-php-debug)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; el doc
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -408,6 +443,7 @@
                     arg
                   (setq i (1+ i)))))
             (split-string doc) " ")))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; smartparens
@@ -712,18 +748,18 @@ BEG and END (region to sort)."
 (setq debug-on-error t)
 (setq wp-0xcb0 (netrc-machine (netrc-parse "~/.netrc") "wp-0xcb0" t))
 
-(setq
- org2blog/wp-confirm-post t
- org2blog/wp-blog-alist
- `(
-   ("0xcb0"
-    :url "http://www.0xcb0.com/xmlrpc.php"
-    :username ,0xcb0-username
-    :password ,0xcb0-password
-    :default-title "Hello, World!"
-    :default-categories ("Uncategorized")
-    :tags-as-categories nil)
-    ))
+;; (setq
+;;  org2blog/wp-confirm-post t
+;;  org2blog/wp-blog-alist
+;;  `(
+;;    ("0xcb0"
+;;     :url "http://www.0xcb0.com/xmlrpc.php"
+;;     :username ,0xcb0-username
+;;     :password ,0xcb0-password
+;;     :default-title "Hello, World!"
+;;     :default-categories ("Uncategorized")
+;;     :tags-as-categories nil)
+;;     ))
 
 (setq org2blog/wp-use-sourcecode-shortcode 't)
 ;; removed light="true"
@@ -828,33 +864,90 @@ BEG and END (region to sort)."
 (package-require 'yasnippet)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; elscrenn
+;; workgroups2
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(package-require 'elscreen)
-(elscreen-start)
-(define-key global-map (kbd "C-c C-c") 'elscreen-create)
-(define-key global-map (kbd "C-c C-<right>") 'elscreen-next)
-(define-key global-map (kbd "C-c C-<left>") 'elscreen-previous)
-(define-key global-map (kbd "C-c C-k") 'elscreen-kill)
-(setf elscreen-display-tab t)
-(setf elscreen-tab-display-kill-screen nil)
+(package-require 'workgroups2)
+(workgroups-mode 1)
+(setq wg-prefix-key (kbd "C-z"))
+(setq wg-session-file "~/.emacs.d/.emacs_workgroups")
+(global-set-key (kbd "C-c C-c")         'create-workgroup)
+(global-set-key (kbd "C-c C-w")         'wg-switch-to-workgroup)
+(global-set-key (kbd "C-c C-r")         'wg-reload-session)
+;;(global-set-key (kbd "C-z C-k")         'wg-kill-workgroup)
+(global-set-key (kbd "C-c C-<left>")         'wg-switch-to-previous-workgroup)
+;; What to do on Emacs exit / workgroups-mode exit?
+(setq wg-emacs-exit-save-behavior           'save)      ; Options: 'save 'ask nil
+(setq wg-workgroups-mode-exit-save-behavior 'save)      ; Options: 'save 'ask nil
+
+;; Mode Line changes
+;; Display workgroups in Mode Line?
+(setq wg-mode-line-display-on t)          ; Default: (not (featurep 'powerline))
+(setq wg-flag-modified t)                 ; Display modified flags as well
+(setq wg-mode-line-decor-left-brace "["
+      wg-mode-line-decor-right-brace "]"  ; how to surround it
+      wg-mode-line-decor-divider ":")
+
 
 (package-require 'zoom-window)
-(setq zoom-window-use-elscreen t)
+;;(setq zoom-window-use-elscreen t)
 (zoom-window-setup)
 
 (global-set-key (kbd "C-x C-z") 'zoom-window-zoom)
 
 ;; Ace jump
 (package-require 'ace-jump-mode)
-(define-key global-map (kbd "C-c j") 'ace-jump-mode) 
+;; you can select the key you prefer to
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+(eval-after-load "ace-jump-mode"
+  '(ace-jump-mode-enable-mark-sync))
+(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
 
-(package-require 'git-gutter-fringe+)
-(require 'git-gutter-fringe+)
-(git-gutter+-toggle-fringe)
-(setq global-git-gutter+-mode t)
+(package-require 'ace-window)
+(global-set-key (kbd "M-p") 'ace-window)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; git
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(package-require 'git-gutter+)
+;;(require 'git-gutter)
+(global-git-gutter+-mode t)
+
+(global-set-key (kbd "C-x g") 'git-gutter+-mode) ; Turn on/off in the current buffer
+(global-set-key (kbd "C-x G") 'global-git-gutter+-mode) ; Turn on/off globally
+
+
+(custom-set-variables
+ '(git-gutter:update-interval 2))
+(global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
+(global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
+
+;; Jump to next/previous hunk
+(define-key git-gutter+-mode-map (kbd "C-x C-n") 'git-gutter+-next-hunk)
+(define-key git-gutter+-mode-map (kbd "C-x C-p") 'git-gutter+-previous-hunk)
+
+;; Stage current hunk
+(global-set-key (kbd "C-x v s") 'git-gutter+-stage-hunks)
+(global-set-key (kbd "C-x v c") 'git-gutter+-commit)
+
+;; Revert current hunk
+(global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
+;;(add-to-list 'git-gutter:update-hooks 'focus-in-hook)
+;;(set-face-background 'git-gutter:modified "purple") ;; background color
+;;(set-face-foreground 'git-gutter:added "green")
+;;(set-face-foreground 'git-gutter:deleted "red")
+(custom-set-variables
+ '(git-gutter:window-width 2)
+ '(git-gutter:modified-sign "☁")
+ '(git-gutter:added-sign "☀")
+ '(git-gutter:deleted-sign "☂"))
+
+(package-require 'mo-git-blame)
+(autoload 'mo-git-blame-file "mo-git-blame" nil t)
+(autoload 'mo-git-blame-current "mo-git-blame" nil t)
+(global-set-key (kbd "C-S-b") 'mo-git-blame-current)
+
 (package-require 'git-link)
-
 ;; add discovery mode (http://www.masteringemacs.org/article/discoverel-discover-emacs-context-menus)
 (package-require 'discover)
 (global-discover-mode 1)
@@ -1041,7 +1134,7 @@ directory to make multiple eshell windows easier."
       (propertize "KW" 'font-lock-face 'font-lock-keyword-face))
 
 ;; versor setup
-;; (add-to-list 'load-path "/home/mpuchalla/projects/emacs-versor/lisp/path/to/versor/lisp")
+;;; (add-to-list 'load-path ;;"/home/mpuchalla/projects/emacs-versor/lisp/path/to/versor/lisp")
 
 ;; (require 'versor)
 ;; (require 'languide)
@@ -1073,32 +1166,115 @@ directory to make multiple eshell windows easier."
 ;; statistical prequesition (ess with R uspport for org-mode bable with R support
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(add-to-list 'load-path "~/.emacs.d/src/ess/lisp")
-(require 'ess-site)
+;;(add-to-list 'load-path "~/.emacs.d/src/ess/lisp")
+;;(require 'ess-site)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; dired modifications
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(load-library "diredCfg")
-(load-library "dired-tar")
+;;(load-library "diredCfg")
+;;(load-library "dired-tar")
 
 (package-require 'rainbow-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; cl and slime 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(let ((default-directory "/usr/local/share/emacs/site-lisp/"))
+  (normal-top-level-add-subdirs-to-load-path))
+
 (package-require 'slime)
 (package-require 'ac-slime)
+
+  ;; Replace "sbcl" with the path to your implementation
+
 (setq inferior-lisp-program "/usr/local/bin/sbcl")
-(require 'slime)
-(slime-setup)
-(add-to-list 'slime-contribs 'slime-fancy 'slime-repl)
-(eval-after-load 'slime
-`(define-key slime-prefix-map (kbd "M-h") 'slime-documentation-lookup))
+;;(setq inferior-lisp-program "/usr/local/bin/clisp")
+
 (setq slime-lisp-implementations
-'((sbcl ("sbcl" "--core" "/Users/cb0/sbcl.core-for-slime"))))
+      '((sbcl ("/opt/sbcl/bin/sbcl" "--control-stack-size 500"))))
+;; 	(clisp ("/usr/local/bin/clisp" ""))))
+        
+
+(add-to-list 'slime-contribs 'slime-repl)
+;;(setq slime-lisp-implementations '((sbcl ("sbcl" "--core" "/Users/cb0/sbcl.core-for-slime"))))
 
 (setq tab-always-indent 'complete)
 (add-to-list 'completion-styles 'initials t)
 
-	     
+;; zoom
+(package-require 'zoom-window)
+;;(setq zoom-window-use-elscreen t)
+(zoom-window-setup)
+
+(global-set-key (kbd "C-x C-z") 'zoom-window-zoom)
+
+(defun switch-to-previous-buffer ()
+      (interactive)
+      (switch-to-buffer (other-buffer (current-buffer) 1)))
+(global-set-key (kbd "C-x C-<left>") 'switch-to-previous-buffer)
+(global-set-key (kbd "C-x C-<right>") 'switch-to-previous-buffer)
+
+
+;; browser remove images
+(defvar-local endless/display-images t)
+
+(defun endless/toggle-image-display ()
+  "Toggle images display on current buffer."
+  (interactive)
+  (setq endless/display-images
+        (null endless/display-images))
+  (endless/backup-display-property endless/display-images))
+
+(defun endless/backup-display-property (invert &optional object)
+  "Move the 'display property at POS to 'display-backup.
+Only applies if display property is an image.
+If INVERT is non-nil, move from 'display-backup to 'display
+instead.
+Optional OBJECT specifies the string or buffer. Nil means current
+buffer."
+  (let* ((inhibit-read-only t)
+         (from (if invert 'display-backup 'display))
+         (to (if invert 'display 'display-backup))
+         (pos (point-min))
+         left prop)
+    (while (and pos (/= pos (point-max)))
+      (if (get-text-property pos from object)
+          (setq left pos)
+        (setq left (next-single-property-change pos from object)))
+      (if (or (null left) (= left (point-max)))
+          (setq pos nil)
+        (setq prop (get-text-property left from object))
+        (setq pos (or (next-single-property-change left from object)
+                      (point-max)))
+        (when (eq (car prop) 'image)
+          (add-text-properties left pos (list from nil to prop) object))))))
+
+
+;; company mode
+(package-require 'company)
+(add-hook 'after-init-hook 'global-company-mode)
+(global-set-key "\M- " 'hippie-expand)
+
+;;buffer-move
+(package-require 'buffer-move)
+(package-require 'bm)
+(setq bm-highlight-style 'bm-highlight-only-line) ;;default, the last one in the pic
+(setq bm-highlight-style 'bm-highlight-only-fringe) ;;middle bookmark
+(setq bm-highlight-style 'bm-highlight-line-and-fringe) ;; the first one
+(setq bm-marker 'bm-marker-right)
+(global-set-key (kbd "<M-f7>") 'bm-toggle)
+(global-set-key (kbd "<f7>") 'bm-next)
+(global-set-key (kbd "<S-f7>") 'bm-previous)
+
+;;uniquify
+(require 'uniquify) 
+(setq 
+  uniquify-buffer-name-style 'post-forward
+  uniquify-separator ":")
+
+(setq debug-on-error t)
+;;sr-speedbar
+(package-require 'sr-speedbar)
+(global-set-key (kbd "<f4>") 'sr-speedbar-toggle)
+;;(sr-speedbar-open)

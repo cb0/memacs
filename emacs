@@ -22,6 +22,8 @@
         (desktop-save desktop-dirname)))
   (add-hook 'auto-save-hook 'my-desktop-save)
 
+(desktop-read)
+
 ;; (custom-set-variables
 ;;  ;; custom-set-variables was added by Custom.
 ;;  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -58,8 +60,8 @@
     ("9dae95cdbed1505d45322ef8b5aa90ccb6cb59e0ff26fef0b8f411dfc416c552" "4eaad15465961fd26ef9eef3bee2f630a71d8a4b5b0a588dc851135302f69b16" default)))
  '(exec-path
    (quote
-    ("~/Dokumente/Tasks/JT-1929/JT-1929.org" "~/Dokumente/Tasks/traso.org" "~/todo.org")))
-    ("/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin-x86_64-10_9" "/Applications/Emacs.app/Contents/MacOS/libexec-x86_64-10_9" "/Applications/Emacs.app/Contents/MacOS/libexec" "/Applications/Emacs.app/Contents/MacOS/bin" )))
+    ("~/Dokumente/Tasks/JT-1929/JT-1929.org" "~/Dokumente/Tasks/traso.org" "~/todo.org" "/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin-x86_64-10_9" "/Applications/Emacs.app/Contents/MacOS/libexec-x86_64-10_9" "/Applications/Emacs.app/Contents/MacOS/libexec" "/Applications/Emacs.app/Contents/MacOS/bin" )))
+ '(fci-rule-color "#383838")
  '(fci-rule-color "#383838")
  '(org-agenda-ndays 7)
  '(org-agenda-show-all-dates t)
