@@ -22,10 +22,10 @@
 (require 'org-compat)
 ;; On thy fly syntax checking (http://www.emacswiki.org/emacs/FlyMake)
 ;; ToDo: It'll work on os x only if you install flymake  through package-install-packages. Determine why package-require is not working.
-(package-require 'flymake)
-(load-library "flymakeCfg")
-(package-require 'flymake-cursor)  
-(require 'flymake)
+;; (package-require 'flymake)
+;; (load-library "flymakeCfg")
+;; (package-require 'flymake-cursor)  
+;; (require 'flymake)
 
 ;; load ido mode (interactivly do things :)
 (load-library "idoCfg")
@@ -36,6 +36,7 @@
 ;; load special rules for german umlaute 
 (load-library "german")
 
+(load-library "exwm")
 
 ;;(load-library "exwm")
 
@@ -65,6 +66,7 @@
 ;; taken from http://www.cbrunzema.de/download/ll-debug/ll-debug.el
 (load-library "ll-debug")
 
+(load-library "secrets")
 
 ;; os x specific - thanks to http://stackoverflow.com/questions/3376863/unable-to-type-braces-and-square-braces-in-emacs
 (setq mac-option-modifier nil
@@ -101,7 +103,7 @@
 ;;         5))))
 
 ;; ;; Now activate this global minor mode
-;; (bzg-big-fringe-mode 1)
+;; (bzg-big-fringe-mode 0)
 
 ;; To activate the fringe by default and deactivate it when windows
 ;; are split vertically, uncomment this:
@@ -114,8 +116,9 @@
 ;;                 (bzg-big-fringe-mode 0)
 ;;               (bzg-big-fringe-mode 1))))
 
-;; Use a minimal cursor
-;; (setq default-cursor-type 'hbar)
+;;Use a box cursor
+(setq default-cursor-type 'box)
+
 
 ;; Get rid of the indicators in the fringe
 (mapcar (lambda(fb) (set-fringe-bitmap-face fb 'org-hide))
@@ -124,7 +127,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; gpg and authentication integration
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'epa-file)
+(package-require 'epa-file)
 (epa-file-enable)
 (setq epa-file-select-keys nil)
 ;; check OS type and load additional gpg path
@@ -163,7 +166,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;make other minor modes do not clutter the modeline
 (package-require 'diminish)
-;;(diminish 'wrap-region-mode)
+;;(diminish 'git-gutter+-mode)
 ;;(diminish 'yas/minor-mode)
 
 ;; rename-modeline to support diminish
@@ -172,10 +175,8 @@
      '(defadvice ,mode (after rename-modeline activate)
         (setq mode-name ,new-name))))
 
-;;(rename-modeline "js2-mode" js2-mode "JS2")
-;;(rename-modeline "clojure-mode" clojure-mode "Clj")
-;;(rename-modeline "global-undo-tree-mode" global-undo-tree-mode "uTr")
-(rename-modeline "undo-tree-mode" undo-tree-mode "uTm")
+(rename-modeline "GitGutter" git-gutter+-mode "gg")
+;;(rename-modeline "Undo-Tree" undo-tree-mode "uTm")
 
 
 ; use allout minor mode to have outlining everywhere.
@@ -207,6 +208,7 @@
 (define-key projectile-mode-map [?\s-g] 'projectile-grep)
 (define-key projectile-mode-map (kbd "s-.") 'projectile-recentf)
 (define-key projectile-mode-map (kbd "s-a") 'projectile-ag)
+(define-key projectile-mode-map (kbd "s-q") 'helm-projectile-ag)
 
 (package-require 'perspective)
 (package-require 'helm-ag)
@@ -333,7 +335,7 @@
 (setq tab-always-indent 'complete)  ;; use 't when auto-complete is disabled
 (add-to-list 'completion-styles 'initials t)
 ;; Stop completion-at-point from popping up completion buffers so eagerly
-(setq completion-cycle-threshold 5)
+(setq completion-cycle-threshold nil)
 
 (whitespace-mode)
 
@@ -384,10 +386,29 @@
 ;;(package-require 'php-completion)
 (package-require 'php-eldoc)
 (package-require 'php-extras)
+(package-require 'ac-php)
+(require 'cl)
 
 ;; use web and php mode at the same time
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
-(add-to-list 'auto-mode-alist '("\\.blade\\.php\\'" . web-mode))
+;;(add-to-list 'auto-mode-alist '("\\.blade\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.module$" . php-mode))
+(add-to-list 'auto-mode-alist '("\\.inc$" . php-mode))
+(add-to-list 'auto-mode-alist '("\\.install$" . php-mode))
+(add-to-list 'auto-mode-alist '("\\.engine$" . php-mode))
+(define-key php-mode-map (kbd "RET") 'newline-and-indent)
+
+
+;; (add-hook 'php-mode-hook
+;; 	  '(lambda ()
+;; 	     (auto-complete-mode t)
+;; 	     (require 'ac-php)
+;; 	     ;;(setq ac-php-use-cscope-flag  t ) ;;enable cscope
+;; 	     (setq ac-sources  '(ac-source-php ) )
+;; 	     (yas-global-mode 1)
+;; 	     (define-key php-mode-map  (kbd "C-]") 'ac-php-find-symbol-at-point)   ;goto define
+;; 	     (define-key php-mode-map  (kbd "C-t") 'ac-php-location-stack-back   ) ;go back
+;; 	     ))
 
 ;;(package-require 'geben)
 ;;(autoload 'geben "geben" "DBGp protocol frontend, a script debugger" t)
@@ -509,7 +530,7 @@
 (global-set-key (kbd "C-x C-:") 'uncomment-region)
 
 ;;imenu for fast infile naviation
-(global-set-key (kbd "C-c i") 'imenu)
+(global-set-key (kbd "M-i") 'imenu)
 
 ;; cycle through buffers
 (global-set-key (kbd "<C-tab>") 'bury-buffer)
@@ -802,6 +823,12 @@ BEG and END (region to sort)."
 (require 'on-screen)
 (on-screen-global-mode +1)
 
+(package-require 'smart-mode-line)
+(package-require 'smart-mode-line-powerline-theme)
+(setq sml/theme 'powerline)
+(setq sml/no-confirm-load-theme t)
+(sml/setup)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; multiple-cursors
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -819,23 +846,23 @@ BEG and END (region to sort)."
 (package-require 'emmet-mode)
 (require 'web-mode)
 
-(defun my-setup-php ()
-  ;; enable web mode
-  (web-mode)
+;; (defun my-setup-php ()
+;;   ;; enable web mode
+;;   (web-mode)
 
-  ;; make these variables local
-  (make-local-variable 'web-mode-code-indent-offset)
-  (make-local-variable 'web-mode-markup-indent-offset)
-  (make-local-variable 'web-mode-css-indent-offset)
+;;   ;; make these variables local
+;;   (make-local-variable 'web-mode-code-indent-offset)
+;;   (make-local-variable 'web-mode-markup-indent-offset)
+;;   (make-local-variable 'web-mode-css-indent-offset)
 
-  ;; set indentation, can set different indentation level for different code type
-  (setq web-mode-code-indent-offset 4)
-  (setq web-mode-css-indent-offset 2)
-  (setq web-mode-markup-indent-offset 2)
-;;  (flycheck-select-checker my-php)
-  (flycheck-mode t))
+;;   ;; set indentation, can set different indentation level for different code type
+;;   (setq web-mode-code-indent-offset 4)
+;;   (setq web-mode-css-indent-offset 2)
+;;   (setq web-mode-markup-indent-offset 2)
+;; ;;  (flycheck-select-checker my-php)
+;;   (flycheck-mode t))
 
-(add-to-list 'auto-mode-alist '("\\.php$" . my-setup-php))
+;; (add-to-list 'auto-mode-alist '("\\.php$" . my-setup-php))
 
 ;; flycheck for php files
 (package-require 'flycheck)
@@ -870,10 +897,12 @@ BEG and END (region to sort)."
 (workgroups-mode 1)
 (setq wg-prefix-key (kbd "C-z"))
 (setq wg-session-file "~/.emacs.d/.emacs_workgroups")
-(global-set-key (kbd "C-c C-c")         'create-workgroup)
-(global-set-key (kbd "C-c C-w")         'wg-switch-to-workgroup)
-(global-set-key (kbd "C-c C-r")         'wg-reload-session)
-;;(global-set-key (kbd "C-z C-k")         'wg-kill-workgroup)
+(global-set-key (kbd "C-c C-c")         'wg-create-workgroup)
+(global-set-key [?\s-c] 'wg-create-workgroup)
+(global-set-key (kbd "C-c w")         'wg-switch-to-workgroup)
+(global-set-key [?\s-w] 'wg-switch-to-workgroup)
+(global-set-key (kbd "C-c C-r")         'wg-rename-workgroup)
+(global-set-key (kbd "C-c C-k")         'wg-kill-workgroup)
 (global-set-key (kbd "C-c C-<left>")         'wg-switch-to-previous-workgroup)
 ;; What to do on Emacs exit / workgroups-mode exit?
 (setq wg-emacs-exit-save-behavior           'save)      ; Options: 'save 'ask nil
@@ -897,7 +926,8 @@ BEG and END (region to sort)."
 ;; Ace jump
 (package-require 'ace-jump-mode)
 ;; you can select the key you prefer to
-(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+(define-key global-map (kbd "C-c C-SPC") 'ace-jump-mode)
+(define-key global-map (kbd "C-x C-SPC") 'ace-jump-mode)
 (eval-after-load "ace-jump-mode"
   '(ace-jump-mode-enable-mark-sync))
 (define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
@@ -1277,4 +1307,79 @@ buffer."
 ;;sr-speedbar
 (package-require 'sr-speedbar)
 (global-set-key (kbd "<f4>") 'sr-speedbar-toggle)
-;;(sr-speedbar-open)
+(sr-speedbar-open)
+
+;;wakatime
+(package-require 'wakatime-mode)
+(global-wakatime-mode)
+(setq wakatime-api-key PASS_wakatime-api-key)
+(setq wakatime-cli-path "/usr/local/bin/wakatime")
+
+
+(package-require 'rainbow-delimiters)
+(rainbow-mode 1)
+
+;; (package-require 'guide-key)
+;; (setq guide-key/guide-key-sequence t)                                                            
+;; (guide-key-mode 1)  ; Enable guide-key-mode                                                      
+;; (setq guide-key/idle-delay 1)                                                                    
+                                                                                                    
+(require 'zone)                                                                                     
+(zone-when-idle 60)
+(setq zone-programs [zone-pgm-drip-fretfully])
+
+(defun zone-choose (pgm)                                                                            
+  "Choose a PGM to run for `zone'."                                                                 
+  (interactive                                                                                      
+   (list                                                                                            
+    (completing-read                                                                                
+     "Program: "                                                                                    
+     (mapcar 'symbol-name zone-programs))))                                                         
+  (let ((zone-programs (list (intern pgm))))                                                        
+    (zone)))                                                                                        
+                                                                                                    
+(defun lock-screen ()                                                                               
+   "Lock screen using (zone) and xtrlock                                                            
+ calls M-x zone on all frames and runs xtrlock"                                                     
+   (interactive)                                                                                    
+   (save-excursion                                                                                  
+     ;(shell-command "xtrlock &")                                                                   
+     (set-process-sentinel                                                                          
+      (start-process "xtrlock" nil "xtrlock")                                                       
+      '(lambda (process event)                                                                      
+         (zone-leave-me-alone)))                                                                    
+     (zone-when-idle 1)))                                                                           
+
+                                                                                                    
+;;fun                                                                                               
+(package-require 'xkcd)                                                                             
+(global-set-key (kbd "<C-F3>") 'kmacro-end-macro)                                                   
+                                                                                                    
+;; twitter
+(package-require 'twittering-mode)
+(setq twittering-use-master-password t)
+(setq twittering-icon-mode t)
+
+(load-library "codeivate-mode")
+(codeivate-mode)
+
+
+;;totd
+(defun totd ()
+  (interactive)
+  (with-output-to-temp-buffer "*Tip of the day*"
+    (let* ((commands (loop for s being the symbols
+                           when (commandp s) collect s))
+           (command (nth (random (length commands)) commands)))
+      (princ
+       (concat "Your tip for the day is:\n========================\n\n"
+               (describe-function command)
+               "\n\nInvoke with:\n\n"
+               (with-temp-buffer
+                 (where-is command t)
+                 (buffer-string)))))))
+
+(global-set-key "\C-x\C-m" 'smex)
+(global-set-key "\C-x\C-k" 'kill-region)
+
+(package-require 'bbdb)
