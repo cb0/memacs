@@ -60,9 +60,6 @@
 ; and some more org stuff
 (setq org-list-allow-alphabetical t)
 
-(setq org-todo-keywords
-      '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")))
-
 (define-key global-map "\C-cl" 'org-store-link)
 (define-key global-map "\C-ca" 'org-agenda)
 ;; add a timestamp when we close an item
@@ -171,7 +168,7 @@
 ;; we want some non standard todo types
 (setq org-todo-keywords
       '((sequence
-	 "TODO" "BUG" "WAIT_FOR_FEEDBACK" "DISCUSSION" "FIXED" "TO_BE_MERGE" "MERGED" "WAIT" "|" "CANCELED" "DONE")))
+	 "TODO(t)" "BUG(b)" "WAIT_FOR_FEEDBACK(w)" "DISCUSSION(D)" "FIXED(f)" "TO_BE_MERGE(m)" "MERGED(M)" "WAIT(w)" "|" "CANCELED(c)" "DONE(d)" "|" "INFO(i)")))
 
 (setq org-todo-keyword-faces
       '(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
@@ -183,6 +180,7 @@
 	("MERGED" :background "gold" :foreground "grey" :weight bold :box (:line-width 2 :style released-button))
 	("WAIT" :background "gray" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
 	("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
+	("INFO" :background "green" :foreground "red1" :weight bold :box (:line-width 2 :style released-button))
 	("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
 
 ;; dont ask when executing code

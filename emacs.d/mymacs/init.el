@@ -8,7 +8,7 @@
 (menu-bar-mode 0)
 ;;; this loads the package manager
 (require 'package)
-
+;;(setq server-use-tcp t)
 ;; add load path for custom scripts
 (add-to-list 'load-path "~/.emacs.d/custom/")
 ;; tell emacs where to read abbrev
@@ -68,6 +68,7 @@
       (delete-region (car bnd) (cdr bnd))
       (insert res))))
 
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
 
 ;; load printing module
 (load-library "printingCfg")
@@ -109,6 +110,10 @@
 (setq mac-option-modifier nil
       mac-command-modifier 'meta
       x-select-enable-clipboard t)
+
+;; (setq frame-title-format
+;;       (list (format "%s %%S: %%j " (system-name))
+;;         '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emacs stripping (thanks to http://bzg.fr/emacs-strip-tease.html)
@@ -213,7 +218,8 @@
         (setq mode-name ,new-name))))
 
 (rename-modeline "GitGutter" git-gutter+-mode "gg")
-;;(rename-modeline "Undo-Tree" undo-tree-mode "uTm")
+(rename-modeline "GitGutter" git-gutter-mode "gg")
+(rename-modeline "Undo-Tree" undo-tree-mode "uTm")
 
 
 ; use allout minor mode to have outlining everywhere.
@@ -567,6 +573,8 @@
 
 ;;imenu for fast infile naviation
 (global-set-key (kbd "M-i") 'imenu)
+(global-set-key (kbd "<f6>") 'helm-imenu)
+(global-set-key (kbd "M-i") 'helm-imenu)
 
 ;; cycle through buffers
 (global-set-key (kbd "<C-tab>") 'bury-buffer)
@@ -734,8 +742,8 @@ And make sure that it really shows up!"
 ;; you need make sure whether the "/jira" at the end is 
 ;; necessary or not, see discussion at the end of this page
 
-;;(package-require 'org-jira)
-;;(require 'org-jira) 
+(package-require 'org-jira)
+(require 'org-jira) 
 ;; jiralib is not explicitly required, since org-jira will load it.
 
 ;;;;;;;;;; custom functions
@@ -1328,9 +1336,9 @@ buffer."
 
 (setq debug-on-error t)
 ;;sr-speedbar
-(package-require 'sr-speedbar)
-(global-set-key (kbd "<f4>") 'sr-speedbar-toggle)
-(sr-speedbar-open)
+;;(package-require 'sr-speedbar)
+;;(global-set-key (kbd "<f4>") 'sr-speedbar-toggle)
+;;(sr-speedbar-open)
 
 ;;wakatime
 (package-require 'wakatime-mode)
@@ -1348,8 +1356,8 @@ buffer."
 ;; (setq guide-key/idle-delay 1)                                                                    
                                                                                                     
 (require 'zone)                                                                                     
-(zone-when-idle 60)
-(setq zone-programs [zone-pgm-drip-fretfully])
+(zone-when-idle 240)
+(setq zone-programs [zone-pgm-drip-fretfully zone-pgm-drip])
 
 (defun zone-choose (pgm)                                                                            
   "Choose a PGM to run for `zone'."                                                                 
@@ -1384,7 +1392,7 @@ buffer."
 (setq twittering-icon-mode t)
 
 (load-library "codeivate-mode")
-(codeivate-mode)
+;;(codeivate-mode)
 
 
 ;;totd
@@ -1462,3 +1470,57 @@ INITIAL-INPUT can be given as the initial minibuffer input."
                           (find-file file-name)
                           (unless (string-match "pdf$" x)
                             (swiper ivy-text)))))))
+
+;;ibuffer
+;; Ensure ibuffer opens with point at the current buffer's entry.
+(defadvice ibuffer
+  (around ibuffer-point-to-most-recent) ()
+  "Open ibuffer with cursor pointed to most recent buffer name."
+  (let ((recent-buffer-name (buffer-name)))
+    ad-do-it
+    (ibuffer-jump-to-buffer recent-buffer-name)))
+(ad-activate 'ibuffer)
+
+
+(package-require 'org-present)
+(autoload 'org-present "org-present" nil t)
+
+(eval-after-load "org-present"
+  '(progn
+     (add-hook 'org-present-mode-hook
+               (lambda ()
+                 (org-present-big)
+                 (org-display-inline-images)
+                 (org-present-hide-cursor)
+                 (org-present-read-only)))
+     (add-hook 'org-present-mode-quit-hook
+               (lambda ()
+                 (org-present-small)
+                 (org-remove-inline-images)
+                 (org-present-show-cursor)
+                 (org-present-read-write)))))
+
+(require 'ox-reveal)
+
+(setq org-reveal-root "file:///home/mpuchalla/projects/reveal.js/")
+
+;;macros as std
+;;(global-set-key (kbd "C-x C-k n") 'kmacro-name-last-macro)
+
+(package-require 'thesaurus)
+(thesaurus-set-bhl-api-key-from-file "~/BigHugeLabs.apikey.txt")
+(define-key global-map (kbd "C-x t") 'thesaurus-choose-synonym-and-replace)
+
+
+(load-library "breadcrumb/breadcrumb.el")
+(require 'breadcrumb) 
+
+(global-set-key (kbd "<S-hiragana-katakana>")  'bc-set)          ;; Shift-SPACE for set bookmark
+(global-set-key (kbd "M-#")    'bc-previous)       ;; M-j for jump to previous
+(global-set-key (kbd "C-M-#")        'bc-next)           ;; Shift-M-j for jump to next
+;;(global-set-key [(meta up)]             'bc-local-previous) ;; M-up-arrow for local previous
+;;(global-set-key [(meta down)]           'bc-local-next)     ;; M-down-arrow for local next
+(global-set-key [(control c)(j)]        'bc-goto-current)   ;; C-c j for jump to current bookmark
+(global-set-key (kbd "ł")   'bc-list)           ;; c-x M-j for the bookmark menu list
+
+(package-require 'ecb)
