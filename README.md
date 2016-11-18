@@ -10,7 +10,7 @@ Years went by and I just started to experiment with [CommonLisp](http://www.clis
 Therefore my journey into the wild began and I was about to learn why emacs is a top dog.
 
 ### Project Info:
-This little project should document all the tinhgs I've learned beside the standard emacs functionality on hot to type M-x ;)
+This little project should document all the tinhgs I've learned beside the standard emacs functionality on how to type M-x ;)
 And in first place it should include all the things I need to be productive in my daily workflow. 
 Therefore this project mainly consists of emacs configuration files, customized extensions and some documentation. I'll try to make everything as clear as possible. However I'm quite sure that there will be errors in both, the code and my understanding of how things work. So if you think I have done something terrible, please mail me at [cb0 at 0xcb0 dot com].
 
@@ -18,6 +18,8 @@ Therefore this project mainly consists of emacs configuration files, customized 
 At the moment this project is not intended to be used as a emacs beginner configuration. You'll need some understanding on how emacs works and how to customize things. 
 There will be a documentation but for now please be aware that this is not what you may have been looking for. It's my personal emacs configuration. Not less, not more.
 
+### Org Mode
+    I use org mode for my config file format. More info on that will be added later.
 
 ### Content:
     |->emacs
