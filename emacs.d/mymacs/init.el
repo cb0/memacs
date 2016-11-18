@@ -106,6 +106,8 @@
 
 (load-library "secrets")
 
+(load-library "swiper")
+
 ;; os x specific - thanks to http://stackoverflow.com/questions/3376863/unable-to-type-braces-and-square-braces-in-emacs
 (setq mac-option-modifier nil
       mac-command-modifier 'meta
@@ -293,6 +295,8 @@
   ad-do-it
   (delete-other-windows))
 
+(setq magit-repository-directories '(("~/projects/" . 1) ("~/xres-vm-mpu/" . 2)))
+
 (defun magit-quit-session ()
   "Restore the previous window configuration and kill the magit buffer."
   (interactive)
@@ -308,9 +312,13 @@
 ;;prevent magit update message 1.4
 (setq magit-last-seen-setup-instructions "1.4.0")
 
-(setq magit-completing-read-function 'magit-ido-completing-read)
+;;(setq magit-completing-read-function 'magit-ido-completing-read)
 (package-require 'ido-ubiquitous)
 (ido-ubiquitous-mode 1)
+
+(setq magit-refresh-status-buffer nil)
+(setq auto-revert-buffer-list-filter
+      'magit-auto-revert-repository-buffers-p)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; auto-complete section
@@ -577,7 +585,8 @@
         (if (region-active-p)
             (setq beg (region-beginning) end (region-end))
             (setq beg (line-beginning-position) end (line-end-position)))
-        (comment-or-uncomment-region beg end)))
+        (comment-or-uncomment-region beg end)
+	(next-line)))
 
 (global-set-key (kbd "M-,") 'comment-or-uncomment-region-or-line)
 
@@ -748,13 +757,14 @@ And make sure that it really shows up!"
 (package-require 'jira)
 (require 'jira)
 
-(setq jiralib-url "http://jira.app.activate.de") 
+(setq jira-url "http://jira.app.infra.gs.xtrav.de/rpc/xmlrpc")
 ;; you need make sure whether the "/jira" at the end is 
 ;; necessary or not, see discussion at the end of this page
 
 (package-require 'org-jira)
-(require 'org-jira) 
+(require 'org-jira)
 ;; jiralib is not explicitly required, since org-jira will load it.
+(setq jiralib-url "http://jira.app.infra.gs.xtrav.de/")
 
 ;;;;;;;;;; custom functions
 (defun uniq-lines (beg end)
@@ -1009,7 +1019,7 @@ BEG and END (region to sort)."
 (global-set-key (kbd "C-x v c") 'git-gutter+-commit)
 
 ;; Revert current hunk
-(global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
+(global-set-key (kbd "C-x v r") 'git-gutter+-revert-hunks)
 ;;(add-to-list 'git-gutter:update-hooks 'focus-in-hook)
 ;;(set-face-background 'git-gutter:modified "purple") ;; background color
 ;;(set-face-foreground 'git-gutter:added "green")
@@ -1258,16 +1268,16 @@ directory to make multiple eshell windows easier."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; cl and slime 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (package-require 'slime)
-;; (package-require 'ac-slime)
-;; (setq inferior-lisp-program "/usr/local/bin/sbcl")
-;; (require 'slime)
-;; (slime-setup)
-;; (add-to-list 'slime-contribs 'slime-fancy 'slime-repl)
-;; (eval-after-load 'slime
-;; `(define-key slime-prefix-map (kbd "M-h") 'slime-documentation-lookup))
-;; (setq slime-lisp-implementations
-;; '((sbcl ("sbcl" "--core" "/Users/cb0/sbcl.core-for-slime"))))
+(package-require 'slime)
+(package-require 'ac-slime)
+(setq inferior-lisp-program "/usr/local/bin/sbcl")
+(require 'slime)
+(slime-setup)
+(add-to-list 'slime-contribs 'slime-fancy 'slime-repl)
+;;(eval-after-load 'slime
+;;`(define-key slime-prefix-map (kbd "M-h") 'slime-documentation-lookup))
+(setq slime-lisp-implementations
+'((sbcl ("sbcl" "--core" "/home/mpuchalla/sbcl.core-for-slime"))))
 
 (setq tab-always-indent 'complete)
 (add-to-list 'completion-styles 'initials t)
@@ -1534,3 +1544,7 @@ INITIAL-INPUT can be given as the initial minibuffer input."
 (global-set-key (kbd "ł")   'bc-list)           ;; c-x M-j for the bookmark menu list
 
 (package-require 'ecb)
+
+(global-set-key (kbd "M-´") 'ispell-word)
+
+

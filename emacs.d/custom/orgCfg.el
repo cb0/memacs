@@ -1,5 +1,12 @@
 ; Activate org-mode
 (require 'org)
+(require 'org-install)
+(require 'org-habit)
+(setq org-habit-preceding-days 7
+      org-habit-following-days 1
+      org-habit-graph-column 80
+      org-habit-show-habits-only-for-today t
+      org-habit-show-all-today t)
 ;;(require 'ess-site)
 ; http://orgmode.org/guide/Activation.html#Activation
 
@@ -21,6 +28,7 @@
    (gnuplot . t)
    (org . t)
    (python . t)
+   (mscgen . t)
    (asymptote)
    (awk)
    (calc)
@@ -38,7 +46,6 @@
    (lisp)
    (matlab)
    (maxima)
-   (mscgen)
    (ocaml)
    (octave)
    (perl)
@@ -199,3 +206,25 @@
   "Face used for the line delimiting the end of source blocks.")
 
 (setq org-completion-use-ido t)
+
+(setq exec-path (append exec-path '("/usr/bin/mscgen")))
+
+
+(defun do-org-show-all-inline-images ()
+  (interactive)
+  (org-display-inline-images t t))
+
+
+
+;; (add-hook 'org-ctrl-c-ctrl-c-hook (lambda () (org-display-inline-images)))
+;;(add-hook 'org-confirm-babel-evaluate-hook (lambda () (org-display-inline-images)))
+
+(add-hook 'org-babel-after-execute-hook (lambda ()
+                                          (condition-case nil
+                                              (org-display-inline-images)
+                                            (error nil)))
+          'append)
+
+(require 'org-tree-slide)
+(global-set-key (kbd "<f8>") 'org-tree-slide-mode)
+(global-set-key (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
