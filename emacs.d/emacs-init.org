@@ -93,20 +93,21 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * Secrets
 ** Load secrets and epa
    #+BEGIN_SRC emacs-lisp
-     (package-require 'secrets)
+     ;;(package-require 'secrets)
      (package-require 'epa-file)
      (setq epg-debug t)
      (epa-file-enable)
      (setq epa-file-select-keys t)
+
      ;; check OS type and load additional gpg path
-     (cond
-      ((string-equal system-type "darwin")
-       (progn
-         (message "loading Mac OS X specific path settings")
-         (add-to-list 'exec-path "/usr/local/bin")
-         (load-library "secrets")
-         (require 'secrets)
-         )))
+     ;; (cond
+     ;;  ((string-equal system-type "darwin")
+     ;;   (progn
+     ;;     (message "loading Mac OS X specific path settings")
+     ;;     (add-to-list 'exec-path "/usr/local/bin")
+     ;;     (load-library "secrets")
+     ;;     (require 'secrets)
+     ;;     )))
      ;;(setf epa-pinentry-mode 'loopback)
 
    #+END_SRC
@@ -312,30 +313,30 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * IDE
 ** php
    #+BEGIN_SRC emacs-lisp
-     (package-require 'ac-php)
-     (add-hook 'php-mode-hook
-               '(lambda ()
-                  (company-mode t)
-                  (add-to-list 'company-backends 'company-ac-php-backend )))
+     ;; (package-require 'ac-php)
+     ;; (add-hook 'php-mode-hook
+     ;;           '(lambda ()
+     ;;              (company-mode t)
+     ;;              (add-to-list 'company-backends 'company-ac-php-backend )))
 
-     (package-require 'php-mode)
-     ;; (package-require 'php-extras)
+     ;; (package-require 'php-mode)
+     ;; ;; (package-require 'php-extras)
 
-     (add-hook 'php-mode-hook
-               '(lambda ()
-                  (auto-complete-mode t)
-                  (require 'ac-php)
-                  (setq ac-sources  '(ac-source-php ) )
-                  (yas-global-mode 1)
-                  (define-key php-mode-map  (kbd "C-]") 'ac-php-find-symbol-at-point)   ;goto define
-                  (define-key php-mode-map  (kbd "C-t") 'ac-php-location-stack-back   ) ;go back
-                  ;; (php-extras-company)
-                  ))
+     ;; (add-hook 'php-mode-hook
+     ;;           '(lambda ()
+     ;;              (auto-complete-mode t)
+     ;;              (require 'ac-php)
+     ;;              (setq ac-sources  '(ac-source-php ) )
+     ;;              (yas-global-mode 1)
+     ;;              (define-key php-mode-map  (kbd "C-]") 'ac-php-find-symbol-at-point)   ;goto define
+     ;;              (define-key php-mode-map  (kbd "C-t") 'ac-php-location-stack-back   ) ;go back
+     ;;              ;; (php-extras-company)
+     ;;              ))
 
-     (eval-after-load 'company
-       '(progn
-          (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
-          (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)))
+     ;; (eval-after-load 'company
+     ;;   '(progn
+     ;;      (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
+     ;;      (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)))
 
 
    #+END_SRC
@@ -752,17 +753,6 @@ This is my emacs init org configuration file. Written in org mode style for bett
 	       'append)
 
    #+END_SRC
-** Agenda
-   #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "C-c a") 'org-agenda)
-     (global-set-key (kbd "C-c c") 'org-capture)
-
-     (setq org-agenda-files
-       '("~/Dokumente/Tasks/traso.org" "~/todo.org" "~/ownCloud/org/journal/"))
-
-
-     (setq org-agenda-file-regexp "\\`[^.].*\\.org'\\|[0-9]+")
-   #+END_SRC
 ** Journaling
    Taken from the site of [[http://www.howardism.org/Technical/Emacs/journaling-org.html][howardism]] I will include a similar strategy.
    #+BEGIN_SRC elisp
@@ -779,7 +769,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (defun get-journal-file-today ()
        "Return filename for today's journal entry."
        (let ((daily-name (format-time-string "%Y%m%d")))
-         (expand-file-name (concat org-journal-dir daily-name))))
+         (expand-file-name (concat org-journal-dir daily-name ".org"))))
 
      (defun journal-file-today ()
        "Create and load a journal file based on today's date."
@@ -792,13 +782,44 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 
    #+END_SRC
-** Capturing Templates
+** Customizations
+*** Quick open homenotes
+    As I use the file `homenotes.org` the most often, I set up a key binding to open it up very quickly.
+    #+BEGIN_SRC elisp
+      (global-set-key (kbd "C-c o") 
+                      (lambda () (interactive) (find-file "~/ownCloud/org/homenotes.org")))
+    #+END_SRC
+*** Increase refile level
+    By default org-refile only shows top level entries. With inspiration taken from [[http://sachachua.com/blog/2015/02/learn-take-notes-efficiently-org-mode/][sachachua]] I will increase this level to 5.
+    #+BEGIN_SRC elisp
+      (setq org-refile-targets '((org-agenda-files . (:maxlevel . 5))))
+    #+END_SRC
+** Agenda
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key (kbd "C-c a") 'org-agenda)
+     (global-set-key (kbd "C-c c") 'org-capture)
+     (setq org-agenda-file-regexp "\\`[^.].*\\.org'\\|[0-9]+")
+
+     (setq org-agenda-files
+       '("~/ownCloud/org/homenotes.org" "~/ownCloud/org/journal/"))
+
+
+   #+END_SRC
+** [#B] Capturing Templates
+   At the moment I'm using only 3 templates.
+   - Todo: for general things that need to be done.
+   - Book: for capturing books to read.
+   - Jounrnal: For a personal daily based journal. Note this is nearly obsolete as I use org-jounral now.
    #+BEGIN_SRC elisp
      (global-set-key (kbd "C-c c") 'org-capture)
 
      (setq org-capture-templates
-       '(("j" "Journal Entry"
-          entry (file+datetree "~/ownCloud/org/journal.org")
+       '(("t" "Todo" entry (file+headline "~/ownCloud/org/homenotes.org" "Todos")
+             "* TODO %?\n  %i\n %a")
+	 ("b" "Book" entry (file+headline "~/ownCloud/org/homenotes.org" "Books")
+             "* TODO Description: %?
+	             %^{Author}p \n Created: %T")
+	("j" "Journal Entry" entry (file+datetree "~/ownCloud/org/journal.org")
               "* Event: %?\n\n  %i\n\n  From: %a"
               :empty-lines 1)
          ))
@@ -856,7 +877,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
   #+END_SRC
 * Paradox integration
   #+BEGIN_SRC emacs-lisp
-    (setq paradox-github-token TOKEN_paradox-github-token)
+  ;;  (setq paradox-github-token TOKEN_paradox-github-token)
   #+END_SRC
 * Jira
   #+BEGIN_SRC emacs-lisp
