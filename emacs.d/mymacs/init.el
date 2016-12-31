@@ -36,8 +36,6 @@
 ;; load special rules for german umlaute 
 (load-library "german")
 
-(load-library "exwm")
-
 ;;(load-library "exwm")
 
 ;; load flyspell and aspell
@@ -59,7 +57,7 @@
 
 ;; helm (command-completion-helper)
 ;;(progn (print 'starting helm search'))
-(load-library "helmCfg")
+;;(load-library "helmCfg")
 ;;(progn (print 'finish helm search'))
 
 ;; advanced commenting and more (toogle-comment)
@@ -208,10 +206,10 @@
 (define-key projectile-mode-map [?\s-g] 'projectile-grep)
 (define-key projectile-mode-map (kbd "s-.") 'projectile-recentf)
 (define-key projectile-mode-map (kbd "s-a") 'projectile-ag)
-(define-key projectile-mode-map (kbd "s-q") 'helm-projectile-ag)
+;;(define-key projectile-mode-map (kbd "s-q") 'helm-projectile-ag)
 
 (package-require 'perspective)
-(package-require 'helm-ag)
+;;(package-require 'helm-ag)
 (persp-mode)
 (package-require 'persp-projectile)
 (define-key projectile-mode-map (kbd "s-s") 'projectile-persp-switch-project)
@@ -382,21 +380,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; web mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(package-require 'php-mode)
+;;(package-require 'php-mode)
 ;;(package-require 'php-completion)
-(package-require 'php-eldoc)
-(package-require 'php-extras)
-(package-require 'ac-php)
+;;(package-require 'php-eldoc)
+;;(package-require 'php-extras)
+;;(package-require 'ac-php)
 (require 'cl)
 
 ;; use web and php mode at the same time
-(add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
+;;(add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
 ;;(add-to-list 'auto-mode-alist '("\\.blade\\.php\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.module$" . php-mode))
-(add-to-list 'auto-mode-alist '("\\.inc$" . php-mode))
-(add-to-list 'auto-mode-alist '("\\.install$" . php-mode))
-(add-to-list 'auto-mode-alist '("\\.engine$" . php-mode))
-(define-key php-mode-map (kbd "RET") 'newline-and-indent)
+;;(add-to-list 'auto-mode-alist '("\\.module$" . php-mode))
+;;(add-to-list 'auto-mode-alist '("\\.inc$" . php-mode))
+;;(add-to-list 'auto-mode-alist '("\\.install$" . php-mode))
+;;(add-to-list 'auto-mode-alist '("\\.engine$" . php-mode))
+;;(define-key php-mode-map (kbd "RET") 'newline-and-indent)
 
 
 ;; (add-hook 'php-mode-hook
@@ -823,11 +821,11 @@ BEG and END (region to sort)."
 (require 'on-screen)
 (on-screen-global-mode +1)
 
-(package-require 'smart-mode-line)
-(package-require 'smart-mode-line-powerline-theme)
-(setq sml/theme 'powerline)
-(setq sml/no-confirm-load-theme t)
-(sml/setup)
+;;(package-require 'smart-mode-line)
+;;(package-require 'smart-mode-line-powerline-theme)
+;;(setq sml/theme 'powerline)
+;;(setq sml/no-confirm-load-theme t)
+;;(sml/setup)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; multiple-cursors
@@ -1222,11 +1220,18 @@ directory to make multiple eshell windows easier."
 ;;(setq inferior-lisp-program "/usr/local/bin/clisp")
 
 (setq slime-lisp-implementations
-      '((sbcl ("/opt/sbcl/bin/sbcl" "--control-stack-size 500"))))
-;; 	(clisp ("/usr/local/bin/clisp" ""))))
+      '((sbcl ("/usr/local/bin/sbcl" "--control-stack-size 500"))))
+;; 	'((clisp ("/usr/local/bin/clisp" ""))))
+
+(add-to-list 'org-capture-templates
+             '("c" "Contacts" entry (file "/Users/cb0/ownCloud/org/contacts.org")
+               "* %(org-contacts-template-name)
+:PROPERTIES:
+:EMAIL: %(org-contacts-template-email)
+:END:"))
         
 
-(add-to-list 'slime-contribs 'slime-repl)
+(add-to-list 'slime-contribs 'slime-repl 'slime-fancy)
 ;;(setq slime-lisp-implementations '((sbcl ("sbcl" "--core" "/Users/cb0/sbcl.core-for-slime"))))
 
 (setq tab-always-indent 'complete)
@@ -1312,7 +1317,7 @@ buffer."
 ;;wakatime
 (package-require 'wakatime-mode)
 (global-wakatime-mode)
-(setq wakatime-api-key PASS_wakatime-api-key)
+(setq wakatime-api-key "65bc7cb1-c1d4-40ea-aeff-43e0dfd92ae9")
 (setq wakatime-cli-path "/usr/local/bin/wakatime")
 
 
@@ -1356,12 +1361,12 @@ buffer."
 (global-set-key (kbd "<C-F3>") 'kmacro-end-macro)                                                   
                                                                                                     
 ;; twitter
-(package-require 'twittering-mode)
-(setq twittering-use-master-password t)
-(setq twittering-icon-mode t)
+;; (package-require 'twittering-mode)
+;; (setq twittering-use-master-password t)
+;; (setq twittering-icon-mode t)
 
-(load-library "codeivate-mode")
-(codeivate-mode)
+;; (load-library "codeivate-mode")
+;; (codeivate-mode)
 
 
 ;;totd
