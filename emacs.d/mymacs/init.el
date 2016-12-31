@@ -1317,7 +1317,7 @@ buffer."
 ;;wakatime
 (package-require 'wakatime-mode)
 (global-wakatime-mode)
-(setq wakatime-api-key "65bc7cb1-c1d4-40ea-aeff-43e0dfd92ae9")
+(setq wakatime-api-key PASS_wakatime-api-key)
 (setq wakatime-cli-path "/usr/local/bin/wakatime")
 
 
