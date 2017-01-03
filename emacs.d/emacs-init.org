@@ -824,6 +824,13 @@ This is my emacs init org configuration file. Written in org mode style for bett
               :empty-lines 1)
          ))
    #+END_SRC
+** Babel
+*** Remote dir fix!
+    When evaluation source blocks inside org mode I get the same error as [[https://lists.gnu.org/archive/html/emacs-orgmode/2016-01/msg00281.html][here]].
+    There is a fix for this by [[http://www.howardism.org/Technical/Emacs/literate-devops.html#fn.2][Howard]] but it involves adjusting org-mode source code. As this might change when updating, I will use this solution, proposed by John Kitchin [[https://lists.gnu.org/archive/html/emacs-orgmode/2016-01/msg00321.html][here]].
+    #+BEGIN_SRC emacs-lisp
+      (setq temporary-file-directory "/tmp")
+    #+END_SRC
 * Magit
   The best git client available
 ** init magit
