@@ -73,6 +73,12 @@ This is my emacs init org configuration file. Written in org mode style for bett
     #+END_SRC
 
 * Customize my theme:
+** Line Wrapping
+   I really like when long lines are wrapped so I don't have to scroll to the right.
+   The [[https://www.emacswiki.org/emacs/LineWrap][emacs wiki]] has different options for that. I for now will use `[[https://www.emacswiki.org/emacs/VisualLineMode][visual-line-mode]]`.
+   #+BEGIN_SRC elisp
+     (global-visual-line-mode 1)
+   #+END_SRC
 ** Remove all interface distractions:
    I don't like the scrollbar, menu and toolbar.
    #+BEGIN_SRC emacs-lisp
