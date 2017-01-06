@@ -901,3 +901,19 @@ This is my emacs init org configuration file. Written in org mode style for bett
     (require 'org-jira)
     (setq jiralib-url "http://jira.app.infra.gs.xtrav.de")
   #+END_SRC
+* XML Processing
+** reformat/pretty print xml
+   As always in emacs, there are [[http://stackoverflow.com/questions/12492/pretty-printing-xml-files-on-emacs][multiple options]] for the task of reformating a xml. 
+*** build in sgml mode
+    Here I use sgml mode with pretty print and my known key combination "Control+Shift+L" to reformat code.
+    #+BEGIN_SRC elisp
+      (global-set-key (kbd "C-S-l") 'sgml-pretty-print)
+    #+END_SRC
+*** using external xmllint
+    We could also use `xmllint` which "might" be more applicable for large xml (to be tested). 
+    #+BEGIN_SRC elisp
+      (defun xmllint-region (&optional b e) 
+        (interactive "r")
+        (shell-command-on-region b e "xmllint --format -" t))
+      ;;(global-set-key (kbd "C-M-l") 'xmlling-region)
+    #+END_SRC
