@@ -938,3 +938,40 @@ This is my emacs init org configuration file. Written in org mode style for bett
         (shell-command-on-region b e "xmllint --format -" t))
       ;;(global-set-key (kbd "C-M-l") 'xmlling-region)
     #+END_SRC
+*
+* Web Browsing
+  This is very new to me as I used eww and w3m not very often. Conkeror was my first choice since some time.
+  But I want to give it a try using emacs.
+** w3m
+*** Installation
+    #+BEGIN_SRC elisp
+      (package-require 'w3m)
+    #+END_SRC
+*** Configuartion
+**** Toggle between work and web
+     I found this at sachachua blog [[http://sachachua.com/blog/2008/08/emacs-and-w3m-toggling-between-work-and-the-web/][here]].
+     #+BEGIN_SRC elisp
+       (defun wicked/toggle-w3m ()
+         "Switch to a w3m buffer or return to the previous buffer."
+         (interactive)
+         (if (derived-mode-p 'w3m-mode)
+             ;; Currently in a w3m buffer
+             ;; Bury buffers until you reach a non-w3m one
+             (while (derived-mode-p 'w3m-mode)
+               (bury-buffer))
+           ;; Not in w3m
+           ;; Find the first w3m buffer
+           (let ((list (buffer-list)))
+             (while list
+               (if (with-current-buffer (car list)
+                     (derived-mode-p 'w3m-mode))
+                   (progn
+                     (switch-to-buffer (car list))
+                     (setq list nil))
+                 (setq list (cdr list))))
+             (unless (derived-mode-p 'w3m-mode)
+               (call-interactively 'w3m)))))
+
+       (global-set-key (kbd "<f7>") 'wicked/toggle-w3m)
+
+     #+END_SRC
