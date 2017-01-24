@@ -96,6 +96,20 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (load-theme 'zenburn t)
 
    #+END_SRC
+* General Functions
+** Copy filename of current buffer to clipboard
+   #+BEGIN_SRC elisp
+     (defun copy-file-name-to-clipboard ()
+       "Copy the current buffer file name to the clipboard."
+       (interactive)
+       (let ((filename (if (equal major-mode 'dired-mode)
+                           default-directory
+                         (buffer-file-name))))
+         (when filename
+           (kill-new filename)
+           (message "Copied buffer file name '%s' to the clipboard." filename))))
+
+   #+END_SRC
 * Secrets
 ** Load secrets and epa
    #+BEGIN_SRC emacs-lisp
