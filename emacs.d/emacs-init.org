@@ -6,6 +6,14 @@ This is my emacs init org configuration file. Written in org mode style for bett
     (setq user-full-name "Marcus Puchalla"
           user-mail-address "marcus.puchalla@gmail.com")
   #+END_SRC
+* OS specific customization
+** OS X
+   To be able to type characters like € or [ on my mac keyboard, this option needs to be set.
+   It instructd emacs not to handle key combinations started by pressing the right alt key.
+   #+BEGIN_SRC elisp
+     (setq ns-right-alternate-modifier (quote none))
+     (set-keyboard-coding-system nil)
+   #+END_SRC
 * Startup customization
 ** File for customizations from within emacs
    If we customize variables we wan't to save those changes to `custom.el` file.
@@ -20,6 +28,10 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (set-keyboard-coding-system 'utf-8)
      (set-selection-coding-system 'utf-8)
      (prefer-coding-system 'utf-8)
+   #+END_SRC
+** Benchmarking startuo time
+   #+BEGIN_SRC elisp
+     (package-require 'esup)
    #+END_SRC
 * Package repos and installation
 ** Package
@@ -96,7 +108,34 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (load-theme 'zenburn t)
 
    #+END_SRC
+** Spaceline
+   Spaceline theme
+   #+BEGIN_SRC elisp
+     (package-require 'spaceline)
+     (package-require 'spaceline-config)
+     (spaceline-spacemacs-theme)
+   #+END_SRC
 * General Functions
+** Increase Number at point
+   #+BEGIN_SRC elisp
+     (defun my-increment-number-decimal (&optional arg)
+       "Increment the number forward from point by 'arg'."
+       (interactive "p*")
+       (save-excursion
+         (save-match-data
+   	(let (inc-by field-width answer)
+             (setq inc-by (if arg arg 1))
+             (skip-chars-backward "0123456789")
+             (when (re-search-forward "[0-9]+" nil t)
+               (setq field-width (- (match-end 0) (match-beginning 0)))
+               (setq answer (+ (string-to-number (match-string 0) 10) inc-by))
+               (when (< answer 0)
+                 (setq answer (+ (expt 10 field-width) answer)))
+               (replace-match (format (concat "%0" (int-to-string field-width) "d")
+                                      answer)))))))
+
+     (global-set-key (kbd "C-c +") 'my-increment-number-decimal)
+   #+END_SRC
 ** Copy filename of current buffer to clipboard
    #+BEGIN_SRC elisp
      (defun copy-file-name-to-clipboard ()
@@ -109,6 +148,14 @@ This is my emacs init org configuration file. Written in org mode style for bett
            (kill-new filename)
            (message "Copied buffer file name '%s' to the clipboard." filename))))
 
+   #+END_SRC
+* Reading
+  Stuff to improve the reading experience inside emacs.
+** speed up reading
+   There are many great tools out there, but for emacs I use spray.
+   #+BEGIN_SRC elisp
+     (package-require 'spray)
+     (global-set-key (kbd "<f6>") 'spray-mode)
    #+END_SRC
 * Secrets
 ** Load secrets and epa
@@ -1051,3 +1098,40 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
         
    #+END_SRC
+* Octave
+** Open al .m files
+   Octave file prefix seems to be .m according to [[https://www.gnu.org/software/octave/doc/v4.0.1/Using-Octave-Mode.html#Using-Octave-Mode][this]].
+   #+BEGIN_SRC elisp
+     (autoload 'octave-mode "octave-mod" nil t)
+     (setq auto-mode-alist
+        (cons '("\\.m$" . octave-mode) auto-mode-alist))
+
+     (add-hook 'octave-mode-hook
+   	 (lambda ()
+      	   (abbrev-mode 1)
+      	   (auto-fill-mode 1)
+      	   (if (eq window-system 'x)
+      	       (font-lock-mode 1))))
+     (autoload 'run-octave "octave-inf" nil t)
+
+     (setq exec-path (append exec-path '("/usr/local/octave/3.8.0/bin/")))
+
+     ;; Seems not to work in emacs 25
+     ;; (autoload 'octave-help "octave-hlp" nil t)
+     ;; (package-require 'gnuserv)
+     ;; (gnuserv-start)
+   #+END_SRC
+** Keysettings
+   #+BEGIN_SRC elisp
+     (global-set-key (kbd "C-c i l") 'octave-send-line)
+     (global-set-key (kbd "C-c i b") 'octave-send-block)    
+     (global-set-key (kbd "C-c i r") 'octave-send-region)    
+     (global-set-key (kbd "C-c i s") 'octave-show-process-buffer)
+
+   #+END_SRC
+* Ansible
+  #+BEGIN_SRC elisp
+    (package-require 'ansible)
+    (package-require 'company-ansible)
+  #+END_SRC
+  
