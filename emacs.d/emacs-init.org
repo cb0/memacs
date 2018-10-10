@@ -953,6 +953,15 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (package-require 'ido-ubiquitous)
      (ido-ubiquitous-mode 1)
    #+END_SRC
+** Magit Customization
+   #+BEGIN_SRC elisp
+     (defun magit-stash-clear (ref)
+       "Remove all stashes saved in REF's reflog by deleting REF."
+       (interactive (let ((ref (or (magit-section-value-if 'stashes) "refs/stash")))
+		      (magit-confirm t (format "Drop all stashes in %s" ref))
+		      (list ref)))
+     (message "To prevent from dropping all stashes again, this was disabled!"))
+   #+END_SRC
 * secretaria
   #+BEGIN_SRC emacs-lisp
     ;; (package-require 'secretaria)
