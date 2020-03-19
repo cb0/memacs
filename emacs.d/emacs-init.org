@@ -190,6 +190,38 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; (setq org-passwords-file "/home/mpuchalla/ownCloud/org/secrets.org.gpg")
      ;; (setq org-passwords-random-words-dictionary "/etc/dictionaries-common/words")
    #+END_SRC
+* EMail
+** Load mu4e
+   So I want to use mu4e within emacs. Tutorial states that I need to include this to check it works.
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'load-path "/usr/local/Cellar/mu/1.2.0_1/share/emacs/site-lisp/mu/mu4e")
+     (package-require 'mu4e)
+     (setq mu4e-maildir "~/.mail")
+     (setq mu4e-drafts-folder "/my.drafts")
+     (setq mu4e-sent-folder   "/my.sent_mail")
+     ;; (setq mu4e-sent-messages-behavior 'delete)
+     ;; allow for updating mail using 'U' in the main view:
+     ;; (setq mu4e-get-mail-command "offlineimap")
+
+     ;; ;; shortcuts
+     ;; (setq mu4e-maildir-shor;; tcuts
+     ;; ;;  
+        ;; '( ("/INBOX"               . ?i)))
+
+     ;; ;; something about ourselves
+     ;; (setq
+     ;;    user-mail-address "cb0@0xcb0.com"
+     ;;    user-full-name  "Marcus Puchalla"
+     ;;    mu4e-compose-signature
+     ;;     (concat
+     ;;    "MfG,\n"
+     ;;    "Marcus Puchalla\n"))
+
+   #+END_SRC
+   Which however does not seem to work.
+   ----
+   Ok, I forgot to use 'package-require to acutally install mu4e after adding it to the path.
+   
 * Code Handling
 ** Commenting of code
    When commenting code I use `M-,` to do this
@@ -611,67 +643,28 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * Org Mode
 ** Install and set custom things for org-mode
    #+BEGIN_SRC emacs-lisp
-                                             ; Activate org-mode
+					     ; Activate org-mode
      (require 'org)
      (require 'org-install)
      ;; (require 'org-habit)
      ;; (setq org-habit-preceding-days 7
-           ;; org-habit-following-days 1
-           ;; org-habit-graph-column 80
-           ;; org-habit-show-habits-only-for-today t
-           ;; org-habit-show-all-today t)
+	   ;; org-habit-following-days 1
+	   ;; org-habit-graph-column 80
+	   ;; org-habit-show-habits-only-for-today t
+	   ;; org-habit-show-all-today t)
      ;;(require 'ess-site)
-                                             ;; http://orgmode.org/guide/Activation.html#Activation
+					     ;; http://orgmode.org/guide/Activation.html#Activation
 
-                                             ;; The following lines are always needed.  Choose your own keys.
+					     ;; The following lines are always needed.  Choose your own keys.
      (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
-                                             ;; And add babel inline code execution
-                                             ;; babel, for executing code in org-mode.
+					     ;; And add babel inline code execution
+					     ;; babel, for executing code in org-mode.
      (org-babel-do-load-languages
       'org-babel-load-languages
-                                             ;; load all language marked with (lang . t).
-      '((C . t)
-        (sh . t)
-        (sql . t)
-        (R . t)
-        (ditaa . t)
-        (dot . t)
-        (emacs-lisp . t)
-        (gnuplot . t)
-        (org . t)
-        (python . t)
-        (mscgen . t)
-        (asymptote)
-        (awk)
-        (calc)
-        (clojure)
-        (comint)
-        (css)
-        (fortran)
-        (haskell)
-        (io)
-        (java)
-        (js)
-        (latex)
-        (ledger)
-        (lilypond)
-        (lisp)
-        (matlab)
-        (maxima)
-        (ocaml)
-        (octave)
-        (perl)
-        (picolisp)
-        (plantuml)
-        (ref)
-        (ruby)
-        (sass)
-        (scala)
-        (scheme)
-        (screen)
-        (shen)
-        (sqlite)))
+					     ;; load all language marked with (lang . t).
+      '((C . t)))
+	;; (sh . t)))
 
      ;; turn off "evaluate code question" in org-mode code blocks
      (setq org-confirm-babel-evaluate nil)
@@ -739,10 +732,10 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      ;; Org Capture
      ;; (setq org-capture-templates
-           ;; '(("t" "Todo" entry (file+headline (concat org-directory "/gtd.org") "Tasks")
-              ;; "* TODO %?\n %i\n")
-             ;; ("l" "Link" plain (file (concat org-directory "/links.org"))
-              ;; "- %?\n %x\n")))
+	   ;; '(("t" "Todo" entry (file+headline (concat org-directory "/gtd.org") "Tasks")
+	      ;; "* TODO %?\n %i\n")
+	     ;; ("l" "Link" plain (file (concat org-directory "/links.org"))
+	      ;; "- %?\n %x\n")))
 
 
      ;; (custom-set-variables
@@ -789,21 +782,21 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      ;; we want some non standard todo types
      (setq org-todo-keywords
-           '((sequence
-              "TODO(t)" "BUG(b)" "WAIT_FOR_FEEDBACK(w)" "DISCUSSION(D)" "FIXED(f)" "TO_BE_MERGE(m)" "MERGED(M)" "WAIT(w)" "|" "CANCELED(c)" "DONE(d)" "|" "INFO(i)")))
+	   '((sequence
+	      "TODO(t)" "BUG(b)" "WAIT_FOR_FEEDBACK(w)" "DISCUSSION(D)" "FIXED(f)" "TO_BE_MERGE(m)" "MERGED(M)" "WAIT(w)" "|" "CANCELED(c)" "DONE(d)" "|" "INFO(i)")))
 
      (setq org-todo-keyword-faces
-           '(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-             ("BUG" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-             ("WAIT_FOR_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-             ("DISCUSSION" :background "red2" :foreground "orange" :weight bold :box (:line-width 2 :style released-button))
-             ("FIXED" :background "orange" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-             ("TO_BE_MERGE" :background "gold" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-             ("MERGED" :background "gold" :foreground "grey" :weight bold :box (:line-width 2 :style released-button))
-             ("WAIT" :background "gray" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-             ("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
-             ("INFO" :background "green" :foreground "red1" :weight bold :box (:line-width 2 :style released-button))
-             ("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
+	   '(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	     ("BUG" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	     ("WAIT_FOR_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	     ("DISCUSSION" :background "red2" :foreground "orange" :weight bold :box (:line-width 2 :style released-button))
+	     ("FIXED" :background "orange" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	     ("TO_BE_MERGE" :background "gold" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	     ("MERGED" :background "gold" :foreground "grey" :weight bold :box (:line-width 2 :style released-button))
+	     ("WAIT" :background "gray" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	     ("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
+	     ("INFO" :background "green" :foreground "red1" :weight bold :box (:line-width 2 :style released-button))
+	     ("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
 
      ;; dont ask when executing code
      (setq org-confirm-babel-evaluate nil)
@@ -835,10 +828,10 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;;(add-hook 'org-confirm-babel-evaluate-hook (lambda () (org-display-inline-images)))
 
      (add-hook 'org-babel-after-execute-hook (lambda ()
-                                               (condition-case nil
-                                                   (org-display-inline-images)
-                                                 (error nil)))
-               'append)
+					       (condition-case nil
+						   (org-display-inline-images)
+						 (error nil)))
+	       'append)
 
    #+END_SRC
 ** Journaling
@@ -1013,6 +1006,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
     (setq wakatime-cli-path "/usr/local/bin/wakatime")
   #+END_SRC
 * Paradox integration
+  :URL: [[https://github.com/Malabarba/paradox][Github]]
+  Project for modernizing Emacs' Package Menu. With package ratings, usage statistics, customizability, and more.
   #+BEGIN_SRC emacs-lisp
   ;;  (setq paradox-github-token TOKEN_paradox-github-token)
   #+END_SRC
@@ -1021,9 +1016,9 @@ This is my emacs init org configuration file. Written in org mode style for bett
     ;;needed by jira
     (package-require 'xml-rpc)
     ;;acutal package
-    (package-require 'org-jira)
-    (require 'org-jira)
-    (setq jiralib-url "http://jira.app.infra.gs.xtrav.de")
+    ;; (package-require 'org-jira)
+    ;; (require 'org-jira)
+    ;; (setq jiralib-url "http://")
   #+END_SRC
 * XML Processing
 ** reformat/pretty print xml
@@ -1094,10 +1089,14 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
      (global-set-key (kbd "C->") 'mc/mark-next-like-this)
      (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-     (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+     (global-set-key (kbd "C-c C-<down>") 'mc/mark-all-like-this)
 
         
    #+END_SRC
+
+   #+RESULTS:
+   : mc/mark-all-like-this
+
 * Octave
 ** Open al .m files
    Octave file prefix seems to be .m according to [[https://www.gnu.org/software/octave/doc/v4.0.1/Using-Octave-Mode.html#Using-Octave-Mode][this]].
@@ -1131,7 +1130,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+END_SRC
 * Ansible
   #+BEGIN_SRC elisp
-    (package-require 'ansible)
-    (package-require 'company-ansible)
+    ;; (package-require 'ansible)
+    ;; (package-require 'company-ansible)
   #+END_SRC
   
