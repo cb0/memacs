@@ -91,6 +91,10 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+BEGIN_SRC elisp
      (global-visual-line-mode 1)
    #+END_SRC
+
+   #+RESULTS:
+   : t
+
 ** Remove all interface distractions:
    I don't like the scrollbar, menu and toolbar.
    #+BEGIN_SRC emacs-lisp
@@ -951,9 +955,9 @@ This is my emacs init org configuration file. Written in org mode style for bett
       '(org-directory "~/ownCloud/org/journal/")
       '(org-agenda-files (list org-directory)))
 
-     (setq org-agenda-file-regexp "\\`[^.].*\\.org\\'\\|[0-9]+")
+     (setq org-agenda-file-regexp "`[^.].*.org'|[0-9]+")
+     ;; (setq org-agenda-file-regexp "\\`[^.].*\\.org\\'\\|[0-9]+")
      (add-to-list 'auto-mode-alist '("\\`[^.].*\\.org|[0-9]+" . org-mode))
-
 
      (setq org-capture-templates
            '(("j" "Journal Entry"
@@ -972,7 +976,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
        (find-file (get-journal-file-today)))
 
      (global-set-key (kbd "C-c f j") 'org-journal-new-entry)
-                     ;; journal-file-today)
+     ;; journal-file-today)
 
      ;; Turn off auto-save-mode, needed for saving encrypted journals without leaking data
      (add-hook 'org-journal-mode-hook (lambda () (auto-save-mode -1)))
@@ -1095,6 +1099,19 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (package-require 'ido-ubiquitous)
      (ido-ubiquitous-mode 1)
    #+END_SRC
+** Magit Customization
+   #+BEGIN_SRC elisp
+     (defun magit-stash-clear (ref)
+       "Remove all stashes saved in REF's reflog by deleting REF."
+       (interactive (let ((ref (or (magit-section-value-if 'stashes) "refs/stash")))
+		      (magit-confirm t (format "Drop all stashes in %s" ref))
+		      (list ref)))
+     (message "To prevent from dropping all stashes again, this was disabled!"))
+   #+END_SRC
+* Merging
+  #+BEGIN_SRC emacs-lisp
+    (setq smerge-command-prefix "\C-cv")
+  #+END_SRC
 * secretaria
   #+BEGIN_SRC emacs-lisp
     ;; (package-require 'secretaria)
