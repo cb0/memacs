@@ -25,7 +25,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; Make german umlauts work.
      (setq locale-coding-system 'utf-8)
      (set-terminal-coding-system 'utf-8)
-     (set-keyboard-coding-system 'utf-8)
+     ;; (set-keyboard-coding-system 'utf-8)
      (set-selection-coding-system 'utf-8)
      (prefer-coding-system 'utf-8)
    #+END_SRC
@@ -302,6 +302,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 
   #+END_SRC
+
 * Session Management
 ** Desktop mode
    #+BEGIN_SRC emacs-lisp
@@ -410,6 +411,112 @@ This is my emacs init org configuration file. Written in org mode style for bett
       (global-set-key (kbd "C-x C-z") 'zoom-window-zoom)    
     #+END_SRC
 * IDE
+** CEDET
+   #+BEGIN_SRC emacs-lisp
+   (add-to-list 'load-path "./submodules/")
+     ; Semantic
+     (global-semantic-idle-completions-mode t)
+     (global-semantic-decoration-mode t)
+     (global-semantic-highlight-func-mode t)
+     (global-semantic-show-unmatched-syntax-mode t)
+
+     ;; CC-mode
+     (add-hook 'c-mode-hook '(lambda ()
+	     (setq ac-sources (append '(ac-source-semantic) ac-sources))
+	     (local-set-key (kbd "RET") 'newline-and-indent)
+	     (linum-mode t)
+	     (semantic-mode t)))
+
+   #+END_SRC
+** General
+*** Speedbar
+    #+begin_src emacs-lisp
+      (package-require 'speedbar)
+      (package-require 'sr-speedbar)
+      (setq speedbar-show-unknown-files t)
+
+    #+end_src
+** C/C++
+   For C/C++ development I use the tutorial provided [[https://tuhdo.github.io/c-ide.html][here]].
+*** Modify Company mode to include auto complete
+    #+BEGIN_SRC emacs-lisp
+      (setq company-backends (delete 'company-semantic company-backends))
+      (define-key c-mode-map  [(tab)] 'company-complete)
+      (define-key c++-mode-map  [(tab)] 'company-complete)
+
+      (package-require 'company-c-headers)
+      (add-to-list 'company-backends 'company-c-headers)
+
+    #+END_SRC
+*** Semantic Package
+    To enable code completion using Semantic
+    #+BEGIN_SRC emacs-lisp
+      (package-require 'cc-mode)
+      (package-require 'semantic)
+
+      (global-semanticdb-minor-mode 1)
+      (global-semantic-idle-scheduler-mode 1)
+
+      (global-semantic-idle-summary-mode 1)
+      (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
+      (package-require 'stickyfunc-enhance)
+
+      (semantic-mode 1)
+    #+END_SRC
+*** Smartparent
+    #+BEGIN_SRC emacs-lisp
+	;; Package: smartparens
+      (package-require 'smartparens)
+      (show-smartparens-global-mode +1)
+      (smartparens-global-mode 1)
+
+      ;; when you press RET, the curly braces automatically
+      ;; add another newline
+      (sp-with-modes '(c-mode c++-mode)
+	(sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET")))
+	(sp-local-pair "/*" "*/" :post-handlers '((" | " "SPC")
+						  ("* ||\n[i]" "RET"))))
+    #+END_SRC
+*** Compile Helper
+    Dont as for make programm every time.
+    #+BEGIN_SRC emacs-lisp
+    (global-set-key (kbd "<f4>") (lambda ()
+                               (interactive)
+                               (setq-local compilation-read-command nil)
+                               (call-interactively 'compile)))
+    #+END_SRC
+*** GDB
+    Allow gdb layout
+    #+BEGIN_SRC emacs-lisp
+      (setq
+       ;; use gdb-many-windows by default
+       gdb-many-windows t
+
+       ;; Non-nil means display source file containing the main routine at startup
+       gdb-show-main t
+       )
+    #+END_SRC
+*** GGTags
+    Emacs frontend to GNU Global source code tagging system. http://elpa.gnu.org
+    [[https://github.com/leoliu/ggtags][Source]]
+    #+begin_src emacs-lisp
+      ;; (package-require 'ggtags)
+      ;; (add-hook 'c-mode-common-hook
+      ;; 	  (lambda ()
+      ;; 	    (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
+      ;; 	      (ggtags-mode 1))))
+
+      ;; (define-key ggtags-mode-map (kbd "C-c g s") 'ggtags-find-other-symbol)
+      ;; (define-key ggtags-mode-map (kbd "C-c g h") 'ggtags-view-tag-history)
+      ;; (define-key ggtags-mode-map (kbd "C-c g r") 'ggtags-find-reference)
+      ;; (define-key ggtags-mode-map (kbd "C-c g f") 'ggtags-find-file)
+      ;; (define-key ggtags-mode-map (kbd "C-c g c") 'ggtags-create-tags)
+      ;; (define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags)
+
+      ;; (define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
+    #+end_src
+*** Install and configuartion
+    
 ** php
    #+BEGIN_SRC emacs-lisp
      ;; (package-require 'ac-php)
@@ -495,7 +602,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    When opening directories over tramp and not closing them manually, the minibuffer sometimes ask for a ssh pass while doing something completly different.
    This is because the directories are still open inside `ido-dir-file-cache`. Searching [[https://www.emacswiki.org/emacs/TrampMode#toc13][emacs wiki]] I found this snipper which will remove these connections from `ido-dir-file-cache`
    This conatains of a function for removing those buffers.
-   #+BEGIN_SRC elisp
+   #+BEGIN_SRC emacs-lisp
      (defun ido-remove-tramp-from-cache nil
        "Remove any TRAMP entries from `ido-dir-file-cache'.
          This stops tramp from trying to connect to remote hosts on emacs startup,
@@ -506,7 +613,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
               (lambda (x)
                 (string-match "/\\(rsh\\|ssh\\|telnet\\|su\\|sudo\\|sshx\\|krlogin\\|ksu\\|rcp\\|scp\\|rsync\\|scpx\\|fcp\\|nc\\|ftp\\|smb\\|adb\\):" (car x)))
               ido-dir-file-cache)))
-     ;; redefine `ido-kill-emacs-hook' so that cache is cleaned before being saved
+     ;; redefine 'ido-kill-emacs-hook' so that cache is cleaned before being saved
      (defun ido-kill-emacs-hook ()
        (ido-remove-tramp-from-cache)
        (ido-save-history))
@@ -643,7 +750,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * Org Mode
 ** Install and set custom things for org-mode
    #+BEGIN_SRC emacs-lisp
-					     ; Activate org-mode
+     ; Activate org-mode
      (require 'org)
      (require 'org-install)
      ;; (require 'org-habit)
@@ -774,6 +881,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;;  '(remember-handler-functions (quote (org-remember-handler))))
 
      (package-require 'org-ac)
+     ;; (package-require 'org-tempo)
 
      ;; To save the clock history across Emacs sessions:
      (setq org-clock-persist 'history)
@@ -783,7 +891,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; we want some non standard todo types
      (setq org-todo-keywords
 	   '((sequence
-	      "TODO(t)" "BUG(b)" "WAIT_FOR_FEEDBACK(w)" "DISCUSSION(D)" "FIXED(f)" "TO_BE_MERGE(m)" "MERGED(M)" "WAIT(w)" "|" "CANCELED(c)" "DONE(d)" "|" "INFO(i)")))
+	      "TODO(t)" "BUG(b)" "WAIT_FOR_FEEDBACK(w)" "FIXED(f)" "TO_BE_MERGE(m)" "MERGED(M)" "WAIT(w)" "|" "CANCELED(c)" "DONE(d)" "|" "INFO(i)")))
 
      (setq org-todo-keyword-faces
 	   '(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
@@ -817,26 +925,24 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      (setq exec-path (append exec-path '("/usr/bin/mscgen")))
 
-
      (defun do-org-show-all-inline-images ()
        (interactive)
        (org-display-inline-images t t))
 
-
-
      ;; (add-hook 'org-ctrl-c-ctrl-c-hook (lambda () (org-display-inline-images)))
      ;;(add-hook 'org-confirm-babel-evaluate-hook (lambda () (org-display-inline-images)))
 
-     (add-hook 'org-babel-after-execute-hook (lambda ()
-					       (condition-case nil
-						   (org-display-inline-images)
-						 (error nil)))
+     (add-hook 'org-babel-after-execute-hook
+	       (lambda ()
+		 (condition-case nil
+		     (org-display-inline-images)
+		   (error nil)))
 	       'append)
 
    #+END_SRC
 ** Journaling
    Taken from the site of [[http://www.howardism.org/Technical/Emacs/journaling-org.html][howardism]] I will include a similar strategy.
-   #+BEGIN_SRC elisp
+   #+BEGIN_SRC emacs-lisp
      (package-require 'org-journal)
 
      (setq org-journal-dir "~/ownCloud/org/journal/")
@@ -878,7 +984,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+END_SRC
 ** WC
    [[https://github.com/bnbeckwith/wc-mode][org-wd]] is a minor mode for counting words. 
-   #+BEGIN_SRC elisp
+   #+BEGIN_SRC emacs-lisp
      (package-require 'org-wc)
 
      ;; and run org-wc-display on a timer every time I go idle for 5 seconds
@@ -908,13 +1014,13 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** Customizations
 *** Quick open homenotes
     As I use the file `homenotes.org` the most often, I set up a key binding to open it up very quickly.
-    #+BEGIN_SRC elisp
+    #+BEGIN_SRC emacs-lisp
       (global-set-key (kbd "C-c o") 
                       (lambda () (interactive) (find-file "~/ownCloud/org/homenotes.org")))
     #+END_SRC
 *** Increase refile level
     By default org-refile only shows top level entries. With inspiration taken from [[http://sachachua.com/blog/2015/02/learn-take-notes-efficiently-org-mode/][sachachua]] I will increase this level to 5.
-    #+BEGIN_SRC elisp
+    #+BEGIN_SRC emacs-lisp
       (setq org-refile-targets '((org-agenda-files . (:maxlevel . 5))))
     #+END_SRC
 ** Agenda
@@ -933,7 +1039,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    - Todo: for general things that need to be done.
    - Book: for capturing books to read.
    - Jounrnal: For a personal daily based journal. Note this is nearly obsolete as I use org-jounral now.
-   #+BEGIN_SRC elisp
+   #+BEGIN_SRC emacs-lisp
      (global-set-key (kbd "C-c c") 'org-capture)
 
      (setq org-capture-templates
@@ -1025,12 +1131,12 @@ This is my emacs init org configuration file. Written in org mode style for bett
    As always in emacs, there are [[http://stackoverflow.com/questions/12492/pretty-printing-xml-files-on-emacs][multiple options]] for the task of reformating a xml. 
 *** build in sgml mode
     Here I use sgml mode with pretty print and my known key combination "Control+Shift+L" to reformat code.
-    #+BEGIN_SRC elisp
+    #+BEGIN_SRC emacs-lisp
       (global-set-key (kbd "C-S-l") 'sgml-pretty-print)
     #+END_SRC
 *** using external xmllint
     We could also use `xmllint` which "might" be more applicable for large xml (to be tested). 
-    #+BEGIN_SRC elisp
+    #+BEGIN_SRC emacs-lisp
       (defun xmllint-region (&optional b e) 
         (interactive "r")
         (shell-command-on-region b e "xmllint --format -" t))
@@ -1042,13 +1148,13 @@ This is my emacs init org configuration file. Written in org mode style for bett
   But I want to give it a try using emacs.
 ** w3m
 *** Installation
-    #+BEGIN_SRC elisp
+    #+BEGIN_SRC emacs-lisp
       (package-require 'w3m)
     #+END_SRC
 *** Configuartion
 **** Toggle between work and web
      I found this at sachachua blog [[http://sachachua.com/blog/2008/08/emacs-and-w3m-toggling-between-work-and-the-web/][here]].
-     #+BEGIN_SRC elisp
+     #+BEGIN_SRC emacs-lisp
        (defun wicked/toggle-w3m ()
          "Switch to a w3m buffer or return to the previous buffer."
          (interactive)
@@ -1077,14 +1183,14 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** Spellchecking
 *** Languagetool
     I used to use grammarly but now want to give languagetools a try.
-    #+BEGIN_SRC elisp
+    #+BEGIN_SRC emacs-lisp
       (package-require 'langtool)
       (setq langtool-language-tool-jar "/home/mpuchalla/projects/languagetools/LanguageTool-3.6/languagetool.jar")
       (setq langtool-mother-tongue "de")
     #+END_SRC
 * Multiple Coursors
 ** Key Configuration:
-   #+BEGIN_SRC elisp
+   #+BEGIN_SRC emacs-lisp
      (package-require 'multiple-cursors)
      (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
      (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -1100,7 +1206,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * Octave
 ** Open al .m files
    Octave file prefix seems to be .m according to [[https://www.gnu.org/software/octave/doc/v4.0.1/Using-Octave-Mode.html#Using-Octave-Mode][this]].
-   #+BEGIN_SRC elisp
+   #+BEGIN_SRC emacs-lisp
      (autoload 'octave-mode "octave-mod" nil t)
      (setq auto-mode-alist
         (cons '("\\.m$" . octave-mode) auto-mode-alist))
@@ -1121,7 +1227,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; (gnuserv-start)
    #+END_SRC
 ** Keysettings
-   #+BEGIN_SRC elisp
+   #+BEGIN_SRC emacs-lisp
      (global-set-key (kbd "C-c i l") 'octave-send-line)
      (global-set-key (kbd "C-c i b") 'octave-send-block)    
      (global-set-key (kbd "C-c i r") 'octave-send-region)    
@@ -1129,8 +1235,14 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
    #+END_SRC
 * Ansible
-  #+BEGIN_SRC elisp
+  #+BEGIN_SRC emacs-lisp
     ;; (package-require 'ansible)
     ;; (package-require 'company-ansible)
   #+END_SRC
-  
+* Music
+** Vuiet
+   music player and explorer for Emacs
+   #+BEGIN_SRC emacs-lisp
+     (package-require 'lastfm)
+     (package-require 'vuiet)
+   #+END_SRC

@@ -7,3 +7,6 @@
 [submodule "emacs.d/custom/xelb-util"]
 	path = emacs.d/custom/xelb-util
 	url = git@github.com:ch11ng/xelb-util.git
+[submodule "submodules/cedet"]
+	path = submodules/cedet
+	url = http://git.code.sf.net/p/cedet/git
