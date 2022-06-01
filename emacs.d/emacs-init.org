@@ -29,10 +29,12 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (set-selection-coding-system 'utf-8)
      (prefer-coding-system 'utf-8)
    #+END_SRC
-** Benchmarking startuo time
+
+** Setup package install
    #+BEGIN_SRC elisp
-     (package-require 'esup)
+     (require 'use-package)
    #+END_SRC
+
 * Package repos and installation
 ** Package
 *** Load Repos
@@ -47,9 +49,9 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; and the old elpa repo
      (add-to-list 'package-archives '("elpa-old" . "http://tromey.com/elpa/"))
 
-     ;; and automatically parsed versiontracking repositories.
-     (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+     (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
+    
    #+END_SRC
 *** Define package require
     `package_require` to make sure a package will get installed.
@@ -68,6 +70,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
              ; if we cannot require it, it does not exist, yet. So install it.
              (error (package-install package))))
    #+END_SRC
+
 *** Initialize the package manager
     #+BEGIN_SRC emacs-lisp
       ;; Initialize installed packages
@@ -84,6 +87,13 @@ This is my emacs init org configuration file. Written in org mode style for bett
       (package-initialize) 
     #+END_SRC
 
+** Benchmarking startuo time
+   #+BEGIN_SRC elisp
+     (package-require 'esup)
+   #+END_SRC
+
+
+    
 * Customize my theme:
 ** Line Wrapping
    I really like when long lines are wrapped so I don't have to scroll to the right.
@@ -198,11 +208,11 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** Load mu4e
    So I want to use mu4e within emacs. Tutorial states that I need to include this to check it works.
    #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "/usr/local/Cellar/mu/1.2.0_1/share/emacs/site-lisp/mu/mu4e")
-     (package-require 'mu4e)
-     (setq mu4e-maildir "~/.mail")
-     (setq mu4e-drafts-folder "/my.drafts")
-     (setq mu4e-sent-folder   "/my.sent_mail")
+     ;;(add-to-list 'load-path "/usr/local/Cellar/mu/1.2.0_1/share/emacs/site-lisp/mu/mu4e")
+     ;; (package-require 'mu4e)
+     ;; (setq mu4e-maildir "~/.mail")
+     ;; (setq mu4e-drafts-folder "/my.drafts")
+     ;; (setq mu4e-sent-folder   "/my.sent_mail")
      ;; (setq mu4e-sent-messages-behavior 'delete)
      ;; allow for updating mail using 'U' in the main view:
      ;; (setq mu4e-get-mail-command "offlineimap")
@@ -210,7 +220,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; ;; shortcuts
      ;; (setq mu4e-maildir-shor;; tcuts
      ;; ;;  
-        ;; '( ("/INBOX"               . ?i)))
+	;; '( ("/INBOX"               . ?i)))
 
      ;; ;; something about ourselves
      ;; (setq
@@ -417,39 +427,39 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * IDE
 ** CEDET
    #+BEGIN_SRC emacs-lisp
-   (add-to-list 'load-path "./submodules/")
-     ; Semantic
-     (global-semantic-idle-completions-mode t)
-     (global-semantic-decoration-mode t)
-     (global-semantic-highlight-func-mode t)
-     (global-semantic-show-unmatched-syntax-mode t)
+     ;; (add-to-list 'load-path "./submodules/")
+     ;;   ; Semantic
+     ;;   (global-semantic-idle-completions-mode t)
+     ;;   (global-semantic-decoration-mode t)
+     ;;   (global-semantic-highlight-func-mode t)
+     ;;   (global-semantic-show-unmatched-syntax-mode t)
 
-     ;; CC-mode
-     (add-hook 'c-mode-hook '(lambda ()
-	     (setq ac-sources (append '(ac-source-semantic) ac-sources))
-	     (local-set-key (kbd "RET") 'newline-and-indent)
-	     (linum-mode t)
-	     (semantic-mode t)))
+     ;;   ;; CC-mode
+     ;;   (add-hook 'c-mode-hook '(lambda ()
+     ;; 	  (setq ac-sources (append '(ac-source-semantic) ac-sources))
+     ;; 	  (local-set-key (kbd "RET") 'newline-and-indent)
+     ;; 	  (linum-mode t)
+     ;; 	  (semantic-mode t)))
 
    #+END_SRC
 ** General
 *** Speedbar
     #+begin_src emacs-lisp
-      (package-require 'speedbar)
-      (package-require 'sr-speedbar)
-      (setq speedbar-show-unknown-files t)
+      ;; (package-require 'speedbar)
+      ;; (package-require 'sr-speedbar)
+      ;; (setq speedbar-show-unknown-files t)
 
     #+end_src
 ** C/C++
    For C/C++ development I use the tutorial provided [[https://tuhdo.github.io/c-ide.html][here]].
 *** Modify Company mode to include auto complete
     #+BEGIN_SRC emacs-lisp
-      (setq company-backends (delete 'company-semantic company-backends))
-      (define-key c-mode-map  [(tab)] 'company-complete)
-      (define-key c++-mode-map  [(tab)] 'company-complete)
+      ;; (setq company-backends (delete 'company-semantic company-backends))
+      ;; (define-key c-mode-map  [(tab)] 'company-complete)
+      ;; (define-key c++-mode-map  [(tab)] 'company-complete)
 
-      (package-require 'company-c-headers)
-      (add-to-list 'company-backends 'company-c-headers)
+      ;; (package-require 'company-c-headers)
+      ;; (add-to-list 'company-backends 'company-c-headers)
 
     #+END_SRC
 *** Semantic Package
@@ -1096,8 +1106,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (setq magit-last-seen-setup-instructions "1.4.0")
 
      (setq magit-completing-read-function 'magit-ido-completing-read)
-     (package-require 'ido-ubiquitous)
-     (ido-ubiquitous-mode 1)
+     ;; (package-require 'ido-ubiquitous)
+     ;; (ido-ubiquitous-mode 1)
    #+END_SRC
 ** Magit Customization
    #+BEGIN_SRC elisp
@@ -1126,7 +1136,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
     (package-require 'wakatime-mode)
     (global-wakatime-mode)
     (setq wakatime-api-key PASS_wakatime-api-key)
-    (setq wakatime-cli-path "/usr/local/bin/wakatime")
+    (setq wakatime-cli-path "~/.wakatime/wakatime-cli")
   #+END_SRC
 * Paradox integration
   :URL: [[https://github.com/Malabarba/paradox][Github]]
