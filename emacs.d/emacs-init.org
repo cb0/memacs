@@ -7,15 +7,39 @@ This is my emacs init org configuration file. Written in org mode style for bett
           user-mail-address "marcus.puchalla@gmail.com")
   #+END_SRC
 * OS specific customization
+** Set EXEC Path
+   #+BEGIN_SRC elisp
+     (setenv "PATH" (concat (getenv "PATH") ":/Users/tk/.ghcup/bin"))
+     (setq exec-path (append exec-path '("/Users/tk/.ghcup/bin")))
+     (getenv "PATH")
+
+     (defun set-exec-path-from-shell-PATH ()
+       "Set up Emacs' `exec-path' and PATH environment variable to match
+	  that used by the user's shell.
+
+	  This is particularly useful under Mac OS X and macOS, where GUI
+	  apps are not started from a shell."
+       (interactive)
+       (let ((path-from-shell (replace-regexp-in-string
+			       "[ \t\n]*$" "" (shell-command-to-string
+					       "$SHELL --login -c 'echo $PATH'"
+					       ))))
+	 (setenv "PATH" path-from-shell)
+	 (setq exec-path (split-string path-from-shell path-separator))))
+
+     (set-exec-path-from-shell-PATH)
+   #+END_SRC
 ** OS X
    To be able to type characters like € or [ on my mac keyboard, this option needs to be set.
    It instructd emacs not to handle key combinations started by pressing the right alt key.
    #+BEGIN_SRC elisp
      (setq ns-right-alternate-modifier (quote none))
+     (setq ns-option-modifier      nil
+	   ns-right-option-modifer 'meta)
      (set-keyboard-coding-system nil)
    #+END_SRC
 * Startup customization
-** File for customizations from within emacs
+** File for customizations) from within emacs
    If we customize variables we wan't to save those changes to `custom.el` file.
    #+BEGIN_SRC emacs-lisp
      (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -43,16 +67,27 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (require 'package)
 
      ;; use packages from marmalade
-     (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+     ;;(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
      ;;the orgmode elpa
      (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
      ;; and the old elpa repo
-     (add-to-list 'package-archives '("elpa-old" . "http://tromey.com/elpa/"))
+     ;;(add-to-list 'package-archives '("elpa-old" . "http://tromey.com/elpa/"))
 
-     (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+     ;; and automatically parsed versiontracking repositories.
+     ;;(add-to-list 'package-archives '("melpa" . "http://melpa.org"))
+
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives
+         '("melpa" . "http://melpa.org/packages/"))
+ (add-to-list 'package-archives
+         '("gnu" . "http://elpa.gnu.org/packages/"))
 
     
    #+END_SRC
+
+   #+RESULTS:
+   : ((elpa-old . http://tromey.com/elpa/) (marmalade . http://marmalade-repo.org/packages/) (gnu . https://elpa.gnu.org/packages/) (org . http://orgmode.org/elpa/))
+
 *** Define package require
     `package_require` to make sure a package will get installed.
        #+BEGIN_SRC emacs-lisp
@@ -74,7 +109,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 *** Initialize the package manager
     #+BEGIN_SRC emacs-lisp
       ;; Initialize installed packages
-      (package-initialize)  
+      ;;(package-initialize)  
       ;; package init not needed, since it is done anyway in emacs 24 after reading the init
       ;; but we have to load the list of available packages
       (unless package-archive-contents
@@ -84,7 +119,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
       (unless (package-installed-p 'org)  ;; Make sure the Org package is
         (package-install 'org))           ;; installed, install it if not
-      (package-initialize) 
+      ;;(package-initialize) 
     #+END_SRC
 
 ** Benchmarking startuo time
@@ -118,8 +153,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+END_SRC
 ** Zen Burn theme
    #+BEGIN_SRC emacs-lisp
-     (package-require 'zenburn-theme)
-     (load-theme 'zenburn t)
+     ;; (package-require 'zenburn-theme)
+     ;; (load-theme 'zenburn t)
 
    #+END_SRC
 ** Spaceline
@@ -180,22 +215,22 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (epa-file-enable)
      (setq epa-file-select-keys t)
 
-     ;; check OS type and load additional gpg path
-     ;; (cond
-     ;;  ((string-equal system-type "darwin")
-     ;;   (progn
-     ;;     (message "loading Mac OS X specific path settings")
-     ;;     (add-to-list 'exec-path "/usr/local/bin")
-     ;;     (load-library "secrets")
-     ;;     (require 'secrets)
-     ;;     )))
-     ;;(setf epa-pinentry-mode 'loopback)
+      ;;check OS type and load additional gpg path
+      (cond
+       ((string-equal system-type "darwin")
+        (progn
+          (message "loading Mac OS X specific path settings")
+          (add-to-list 'exec-path "/usr/local/bin")
+          (load-library "secrets")
+          (require 'secrets)
+          )))
+     (setf epa-pinentry-mode 'loopback)
 
    #+END_SRC
 ** load my secrets file
   inspired by http://emacs-fu.blogspot.de/2011/02/keeping-your-secrets-secret.html
   #+BEGIN_SRC emacs-lisp
-    (load-library "~/secrets.el.gpg")
+    ;;(load-library "~/secrets.el.gpg")
   #+END_SRC
 
 ** org-passwords
@@ -208,11 +243,11 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** Load mu4e
    So I want to use mu4e within emacs. Tutorial states that I need to include this to check it works.
    #+BEGIN_SRC emacs-lisp
-     ;;(add-to-list 'load-path "/usr/local/Cellar/mu/1.2.0_1/share/emacs/site-lisp/mu/mu4e")
-     ;; (package-require 'mu4e)
-     ;; (setq mu4e-maildir "~/.mail")
-     ;; (setq mu4e-drafts-folder "/my.drafts")
-     ;; (setq mu4e-sent-folder   "/my.sent_mail")
+;;     (add-to-list 'load-path "/usr/local/Cellar/mu/1.2.0_1/share/emacs/site-lisp/mu/mu4e")
+  ;;   (package-require 'mu4e)
+    ;; (setq mu4e-maildir "~/.mail")
+     ;;(setq mu4e-drafts-folder "/my.drafts")
+     ;;(setq mu4e-sent-folder   "/my.sent_mail")
      ;; (setq mu4e-sent-messages-behavior 'delete)
      ;; allow for updating mail using 'U' in the main view:
      ;; (setq mu4e-get-mail-command "offlineimap")
@@ -260,14 +295,14 @@ This is my emacs init org configuration file. Written in org mode style for bett
     #+END_SRC
 * Helm
   #+BEGIN_SRC emacs-lisp
-    (package-require 'helm)
-    (package-require 'ac-helm)
+    ;;(package-require 'helm)
+    ;; (package-require 'ac-helm)
 
-    (global-set-key (kbd "C-c m") 'helm-mini)
+    ;; (global-set-key (kbd "C-c m") 'helm-mini)
 
-    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-    (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+    ;; (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+    ;; (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+    ;; (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
 
     ;; (when (executable-find "curl")
     ;;   (setq helm-google-suggest-use-curl-p t))
@@ -312,7 +347,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
     ;; (helm-autoresize-mode 1)
     ;; ;; activate helm mode
-    (helm-mode 1)
+    ;; (helm-mode 1)
 
 
   #+END_SRC
@@ -336,34 +371,34 @@ This is my emacs init org configuration file. Written in org mode style for bett
   #+END_SRC
 ** Workgroups2 Mode
    #+BEGIN_SRC emacs-lisp
-     (package-require 'workgroups2)
+     ;;(package-require 'workgroups2)
 
-     (setq wg-prefix-key (kbd "C-z"))
-     (setq wg-session-file "~/.emacs.d/.emacs_workgroups")
-     (global-set-key (kbd "C-c C-c")         'wg-create-workgroup)
-     (global-set-key [?\s-c] 'wg-create-workgroup)
-     (global-set-key (kbd "C-c w")         'wg-switch-to-workgroup)
-     (global-set-key [?\s-w] 'wg-switch-to-workgroup)
-     (global-set-key (kbd "C-c C-r")         'wg-rename-workgroup)
-     (global-set-key (kbd "C-c C-k")         'wg-kill-workgroup)
-     (global-set-key (kbd "C-c C-<left>")         'wg-switch-to-previous-workgroup)
-     ;; What to do on Emacs exit / workgroups-mode exit?
-     (setq wg-emacs-exit-save-behavior           'save)      ; Options: 'save 'ask nil
-     (setq wg-workgroups-mode-exit-save-behavior 'save)      ; Options: 'save 'ask nil
+     ;;(setq wg-prefix-key (kbd "C-z"))
+     ;;(setq wg-session-file "~/.emacs.d/.emacs_workgroups")
+     ;; (global-set-key (kbd "C-c C-c")         'wg-create-workgroup)
+     ;; (global-set-key [?\s-c] 'wg-create-workgroup)
+     ;; (global-set-key (kbd "C-c w")         'wg-switch-to-workgroup)
+     ;; (global-set-key [?\s-w] 'wg-switch-to-workgroup)
+     ;; (global-set-key (kbd "C-c C-r")         'wg-rename-workgroup)
+     ;; (global-set-key (kbd "C-c C-k")         'wg-kill-workgroup)
+     ;; (global-set-key (kbd "C-c C-<left>")         'wg-switch-to-previous-workgroup)
+     ;; ;; What to do on Emacs exit / workgroups-mode exit?
+     ;; (setq wg-emacs-exit-save-behavior           'save)      ; Options: 'save 'ask nil
+     ;; (setq wg-workgroups-mode-exit-save-behavior 'save)      ; Options: 'save 'ask nil
 
-     ;; Mode Line changes
-     ;; Display workgroups in Mode Line?
-     (setq wg-mode-line-display-on t)          ; Default: (not (featurep 'powerline))
-     (setq wg-flag-modified t)                 ; Display modified flags as well
-     (setq wg-mode-line-decor-left-brace "["
-           wg-mode-line-decor-right-brace "]"  ; how to surround it
-           wg-mode-line-decor-divider ":")
+     ;; ;; Mode Line changes
+     ;; ;; Display workgroups in Mode Line?
+     ;; (setq wg-mode-line-display-on t)          ; Default: (not (featurep 'powerline))
+     ;; (setq wg-flag-modified t)                 ; Display modified flags as well
+     ;; (setq wg-mode-line-decor-left-brace "["
+     ;;       wg-mode-line-decor-right-brace "]"  ; how to surround it
+     ;;       wg-mode-line-decor-divider ":")
 
 
 
-     (setq debug-on-error t)
+     ;; (setq debug-on-error t)
 
-     (workgroups-mode 1)
+     ;; (workgroups-mode 1)
 
    #+END_SRC
 
@@ -418,11 +453,11 @@ This is my emacs init org configuration file. Written in org mode style for bett
     
 *** Zoom windows
     #+BEGIN_SRC emacs-lisp
-      (package-require 'zoom-window)
-      ;;(setq zoom-window-use-elscreen t)
-      (zoom-window-setup)
+      ;; (package-require 'zoom-window)
+      ;; ;;(setq zoom-window-use-elscreen t)
+      ;; (zoom-window-setup)
 
-      (global-set-key (kbd "C-x C-z") 'zoom-window-zoom)    
+      ;; (global-set-key (kbd "C-x C-z") 'zoom-window-zoom)    
     #+END_SRC
 * IDE
 ** CEDET
@@ -465,31 +500,31 @@ This is my emacs init org configuration file. Written in org mode style for bett
 *** Semantic Package
     To enable code completion using Semantic
     #+BEGIN_SRC emacs-lisp
-      (package-require 'cc-mode)
-      (package-require 'semantic)
+      ;; (package-require 'cc-mode)
+      ;; (package-require 'semantic)
 
-      (global-semanticdb-minor-mode 1)
-      (global-semantic-idle-scheduler-mode 1)
+      ;; (global-semanticdb-minor-mode 1)
+      ;; (global-semantic-idle-scheduler-mode 1)
 
-      (global-semantic-idle-summary-mode 1)
-      (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
-      (package-require 'stickyfunc-enhance)
+      ;; (global-semantic-idle-summary-mode 1)
+      ;; ;; (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
+      ;; ;; (package-require 'stickyfunc-enhance)
 
-      (semantic-mode 1)
+      ;; ;; (semantic-mode 1)
     #+END_SRC
 *** Smartparent
     #+BEGIN_SRC emacs-lisp
 	;; Package: smartparens
-      (package-require 'smartparens)
-      (show-smartparens-global-mode +1)
-      (smartparens-global-mode 1)
+      ;; (package-require 'smartparens)
+      ;; (show-smartparens-global-mode +1)
+      ;; (smartparens-global-mode 1)
 
-      ;; when you press RET, the curly braces automatically
-      ;; add another newline
-      (sp-with-modes '(c-mode c++-mode)
-	(sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET")))
-	(sp-local-pair "/*" "*/" :post-handlers '((" | " "SPC")
-						  ("* ||\n[i]" "RET"))))
+      ;; ;; when you press RET, the curly braces automatically
+      ;; ;; add another newline
+      ;; (sp-with-modes '(c-mode c++-mode)
+      ;;   (sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET")))
+      ;;   (sp-local-pair "/*" "*/" :post-handlers '((" | " "SPC")
+      ;; 					    ("* ||\n[i]" "RET"))))
     #+END_SRC
 *** Compile Helper
     Dont as for make programm every time.
@@ -560,6 +595,24 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 
    #+END_SRC
+** Haskell
+   #+BEGIN_SRC emacs-lisp
+     (package-require 'haskell-mode)
+     (package-require 'lsp-mode)
+     (package-require 'lsp-ui)
+     (package-require 'lsp-haskell)
+     ;; (package-require 'company-ghc)
+
+     (add-hook 'haskell-mode-hook #'lsp)
+     (add-hook 'haskell-literate-mode-hook #'lsp)
+
+     (eval-after-load "haskell-mode"
+       '(define-key haskell-mode-map (kbd "C-c C-c") 'haskell-compile))
+
+     (eval-after-load "haskell-cabal"
+	 '(define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-compile))
+     #+END_SRC
+   
 * Sudo Edit Files
 ** local ssh
    #+BEGIN_SRC emacs-lisp
@@ -602,14 +655,14 @@ This is my emacs init org configuration file. Written in org mode style for bett
                       (tramp-file-name-host vec))))
          (concat "/sudo:root@localhost:" tempfile)))
 
-     (define-key dired-mode-map [s-return] 'sudo-edit-current-file)
+     ;;(define-key dired-mode-map [s-return] 'sudo-edit-current-file)
 
-     (setq tramp-default-method "ssh")
+     ;;(setq tramp-default-method "ssh")
         
    #+END_SRC
 ** sudo-edit.el
    #+BEGIN_SRC emacs-lisp
-     (package-require 'sudo-edit)
+     ;;(package-require 'sudo-edit)
    #+END_SRC
 * Tramp
 ** Clean up tramp connections
@@ -679,29 +732,29 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * Projectile
 ** Install
    #+BEGIN_SRC emacs-lisp
-     ;;projectile
-     (package-require 'projectile)
-     (projectile-global-mode)
-     (setq projectile-indexing-method 'alien)
-     (setq projectile-switch-project-action 'projectile-dired)
-     (setq projectile-enable-caching t)
-     (package-require 'ag)
+     ;; ;;projectile
+     ;; (package-require 'projectile)
+     ;; (projectile-global-mode)
+     ;; (setq projectile-indexing-method 'alien)
+     ;; (setq projectile-switch-project-action 'projectile-dired)
+     ;; (setq projectile-enable-caching t)
+     ;; (package-require 'ag)
 
-     (define-key projectile-mode-map [?\s-d] 'projectile-find-dir)
-     (define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
-     (define-key projectile-mode-map [?\s-f] 'projectile-find-file)
-     (define-key projectile-mode-map [?\s-g] 'projectile-grep)
-     (define-key projectile-mode-map (kbd "s-.") 'projectile-recentf)
-     (define-key projectile-mode-map (kbd "s-a") 'projectile-ag)
-     (define-key projectile-mode-map (kbd "s-q") 'helm-projectile-ag)
+     ;; (define-key projectile-mode-map [?\s-d] 'projectile-find-dir)
+     ;; (define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
+     ;; (define-key projectile-mode-map [?\s-f] 'projectile-find-file)
+     ;; (define-key projectile-mode-map [?\s-g] 'projectile-grep)
+     ;; (define-key projectile-mode-map (kbd "s-.") 'projectile-recentf)
+     ;; (define-key projectile-mode-map (kbd "s-a") 'projectile-ag)
+     ;; (define-key projectile-mode-map (kbd "s-q") 'helm-projectile-ag)
 
-     (package-require 'perspective)
-     (package-require 'helm-ag)
-     (persp-mode)
-     (package-require 'persp-projectile)
-     (define-key projectile-mode-map (kbd "s-s") 'projectile-persp-switch-project)
+     ;; (package-require 'perspective)
+     ;; (package-require 'helm-ag)
+     ;; (persp-mode)
+     ;; (package-require 'persp-projectile)
+     ;; (define-key projectile-mode-map (kbd "s-s") 'projectile-persp-switch-project)
 
-     (package-require 'project-explorer)
+     ;; (package-require 'project-explorer)
 
    #+END_SRC
 ** Config
@@ -728,21 +781,21 @@ This is my emacs init org configuration file. Written in org mode style for bett
     (global-set-key (kbd "C-c j") 'counsel-git-grep)
     (global-set-key (kbd "C-c k") 'counsel-ag)
     (global-set-key (kbd "C-x l") 'counsel-locate)
-    (package-require 'helm-rhythmbox)
-    (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+    ;; (package-require 'helm-rhythmbox)
+    ;;(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
 
-    (defun counsel ()
-      "Elisp completion at point."
-      (interactive)
-      (let* ((bnd (bounds-of-thing-at-point 'symbol))
-             (str (buffer-substring-no-properties (car bnd) (cdr bnd)))
-             (candidates (all-completions str obarray))
-             (ivy-height 7)
-             (res (ivy-read (format "pattern (%s): " str)
-                            candidates)))
-        (when (stringp res)
-          (delete-region (car bnd) (cdr bnd))
-          (insert res))))
+    ;; (defun counsel ()
+    ;;   "Elisp completion at point."
+    ;;   (interactive)
+    ;;   (let* ((bnd (bounds-of-thing-at-point 'symbol))
+    ;;          (str (buffer-substring-no-properties (car bnd) (cdr bnd)))
+    ;;          (candidates (all-completions str obarray))
+    ;;          (ivy-height 7)
+    ;;          (res (ivy-read (format "pattern (%s): " str)
+    ;;                         candidates)))
+    ;;     (when (stringp res)
+    ;;       (delete-region (car bnd) (cdr bnd))
+    ;;       (insert res))))
 
 
   #+END_SRC
@@ -1084,11 +1137,11 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (global-set-key (kbd "<f5>") 'magit-status)
 
      ;;taken from http://tullo.ch/articles/modern-emacs-setup/
-     (defadvice magit-status (around magit-fullscreen activate)
-       "Make magit-status run alone in a frame."
-       (window-configuration-to-register :magit-fullscreen)
-       ad-do-it
-       (delete-other-windows))
+     ;; (defadvice magit-status (around magit-fullscreen activate)
+     ;;   "Make magit-status run alone in a frame."
+     ;;   (window-configuration-to-register :magit-fullscreen)
+     ;;   ad-do-it
+     ;;   (delete-other-windows))
 
      (defun magit-quit-session ()
        "Restore the previous window configuration and kill the magit buffer."
@@ -1096,14 +1149,14 @@ This is my emacs init org configuration file. Written in org mode style for bett
        (kill-buffer)
        (jump-to-register :magit-fullscreen))
 
-     ;; (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
 
      ;;magit update recommendation
      ;;Note from update: Before running Git, Magit by default reverts all unmodified buffers which visit files tracked in the current repository. This can potentially lead to dataloss so you might want to disable this by adding the following line to your init file:
      (setq magit-auto-revert-mode nil)
 
      ;;prevent magit update message 1.4
-     (setq magit-last-seen-setup-instructions "1.4.0")
+     ;;(setq magit-last-seen-setup-instructions "1.4.0")
 
      (setq magit-completing-read-function 'magit-ido-completing-read)
      ;; (package-require 'ido-ubiquitous)
