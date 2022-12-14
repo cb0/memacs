@@ -119,7 +119,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
       (unless (package-installed-p 'org)  ;; Make sure the Org package is
         (package-install 'org))           ;; installed, install it if not
-      ;;(package-initialize) 
+      (package-initialize) 
     #+END_SRC
 
 ** Benchmarking startuo time
