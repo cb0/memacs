@@ -1007,6 +1007,16 @@ This is my emacs init org configuration file. Written in org mode style for bett
 	       'append)
 
    #+END_SRC
+*** Fixing the insertion of source blocks in emacs org > 9.2
+
+    As written [[https://github.com/syl20bnr/spacemacs/issues/11798#issuecomment-454941024][here]] the short syntax '>s' + 'TAB' does not expand into a bable source code block.
+    The next code block will fix this.
+    
+    #+begin_src emacs-lisp
+	(when (version<= "9.2" (org-version))
+	  (require 'org-tempo))
+    #+end_src
+
 ** Journaling
    Taken from the site of [[http://www.howardism.org/Technical/Emacs/journaling-org.html][howardism]] I will include a similar strategy.
    #+BEGIN_SRC emacs-lisp
