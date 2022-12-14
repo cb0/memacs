@@ -270,7 +270,11 @@ This is my emacs init org configuration file. Written in org mode style for bett
    Which however does not seem to work.
    ----
    Ok, I forgot to use 'package-require to acutally install mu4e after adding it to the path.
-   
+** notmuch
+   #+begin_src emacs-lisp
+     (package-require 'notmuch)
+   #+end_src
+
 * Code Handling
 ** Commenting of code
    When commenting code I use `M-,` to do this
