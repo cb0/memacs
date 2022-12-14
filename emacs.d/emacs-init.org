@@ -270,10 +270,37 @@ This is my emacs init org configuration file. Written in org mode style for bett
    Which however does not seem to work.
    ----
    Ok, I forgot to use 'package-require to acutally install mu4e after adding it to the path.
-** notmuch
+   
+** NotMuch
+   notmuch
    #+begin_src emacs-lisp
      (package-require 'notmuch)
    #+end_src
+
+
+* Blogging
+** Config
+   (setq org-publish-project-alist
+      '(("cb0-blog"
+         :base-directory "~/projects/blog/content/"
+         :recursive t
+         :base-extension "org"
+         :publishing-function org-html-publish-to-html
+         :publishing-directory "~/projects/blog/public/"
+         :makeindex t
+         :section-numbers nil
+         :with-toc nil
+         :auto-sitemap t
+         :html-head "<link rel=\"stylesheet\"
+                    href=\"../other/mystyle.css\"
+                    type=\"text/css\"/>")
+                    
+   ("images"
+         :base-directory "~/images/"
+         :base-extension "jpg\\|gif\\|png"
+         :publishing-directory "~/projects/blog/public/images/"
+         :publishing-function org-publish-attachment)
+   ))
 
 * Code Handling
 ** Commenting of code
