@@ -1176,10 +1176,9 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+BEGIN_SRC emacs-lisp
      (global-set-key (kbd "C-c a") 'org-agenda)
      (global-set-key (kbd "C-c c") 'org-capture)
-     (setq org-agenda-file-regexp "\\`[^.].*\\.org'\\|[0-9]+")
 
-     (setq org-agenda-files
-       '("~/ownCloud/org/homenotes.org" "~/ownCloud/org/journal/"))
+;;     (setq org-agenda-files
+;;       '("~/ownCloud/org/homenotes.org" "~/ownCloud/org/journal/"))
 
 
    #+END_SRC
