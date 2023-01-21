@@ -127,8 +127,233 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (package-require 'esup)
    #+END_SRC
 
+* Hydra
+  #+begin_src elisp
+    (package-require 'hydra)
 
-    
+  #+end_src
+* Window Manager EXWM
+
+** Install exwm
+   #+begin_src elisp
+     (package-require 'exwm)
+   #+end_src
+
+** Configure WM
+   #+begin_src elisp
+     (require 'exwm)
+
+     ;; simple system tray
+     (require 'exwm-systemtray)
+     (exwm-systemtray-enable)
+
+     ;; example config to be revmoed soon
+     (require 'exwm-config)
+
+     ;; All buffers created in EXWM mode are named "*EXWM*". You may want to
+     ;; change it in `exwm-update-class-hook' and `exwm-update-title-hook', which
+     ;; are run when a new X window class name or title is available.  Here's
+     ;; some advice on this topic:
+     ;; + Always use `exwm-workspace-rename-buffer` to avoid naming conflict.
+     ;; + For applications with multiple windows (e.g. GIMP), the class names of
+     ;    all windows are probably the same.  Using window titles for them makes
+     ;;   more sense.
+     ;; In the following example, we use class names for all windows except for
+     ;; Java applications and GIMP.
+     (add-hook 'exwm-update-class-hook
+	       (lambda ()
+		 (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+			     (string= "gimp" exwm-instance-name))
+		   (exwm-workspace-rename-buffer exwm-class-name))))
+     (add-hook 'exwm-update-title-hook
+	       (lambda ()
+		 (when (or (not exwm-instance-name)
+			   (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+			   (string= "gimp" exwm-instance-name))
+		   (exwm-workspace-rename-buffer exwm-title))))
+
+     ;; Global keybindings can be defined with `exwm-input-global-keys'.
+     ;; Here are a few examples:
+     (setq exwm-input-global-keys
+	   `(
+	     ;; Bind "s-r" to exit char-mode and fullscreen mode.
+	     ([?\s-r] . exwm-reset)
+	     ;; Bind "s-w" to switch workspace interactively.
+	     ([?\s-w] . exwm-workspace-switch)
+	     ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+	     ,@(mapcar (lambda (i)
+			 `(,(kbd (format "s-%d" i)) .
+			   (lambda ()
+			     (interactive)
+			     (exwm-workspace-switch-create ,i))))
+		       (number-sequence 0 9))
+	     ;; Bind "s-&" to launch applications ('M-&' also works if the output
+	     ;; buffer does not bother you).
+	     ([?\s-&] . (lambda (command)
+			  (interactive (list (read-shell-command "$ ")))
+			  (start-process-shell-command command nil command)))
+	     ;; Bind "s-<f2>" to "slock", a simple X display locker.
+	     ([s-f2] . (lambda ()
+			 (interactive)
+			 (start-process "" nil "/usr/bin/slock")))))
+
+     (exwm-config-example)
+
+     (setq exwm-input-simulation-keys
+      '(([?\C-b] . [left])
+	([?\C-f] . [right])
+	([?\C-p] . [up])
+	([?\C-n] . [down])
+	([?\C-a] . [home])
+	([?\C-e] . [end])
+	([?\M-v] . [prior])
+	([?\C-v] . [next])
+	([?\C-d] . [delete])
+	([?\C-k] . [S-end delete])))
+
+     ;; using xim input
+     (require 'exwm-xim)
+     (exwm-xim-enable)
+     (exwm-xim--exit)
+     (push ?\C-\\ exwm-input-prefix-keys)   ;; use Ctrl + \ to switch input method
+
+
+   #+end_src
+
+** LemonBar
+   #+begin_src elisp
+     ;; get workspace list in bar
+     (defun feb/exwm-workspace-list ()
+       "Return a lemonbar string showing workspace list."
+       (let* ((num (exwm-workspace--count))
+	  (sequence (number-sequence 0 (1- num)))
+	  (curr (exwm-workspace--position exwm-workspace--current)))
+	 (mapconcat (lambda (i)
+	      (format (if (= i curr) "[%%{F#00ff00}%d%%{F-}] " "%d ") i))
+		sequence "")
+	 ))
+
+     (defun feb/exwm-report-workspaces-to-lemonbar ()
+       (with-temp-file "/tmp/panel-fifo"
+	 (insert (format "WIN%s\n" (feb/exwm-workspace-list)))))
+
+     (add-hook 'exwm-workspace-switch-hook #'feb/exwm-report-workspaces-to-lemonbar)
+     (add-hook 'exwm-init-hook #'feb/exwm-report-workspaces-to-lemonbar)
+   #+end_src
+
+** Make xinitrc file
+   #+begin_src sh :tangle ~/.xinitrc.emacs
+     # Disable access control for the current user.
+     xhost +SI:localuser:$USER
+
+     # Make Java applications aware this is a non-reparenting window manager.
+     export _JAVA_AWT_WM_NONREPARENTING=1
+
+     # Set default cursor.
+     xsetroot -cursor_name left_ptr
+
+     # Set keyboard repeat rate.
+     xset r rate 200 60
+
+     # Uncomment the following block to use the exwm-xim module.
+     #export XMODIFIERS=@im=exwm-xim
+     #export GTK_IM_MODULE=xim
+     #export QT_IM_MODULE=xim
+     #export CLUTTER_IM_MODULE=xim
+
+     # Finally start Emacs
+     exec emacs
+   #+end_src
+
+   #+RESULTS:
+   : localuser:cb0 being added to access control list
+
+** Modify exwm startup
+   #+begin_src elisp
+	;; from https://config.daviwil.com/desktop
+	;; Hide the modeline on all X windows
+	(add-hook 'exwm-floating-setup-hook
+		  (lambda ()
+		    (exwm-layout-hide-mode-line)))
+
+     ;; Ctrl+Q will enable the next key to be sent directly
+     (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
+
+   #+end_src
+
+** Network manager
+   #+begin_src elisp
+     (package-require 'enwc)
+     (setq enwc-default-backend 'nm)
+     ;;(condition-case nil			
+     ;;    (enwc)
+     ;;  (error nil))
+   #+end_src
+
+** Desktop environment management
+   #+begin_src elisp
+	(add-to-list 'load-path "~/.emacs.d/lib/desktop-environment/")
+	(require 'desktop-environment)
+
+
+	(use-package desktop-environment
+	    :after exwm
+	    :config (desktop-environment-mode)
+	    :custom
+	    (desktop-environment-brightness-small-increment "2%+")
+	    (desktop-environment-brightness-small-decrement "2%-")
+	    (desktop-environment-brightness-normal-increment "5%+")
+	    (desktop-environment-brightness-normal-decrement "5%-")
+	    (desktop-environment-screenshot-command "flameshot gui"))
+
+	;; This needs a more elegant ASCII banner
+	(defhydra hydra-exwm-move-resize (:timeout 4)
+	  "Move/Resize Window (Shift is bigger steps, Ctrl moves window)"
+	  ("j" (lambda () (interactive) (exwm-layout-enlarge-window 10)) "V 10")
+	  ("J" (lambda () (interactive) (exwm-layout-enlarge-window 30)) "V 30")
+	  ("k" (lambda () (interactive) (exwm-layout-shrink-window 10)) "^ 10")
+	  ("K" (lambda () (interactive) (exwm-layout-shrink-window 30)) "^ 30")
+	  ("h" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 10)) "< 10")
+	  ("H" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 30)) "< 30")
+	  ("l" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 10)) "> 10")
+	  ("L" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 30)) "> 30")
+	  ("C-j" (lambda () (interactive) (exwm-floating-move 0 10)) "V 10")
+	  ("C-S-j" (lambda () (interactive) (exwm-floating-move 0 30)) "V 30")
+	  ("C-k" (lambda () (interactive) (exwm-floating-move 0 -10)) "^ 10")
+	  ("C-S-k" (lambda () (interactive) (exwm-floating-move 0 -30)) "^ 30")
+	  ("C-h" (lambda () (interactive) (exwm-floating-move -10 0)) "< 10")
+	  ("C-S-h" (lambda () (interactive) (exwm-floating-move -30 0)) "< 30")
+	  ("C-l" (lambda () (interactive) (exwm-floating-move 10 0)) "> 10")
+	  ("C-S-l" (lambda () (interactive) (exwm-floating-move 30 0)) "> 30")
+	  ("f" nil "finished" :exit t))
+
+
+
+     ;; Workspace switching
+     (setq exwm-input-global-keys
+	    `(([?\s-\C-r] . exwm-reset)
+	      ([?\s-w] . exwm-workspace-switch)
+	      ([?\s-r] . hydra-exwm-move-resize/body)
+	      ([?\s-e] . dired-jump)
+	      ([?\s-E] . (lambda () (interactive) (dired "~")))
+	      ([?\s-Q] . (lambda () (interactive) (kill-buffer)))
+	      ([?\s-`] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
+	      ([?\s-&] . (lambda (command)
+			   (interactive (list (read-shell-command "$ ")))
+			   (start-process-shell-command command nil command)))
+	      ,@(mapcar (lambda (i)
+			  `(,(kbd (format "s-%d" i)) .
+			     (lambda ()
+			      (interactive)
+			      (exwm-workspace-switch-create ,i))))
+			(number-sequence 0 9))))
+
+
+   #+end_src
+
+   
+** 
+
 * Customize my theme:
 ** Line Wrapping
    I really like when long lines are wrapped so I don't have to scroll to the right.
