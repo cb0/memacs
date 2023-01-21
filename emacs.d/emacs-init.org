@@ -978,7 +978,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;;  '(remember-annotation-functions (quote (org-remember-annotation)))
      ;;  '(remember-handler-functions (quote (org-remember-handler))))
 
-     (package-require 'org-ac)
+     ;; (package-require 'org-ac)
      ;; (package-require 'org-tempo)
 
      ;; To save the clock history across Emacs sessions:
