@@ -1056,26 +1056,28 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+BEGIN_SRC emacs-lisp
      (package-require 'org-journal)
 
-     (setq org-journal-dir "~/ownCloud/org/journal/")
+     (setq org-journal-dir "~/org/journal/")
+
+     (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
+     (add-to-list 'org-agenda-files org-journal-dir)
+     (add-to-list 'org-agenda-files "~/org/calendar.org")
 
      (custom-set-variables
-      '(org-directory "~/ownCloud/org/journal/")
+      '(org-directory "~/org/journal/")
       '(org-agenda-files (list org-directory)))
 
-     (setq org-agenda-file-regexp "`[^.].*.org'|[0-9]+")
-     ;; (setq org-agenda-file-regexp "\\`[^.].*\\.org\\'\\|[0-9]+")
      (add-to-list 'auto-mode-alist '("\\`[^.].*\\.org|[0-9]+" . org-mode))
 
      (setq org-capture-templates
-           '(("j" "Journal Entry"
-              entry (file+datetree "~/ownCloud/org/journal.org")
-              "* Event: %?\n\n  %i\n\n  From: %a"
-              :empty-lines 1)))
+	   '(("j" "Journal Entry"
+	      entry (file+datetree "~/org/journaljournal.org")
+	      "* Event: %?\n\n  %i\n\n  From: %a"
+	      :empty-lines 1)))
 
      (defun get-journal-file-today ()
        "Return filename for today's journal entry."
        (let ((daily-name (format-time-string "%Y%m%d")))
-         (expand-file-name (concat org-journal-dir daily-name ".org"))))
+	 (expand-file-name (concat org-journal-dir daily-name ".org"))))
 
      (defun journal-file-today ()
        "Create and load a journal file based on today's date."
