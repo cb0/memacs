@@ -59,6 +59,19 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (require 'use-package)
    #+END_SRC
 
+** Make cl deprecation warning go away
+   #+begin_src elisp
+		    (require 'cl-lib)
+
+		    (require 'loadhist)
+		    ;; (file-dependents (feature-file 'cl)) 
+
+;;		    (file-dependents (feature-file 'yaxception))
+;;     ("/home/cb0/.emacs.d/elpa/auto-complete-pcmp-20140227.651/auto-complete-pcmp.elc" "/home/cb0/.emacs.d/elpa/org-ac-20170401.1307/org-ac.elc" ;;"/home/cb0/projects/memacs/emacs.d/elpa/auto-complete-pcmp-20140303.255/auto-complete-pcmp.el")
+
+;;	  ("/home/cb0/.emacs.d/elpa/yaxception-20150105.1452/yaxception.elc" "/home/cb0/projects/memacs/emacs.d/elpa/yaxception-20150105.1540/yaxception.el" ;;"/home/cb0/projects/memacs/emacs.d/elpa/yaxception-20150105.1540/yaxception.elc" ;;"/home/cb0/projects/memacs/emacs.d/elpa/auto-complete-pcmp-20140303.255/auto-complete-pcmp.el")
+
+   #+end_src
 * Package repos and installation
 ** Package
 *** Load Repos
