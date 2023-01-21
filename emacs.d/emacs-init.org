@@ -454,7 +454,12 @@ This is my emacs init org configuration file. Written in org mode style for bett
     (add-hook 'after-init-hook 'global-company-mode)
   #+END_SRC
 * Key Management
-** Font size handling
+** Set default font size
+   #+begin_src elisp
+
+      (text-scale-set 3)
+   #+end_src
+** [#B] Font size handling
    In/Decrease the font size with `C-+` and `C--`
    #+BEGIN_SRC emacs-lisp
      (define-key global-map (kbd "C-+") 'text-scale-increase)
