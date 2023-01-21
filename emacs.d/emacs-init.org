@@ -1093,6 +1093,44 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 
    #+END_SRC
+** Calendar
+** Super Agenda
+   #+begin_src elisp
+     (package-require 'org-super-agenda)
+     (org-super-agenda-mode)
+     (let ((org-super-agenda-groups
+	    '(;; Each group has an implicit boolean OR operator between its selectors.
+	      (:name "Today"  ; Optionally specify section name
+		     :time-grid t  ; Items that appear on the time grid
+		     :todo "TODAY")  ; Items that have this TODO keyword
+	      (:name "Important"
+		     ;; Single arguments given alone
+		     :tag "work"
+		     :priority "A"))))
+       (org-agenda nil "a"))
+   #+end_src
+*** Integrate radicale online calendar
+    #+begin_src elisp
+     (package-require 'org-caldav)
+     (setq org-caldav-url "https://cal.0xcb0.com/")
+     (setq org-caldav-calendar-id "cb0/53ba00fd-502f-8b48-c01d-bd339a3ef42a")
+     (setq org-caldav-inbox "~/org/calendar.org")
+     (setq org-caldav-files ())
+     (setq org-icalendar-timezone "Europe/Berlin")
+
+     (global-set-key (kbd "C-c y") 'org-caldav-sync)
+
+   #+end_src
+*** Configure calendar usage
+    #+begin_src elisp
+      (setq calendar-week-start-day 1)
+      (setq diary-number-of-entries 14)
+      (appt-activate t)
+
+      (global-set-key (kbd "C-c c") 'calendar)
+      ;; use the same diary file as the one from caldav
+      (setq diary-file org-caldav-inbox)
+    #+end_src
 ** WC
    [[https://github.com/bnbeckwith/wc-mode][org-wd]] is a minor mode for counting words. 
    #+BEGIN_SRC emacs-lisp
