@@ -880,8 +880,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; and some more org stuff
      (setq org-list-allow-alphabetical t)
 
-     ;; (define-key global-map "\C-cl" 'org-store-link)
-     ;; (define-key global-map "\C-ca" 'org-agenda)
+     (define-key global-map "\C-cl" 'org-store-link)
+     (define-key global-map "\C-ca" 'org-agenda)
      ;; add a timestamp when we close an item
      (setq org-log-done t)
      ;; include a closing note when close an todo item
