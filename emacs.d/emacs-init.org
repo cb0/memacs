@@ -140,6 +140,15 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (package-require 'esup)
    #+END_SRC
 
+* Which key
+  Showing key bindings in a minor mode might seem like a good idea.
+  #+begin_src elisp
+    (package-require 'which-key)
+    ;; add minor mode to show help
+    (which-key-mode)
+    ;; slide in from right side if there is enough space there
+    (which-key-setup-side-window-right-bottom)
+  #+end_src
 * Hydra
   #+begin_src elisp
     (package-require 'hydra)
