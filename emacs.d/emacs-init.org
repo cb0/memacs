@@ -392,6 +392,22 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;;(setq async-shell-command-display-buffer nil) ;; this would keep the new buffer in background. Might be attached to C-s-&
    #+end_src
 
+** Window handling
+   I want to be able to switch to a buffer even if it is not in the current workspace.
+   This will move a buffer to my current workspace when I select the buffer.
+   #+begin_src elisp
+     (setq exwm-workspace-show-all-buffers t)
+     (setq exwm-layout-show-all-buffers t)
+   #+end_src
+
+** Hide minibuffer and echo area
+   Get more space by hiding the echo area and the mini buffer when not required.
+   #+begin_src elisp
+     (setq exwm-workspace-minibuffer-position 'bottom)
+     (setq exwm-workspace-display-echo-area-timeout 5)
+     ;; (exwm-workspace-attach-minibuffer)
+     ;; (exwm-workspace-detach-minibuffer)
+   #+end_src
 * Customize my theme:
 ** Line Wrapping
    I really like when long lines are wrapped so I don't have to scroll to the right.
