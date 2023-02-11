@@ -166,8 +166,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (require 'exwm)
 
      ;; simple system tray
-     (require 'exwm-systemtray)
-     (exwm-systemtray-enable)
+     ;; (require 'exwm-systemtray)
+     ;; (exwm-systemtray-disable)
 
      ;; example config to be revmoed soon
      (require 'exwm-config)
