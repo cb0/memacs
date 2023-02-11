@@ -1592,7 +1592,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
   #+BEGIN_SRC emacs-lisp
     (package-require 'wakatime-mode)
     (require 'secrets)
-    (global-wakatme-mode)
+    (global-wakatime-mode)
     (setq wakatime-api-key PASS_wakatime-api-key)
     (setq wakatime-cli-path "/home/cb0/.wakatime/wakatime-cli")
   #+END_SRC
