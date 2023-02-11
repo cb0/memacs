@@ -445,30 +445,59 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (global-set-key (kbd "<f6>") 'spray-mode)
    #+END_SRC
 * Secrets
+** EXWM Adjustments
+   #+begin_src elisp
+     ;; let's get encryption established
+     (setenv "GPG_AGENT_INFO" nil)  ;; use emacs pinentry
+     (setq auth-source-debug t)
+
+     (setq epg-gpg-program "gpg2")  ;; not necessary
+     (package-require 'epa-file)
+     (epa-file-enable)
+     (setq epa-pinentry-mode 'loopback)
+     (setq epg-pinentry-mode 'loopback)
+     ;;(pinentry-start)
+
+     (require 'org-crypt)
+     (org-crypt-use-before-save-magic)
+
+     (setq epa-file-select-keys nil)
+   #+end_src
+** Create gpg agent file
+   #+begin_src sh :tangle ~/.gnupg/gpg-agent.conf
+     allow-emacs-pinentry
+     allow-loopback-pinentry
+   #+end_src
+
+   #+RESULTS:
+
 ** Load secrets and epa
    #+BEGIN_SRC emacs-lisp
-     ;;(package-require 'secrets)
-     (package-require 'epa-file)
-     (setq epg-debug t)
-     (epa-file-enable)
-     (setq epa-file-select-keys t)
+	  ;;(package-require 'secrets)
+     ;;(package-require 'epa-file)
 
-      ;;check OS type and load additional gpg path
-      (cond
-       ((string-equal system-type "darwin")
-        (progn
-          (message "loading Mac OS X specific path settings")
-          (add-to-list 'exec-path "/usr/local/bin")
-          (load-library "secrets")
-          (require 'secrets)
-          )))
-     (setf epa-pinentry-mode 'loopback)
+     ;; (setq epg-debug t)
+     ;;      (epa-file-enable)
+     ;;      (setq epa-file-select-keys t)
+
+     ;;       ;;check OS type and load additional gpg path
+     ;;       (cond
+     ;;        ((string-equal system-type "darwin")
+     ;; 	(progn
+     ;; 	  (message "loading Mac OS X specific path settings")
+     ;; 	  (add-to-list 'exec-path "/usr/local/bin")
+     ;; 	  (load-library "secrets")
+     ;; 	  (require 'secrets)
+     ;; 	  )))
+
+     ;;      (setf epa-pinentry-mode 'loopback)
 
    #+END_SRC
+
 ** load my secrets file
   inspired by http://emacs-fu.blogspot.de/2011/02/keeping-your-secrets-secret.html
   #+BEGIN_SRC emacs-lisp
-    (load-library "~/secrets.el.gpg")
+    ;;(load-library "~/secrets.el.gpg")
   #+END_SRC
 
 ** org-passwords
@@ -477,6 +506,31 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; (setq org-passwords-file "/home/mpuchalla/ownCloud/org/secrets.org.gpg")
      ;; (setq org-passwords-random-words-dictionary "/etc/dictionaries-common/words")
    #+END_SRC
+** Use pinentry
+   #+begin_src elisp
+     (use-package pinentry
+       :ensure t
+       :config
+       (pinentry-start))
+   #+end_src
+* Smudge - Spotify
+** Install package & requirements
+   #+begin_src elisp
+;;     (add-to-list 'load-path "~/.emacs.d/lib/smudge/") 
+
+;;     (package-require 'simple-httpd)
+;;     (package-require 'oauth2)
+;;     (require 'smudge)
+   #+end_src
+** Configure
+   #+begin_src elisp
+     ;; Settings
+;;     (setq smudge-oauth2-client-secret PASS_spotify-app-client-secret)
+;;     (setq smudge-oauth2-client-id PASS_spotify-app-client-id)
+;;     (define-key smudge-mode-map (kbd "C-c .") 'smudge-command-map)
+
+;;     (setq smudge-transport 'connect)
+   #+end_src
 * EMail
 ** Load mu4e
    So I want to use mu4e within emacs. Tutorial states that I need to include this to check it works.
@@ -1513,7 +1567,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * WakaWaka
   #+BEGIN_SRC emacs-lisp
     (package-require 'wakatime-mode)
-    (global-wakatime-mode)
+    (require 'secrets)
+    (global-wakatme-mode)
     (setq wakatime-api-key PASS_wakatime-api-key)
     (setq wakatime-cli-path "/home/cb0/.wakatime/wakatime-cli")
   #+END_SRC
