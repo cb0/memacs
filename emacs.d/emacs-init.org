@@ -535,7 +535,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** Install package
    I could not find the package in my local MELPA. So I download and use the version from githin.
    #+begin_src elisp
-     (add-to-list 'load-path "~/.emacs.d/lib/smudge/")
+     ;;(add-to-list 'load-path "~/.emacs.d/lib/smudge/")
+     (package-require 'smudge)
    #+end_src
 ** Install requirements
    It seems we need simple-httpd and oauth2 packages to use it.
