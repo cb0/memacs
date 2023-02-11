@@ -695,7 +695,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** Set default font size
    #+begin_src elisp
 
-      (text-scale-set 3)
+      (text-scale-set 4)
    #+end_src
 ** [#B] Font size handling
    In/Decrease the font size with `C-+` and `C--`
