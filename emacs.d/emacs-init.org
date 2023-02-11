@@ -185,30 +185,30 @@ This is my emacs init org configuration file. Written in org mode style for bett
 			   (string= "gimp" exwm-instance-name))
 		   (exwm-workspace-rename-buffer exwm-title))))
 
-     ;; Global keybindings can be defined with `exwm-input-global-keys'.
-     ;; Here are a few examples:
-     (setq exwm-input-global-keys
-	   `(
-	     ;; Bind "s-r" to exit char-mode and fullscreen mode.
-	     ([?\s-r] . exwm-reset)
-	     ;; Bind "s-w" to switch workspace interactively.
-	     ([?\s-w] . exwm-workspace-switch)
-	     ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
-	     ,@(mapcar (lambda (i)
-			 `(,(kbd (format "s-%d" i)) .
-			   (lambda ()
-			     (interactive)
-			     (exwm-workspace-switch-create ,i))))
-		       (number-sequence 0 9))
-	     ;; Bind "s-&" to launch applications ('M-&' also works if the output
-	     ;; buffer does not bother you).
-	     ([?\s-&] . (lambda (command)
-			  (interactive (list (read-shell-command "$ ")))
-			  (start-process-shell-command command nil command)))
-	     ;; Bind "s-<f2>" to "slock", a simple X display locker.
-	     ([s-f2] . (lambda ()
-			 (interactive)
-			 (start-process "" nil "/usr/bin/slock")))))
+     ;; ;; Global keybindings can be defined with `exwm-input-global-keys'.
+     ;; ;; Here are a few examples:
+     ;; (setq exwm-input-global-keys
+     ;;       `(
+     ;; 	;; Bind "s-r" to exit char-mode and fullscreen mode.
+     ;; 	;; ([?\s-r] . exwm-reset)
+     ;; 	;; ;; Bind "s-w" to switch workspace interactively.
+     ;; 	;; ([?\s-w] . exwm-workspace-switch)
+     ;; 	;; ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+     ;; 	;; ,@(mapcar (lambda (i)
+     ;; 	;; 		 `(,(kbd (format "s-%d" i)) .
+     ;; 	;; 		   (lambda ()
+     ;; 	;; 		     (interactive)
+     ;; 	;; 		     (exwm-workspace-switch-create ,i))))
+     ;; 	;; 	       (number-sequence 0 9))
+     ;; 	;; ;; Bind "s-&" to launch applications ('M-&' also works if the output
+     ;; 	;; ;; buffer does not bother you).
+     ;; 	([?\s-&] . (lambda (command)
+     ;; 		     (interactive (list (read-shell-command "$ ")))
+     ;; 		     (start-process-shell-command command nil command)))
+     ;; 	;; Bind "s-<f2>" to "slock", a simple X display locker.
+     ;; 	([s-f2] . (lambda ()
+     ;; 		    (interactive)
+     ;; 		    (start-process "" nil "/usr/bin/slock")))))
 
      (exwm-config-example)
 
@@ -224,10 +224,11 @@ This is my emacs init org configuration file. Written in org mode style for bett
 	([?\C-d] . [delete])
 	([?\C-k] . [S-end delete])))
 
+
      ;; using xim input
      (require 'exwm-xim)
      (exwm-xim-enable)
-     (exwm-xim--exit)
+     ;; (exwm-xim--exit)
      (push ?\C-\\ exwm-input-prefix-keys)   ;; use Ctrl + \ to switch input method
 
 
@@ -305,67 +306,82 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 ** Desktop environment management
    #+begin_src elisp
-	(add-to-list 'load-path "~/.emacs.d/lib/desktop-environment/")
-	(require 'desktop-environment)
+     (add-to-list 'load-path "~/.emacs.d/lib/desktop-environment/")
+     (require 'desktop-environment)
 
 
-	(use-package desktop-environment
-	    :after exwm
-	    :config (desktop-environment-mode)
-	    :custom
-	    (desktop-environment-brightness-small-increment "2%+")
-	    (desktop-environment-brightness-small-decrement "2%-")
-	    (desktop-environment-brightness-normal-increment "5%+")
-	    (desktop-environment-brightness-normal-decrement "5%-")
-	    (desktop-environment-screenshot-command "flameshot gui"))
+     (use-package desktop-environment
+       :after exwm
+       :config (desktop-environment-mode)
+       :custom
+       (desktop-environment-brightness-small-increment "2%+")
+       (desktop-environment-brightness-small-decrement "2%-")
+       (desktop-environment-brightness-normal-increment "5%+")
+       (desktop-environment-brightness-normal-decrement "5%-")
+       (desktop-environment-screenshot-command "flameshot gui"))
 
-	;; This needs a more elegant ASCII banner
-	(defhydra hydra-exwm-move-resize (:timeout 4)
-	  "Move/Resize Window (Shift is bigger steps, Ctrl moves window)"
-	  ("j" (lambda () (interactive) (exwm-layout-enlarge-window 10)) "V 10")
-	  ("J" (lambda () (interactive) (exwm-layout-enlarge-window 30)) "V 30")
-	  ("k" (lambda () (interactive) (exwm-layout-shrink-window 10)) "^ 10")
-	  ("K" (lambda () (interactive) (exwm-layout-shrink-window 30)) "^ 30")
-	  ("h" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 10)) "< 10")
-	  ("H" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 30)) "< 30")
-	  ("l" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 10)) "> 10")
-	  ("L" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 30)) "> 30")
-	  ("C-j" (lambda () (interactive) (exwm-floating-move 0 10)) "V 10")
-	  ("C-S-j" (lambda () (interactive) (exwm-floating-move 0 30)) "V 30")
-	  ("C-k" (lambda () (interactive) (exwm-floating-move 0 -10)) "^ 10")
-	  ("C-S-k" (lambda () (interactive) (exwm-floating-move 0 -30)) "^ 30")
-	  ("C-h" (lambda () (interactive) (exwm-floating-move -10 0)) "< 10")
-	  ("C-S-h" (lambda () (interactive) (exwm-floating-move -30 0)) "< 30")
-	  ("C-l" (lambda () (interactive) (exwm-floating-move 10 0)) "> 10")
-	  ("C-S-l" (lambda () (interactive) (exwm-floating-move 30 0)) "> 30")
-	  ("f" nil "finished" :exit t))
+     ;; This needs a more elegant ASCII banner
+     (defhydra hydra-exwm-move-resize (:timeout 4)
+       "Move/Resize Window (Shift is bigger steps, Ctrl moves window)"
+       ("j" (lambda () (interactive) (exwm-layout-enlarge-window 10)) "V 10")
+       ("J" (lambda () (interactive) (exwm-layout-enlarge-window 30)) "V 30")
+       ("k" (lambda () (interactive) (exwm-layout-shrink-window 10)) "^ 10")
+       ("K" (lambda () (interactive) (exwm-layout-shrink-window 30)) "^ 30")
+       ("h" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 10)) "< 10")
+       ("H" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 30)) "< 30")
+       ("l" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 10)) "> 10")
+       ("L" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 30)) "> 30")
+       ("C-j" (lambda () (interactive) (exwm-floating-move 0 10)) "V 10")
+       ("C-S-j" (lambda () (interactive) (exwm-floating-move 0 30)) "V 30")
+       ("C-k" (lambda () (interactive) (exwm-floating-move 0 -10)) "^ 10")
+       ("C-S-k" (lambda () (interactive) (exwm-floating-move 0 -30)) "^ 30")
+       ("C-h" (lambda () (interactive) (exwm-floating-move -10 0)) "< 10")
+       ("C-S-h" (lambda () (interactive) (exwm-floating-move -30 0)) "< 30")
+       ("C-l" (lambda () (interactive) (exwm-floating-move 10 0)) "> 10")
+       ("C-S-l" (lambda () (interactive) (exwm-floating-move 30 0)) "> 30")
+       ("f" nil "finished" :exit t))
 
 
 
      ;; Workspace switching
      (setq exwm-input-global-keys
-	    `(([?\s-\C-r] . exwm-reset)
-	      ([?\s-w] . exwm-workspace-switch)
-	      ([?\s-r] . hydra-exwm-move-resize/body)
-	      ([?\s-e] . dired-jump)
-	      ([?\s-E] . (lambda () (interactive) (dired "~")))
-	      ([?\s-Q] . (lambda () (interactive) (kill-buffer)))
-	      ([?\s-`] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
-	      ([?\s-&] . (lambda (command)
-			   (interactive (list (read-shell-command "$ ")))
-			   (start-process-shell-command command nil command)))
-	      ,@(mapcar (lambda (i)
-			  `(,(kbd (format "s-%d" i)) .
-			     (lambda ()
+	 `(([?\s-\C-r] . exwm-reset)
+	     ([?\s-w] . exwm-workspace-switch)
+	     ([?\s-r] . hydra-exwm-move-resize/body)
+	     ([?\s-e] . dired-jump)
+	     ([?\s-E] . (lambda () (interactive) (dired "~")))
+	     ([?\s-Q] . (lambda () (interactive) (kill-buffer)))
+	     ([?\s-`] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
+	     ([?\s-&] . (lambda (command)
+			  (interactive (list (read-shell-command "$ ")))
+			  (start-process-shell-command command nil command)))
+	     ([?\C-\s-l] . (lambda ()
 			      (interactive)
-			      (exwm-workspace-switch-create ,i))))
-			(number-sequence 0 9))))
+			      (start-process "" nil "/usr/bin/slock")))
+	     ,@(mapcar (lambda (i)
+			 `(,(kbd (format "s-%d" i)) .
+			   (lambda ()
+			     (interactive)
+			     (exwm-workspace-switch-create ,i))))
+		       (number-sequence 0 9))))
 
 
    #+end_src
 
    
-** 
+** Process handling
+   When using exwm and you open a new async process using 'C-&', you will see the this prompt every time.
+   #+begin_quote
+   A command is running in the default buffer. Use a new buffer? (yes or no)   
+   #+end_quote
+
+   As in exwm, you probably answer this question with yes all the time, it's best to disable this question.
+   You can do so with the following code:
+
+   #+begin_src elisp
+     (setq async-shell-command-buffer 'new-buffer)
+     ;;(setq async-shell-command-display-buffer nil) ;; this would keep the new buffer in background. Might be attached to C-s-&
+   #+end_src
 
 * Customize my theme:
 ** Line Wrapping
@@ -600,14 +616,14 @@ This is my emacs init org configuration file. Written in org mode style for bett
 *** Single line
     #+BEGIN_SRC emacs-lisp
       (defun comment-or-uncomment-region-or-line ()
-        "Comments or uncomments the region or the current line if there's no active region."
-        (interactive)
-        (let (beg end)
-          (if (region-active-p)
-              (setq beg (region-beginning) end (region-end))
-            (setq beg (line-beginning-position) end (line-end-position)))
-          (comment-or-uncomment-region beg end)
-          (next-line)))
+	"Comments or uncomments the region or the current line if there's no active region."
+	(interactive)
+	(let (beg end)
+	  (if (region-active-p)
+	      (setq beg (region-beginning) end (region-end))
+	    (setq beg (line-beginning-position) end (line-end-position)))
+	  (comment-or-uncomment-region beg end)
+	  (next-line)))
 
       (global-set-key (kbd "M-,") 'comment-or-uncomment-region-or-line)
     #+END_SRC
@@ -941,6 +957,14 @@ This is my emacs init org configuration file. Written in org mode style for bett
 	 '(define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-compile))
      #+END_SRC
    
+** Lisp
+   #+begin_src elisp
+     (setq inferior-lisp-program "sbcl")
+     (add-hook 'lisp-mode-hook (lambda () (slime-mode t)))
+     (add-hook 'inferior-lisp-mode-hook (lambda () (inferior-slime-mode t)))
+     ;; (load "~/quicklisp/setup.lisp")	
+     ;; (ql:add-to-init-file)
+   #+end_src
 * Sudo Edit Files
 ** local ssh
    #+BEGIN_SRC emacs-lisp
