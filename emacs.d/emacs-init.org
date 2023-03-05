@@ -33,9 +33,10 @@ This is my emacs init org configuration file. Written in org mode style for bett
    To be able to type characters like € or [ on my mac keyboard, this option needs to be set.
    It instructd emacs not to handle key combinations started by pressing the right alt key.
    #+BEGIN_SRC elisp
-     (setq ns-right-alternate-modifier (quote none))
+     (setq ns-right-alternate-modifier (quote nil))
      (setq ns-option-modifier      nil
 	   ns-right-option-modifer 'meta)
+     (setq mac-command-modifier 'meta)
      (set-keyboard-coding-system nil)
    #+END_SRC
 * Startup customization
@@ -56,7 +57,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 ** Setup package install
    #+BEGIN_SRC elisp
-     (require 'use-package)
+     ;; (require 'use-package)
    #+END_SRC
 
 ** Make cl deprecation warning go away
@@ -440,8 +441,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
    Spaceline theme
    #+BEGIN_SRC elisp
      (package-require 'spaceline)
-     (package-require 'spaceline-config)
-     (spaceline-spacemacs-theme)
+     ;;(package-require 'spaceline-config)
+     ;;(spaceline-spacemacs-theme)
    #+END_SRC
 * General Functions
 ** Increase Number at point
@@ -514,31 +515,29 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 ** Load secrets and epa
    #+BEGIN_SRC emacs-lisp
-	  ;;(package-require 'secrets)
-     ;;(package-require 'epa-file)
+     (package-require 'secrets)
+     (package-require 'epa-file)
+     (setq epg-debug t)
+     (epa-file-enable)
+     (setq epa-file-select-keys nil)
 
-     ;; (setq epg-debug t)
-     ;;      (epa-file-enable)
-     ;;      (setq epa-file-select-keys t)
-
-     ;;       ;;check OS type and load additional gpg path
-     ;;       (cond
-     ;;        ((string-equal system-type "darwin")
-     ;; 	(progn
-     ;; 	  (message "loading Mac OS X specific path settings")
-     ;; 	  (add-to-list 'exec-path "/usr/local/bin")
-     ;; 	  (load-library "secrets")
-     ;; 	  (require 'secrets)
-     ;; 	  )))
-
-     ;;      (setf epa-pinentry-mode 'loopback)
+      ;;check OS type and load additional gpg path
+      (cond
+       ((string-equal system-type "darwin")
+        (progn
+          (message "loading Mac OS X specific path settings")
+          (add-to-list 'exec-path "/usr/local/MacGPG2/bin")
+          (load-library "secrets")
+          (require 'secrets)
+          )))
+     (setf epa-pinentry-mode 'loopback)
 
    #+END_SRC
 
 ** load my secrets file
   inspired by http://emacs-fu.blogspot.de/2011/02/keeping-your-secrets-secret.html
   #+BEGIN_SRC emacs-lisp
-    ;;(load-library "~/secrets.el.gpg")
+    (load-library "~/.secrets.el.gpg")
   #+END_SRC
 
 ** org-passwords
@@ -649,7 +648,6 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+begin_src emacs-lisp
      (package-require 'notmuch)
    #+end_src
-
 
 * Blogging
 ** Config
@@ -1024,6 +1022,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    
 ** Lisp
    #+begin_src elisp
+     (package-require 'slime)
      (setq inferior-lisp-program "sbcl")
      (add-hook 'lisp-mode-hook (lambda () (slime-mode t)))
      (add-hook 'inferior-lisp-mode-hook (lambda () (inferior-slime-mode t)))
@@ -1442,7 +1441,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+BEGIN_SRC emacs-lisp
      (package-require 'org-journal)
 
-     (setq org-journal-dir "~/org/journal/")
+     (setq org-journal-dir "~/sync/org/journal/")
 
      (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
      (add-to-list 'org-agenda-files org-journal-dir)
@@ -1659,7 +1658,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
     (require 'secrets)
     (global-wakatime-mode)
     (setq wakatime-api-key PASS_wakatime-api-key)
-    (setq wakatime-cli-path "/home/cb0/.wakatime/wakatime-cli")
+    (setq wakatime-cli-path "~/.wakatime/wakatime-cli")
   #+END_SRC
 * Paradox integration
   :URL: [[https://github.com/Malabarba/paradox][Github]]
