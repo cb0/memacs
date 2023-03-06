@@ -141,6 +141,20 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (package-require 'esup)
    #+END_SRC
 
+* Buffer handling
+
+  
+** Pin buffer to window
+   When working in slime mode I do not want ANY window to get into my sbcl repl.
+   I therefore want to pin the window. I found https://www.reddit.com/r/emacs/comments/1xfeuw/how_do_i_pin_windows_in_place/ which links to https://lists.gnu.org/archive/html/help-gnu-emacs/2007-05/msg00975.html which includes this nice function:
+   #+begin_src elisp
+     (global-set-key (kbd "C-c M-l") 'locked-buffer-mode)
+
+     (define-minor-mode locked-buffer-mode
+       "Make the current window always display this buffer."
+       nil " locked" nil
+       (set-window-dedicated-p (selected-window) locked-buffer-mode))
+   #+end_src
 * Which key
   Showing key bindings in a minor mode might seem like a good idea.
   #+begin_src elisp
