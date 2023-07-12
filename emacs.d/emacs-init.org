@@ -1383,7 +1383,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; To save the clock history across Emacs sessions:
      (setq org-clock-persist 'history)
      (org-clock-persistence-insinuate)
-     (setq org-clock-continuously t)
+     (setq org-clock-continuously nil)
 
      ;; we want some non standard todo types
      (setq org-todo-keywords
