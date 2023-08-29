@@ -40,6 +40,20 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (set-keyboard-coding-system nil)
    #+END_SRC
 * Startup customization
+** Ask before qutting emacs
+   Especially when running exwm, closing the current emacs would close the whole window manager.
+   To cope with this, just ask before doing it.
+   #+begin_src elisp
+     (defun ask-before-closing ()
+       "Close only if y was pressed."
+       (interactive)
+       (if (y-or-n-p (format "Are you sure you want to close this frame? "))
+	   (save-buffers-kill-emacs)                                                                                            
+	 (message "Canceled frame close")))
+
+     (when (daemonp)
+       (global-set-key (kbd "C-x C-c") 'ask-before-closing))
+   #+end_src
 ** File for customizations) from within emacs
    If we customize variables we wan't to save those changes to `custom.el` file.
    #+BEGIN_SRC emacs-lisp
@@ -423,6 +437,22 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; (exwm-workspace-attach-minibuffer)
      ;; (exwm-workspace-detach-minibuffer)
    #+end_src
+** Process helper functions
+   #+begin_src elisp
+     ;; (defun get-exwm-process-id (&optional buffer-or-name)
+     ;;   (interactive)
+     ;;   (let* ((buf (or buffer-or-name (current-buffer)))
+     ;;        (id (exwm--buffer->id (get-buffer buf)))) ; ID of X window being displayed
+     ;;      (if id
+     ;; 	  (slot-value (xcb:+request-unchecked+reply
+     ;; 			   exwm--connection
+     ;; 			   (make-instance 'xcb:ewmh:get-_NET_WM_PID :window id))
+     ;; 		       'value)
+     ;; 	(user-error "Target buffer %S is not an X window managed by EXWM!"
+     ;; 		    buf))))
+
+     ;; (get-exwm-process-id)
+   #+end_src
 * Customize my theme:
 ** Line Wrapping
    I really like when long lines are wrapped so I don't have to scroll to the right.
@@ -589,11 +619,11 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** Configure
    #+begin_src elisp
      ;; Settings
-     (setq smudge-oauth2-client-secret PASS_spotify-app-client-secret)
-     (setq smudge-oauth2-client-id PASS_spotify-app-client-id)
-     (define-key smudge-mode-map (kbd "C-c .") 'smudge-command-map)
+     ;;(setq smudge-oauth2-client-secret PASS_spotify-app-client-secret)
+     ;;(setq smudge-oauth2-client-id PASS_spotify-app-client-id)
+     ;;(define-key smudge-mode-map (kbd "C-c .") 'smudge-command-map)
 
-     (setq smudge-transport 'connect)
+     ;;(setq smudge-transport 'connect)
    #+end_src
 ** Smudge Hydra config
    #+begin_src elisp
@@ -1668,11 +1698,11 @@ This is my emacs init org configuration file. Written in org mode style for bett
   #+END_SRC
 * WakaWaka
   #+BEGIN_SRC emacs-lisp
-    (package-require 'wakatime-mode)
-    (require 'secrets)
-    (global-wakatime-mode)
-    (setq wakatime-api-key PASS_wakatime-api-key)
-    (setq wakatime-cli-path "~/.wakatime/wakatime-cli")
+    ;; (package-require 'wakatime-mode)
+    ;; (require 'secrets)
+    ;; (global-wakatime-mode)
+    ;; (setq wakatime-api-key PASS_wakatime-api-key)
+    ;; (setq wakatime-cli-path "/home/cb0/.wakatime/wakatime-cli")
   #+END_SRC
 * Paradox integration
   :URL: [[https://github.com/Malabarba/paradox][Github]]
