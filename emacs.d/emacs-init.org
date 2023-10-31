@@ -1642,7 +1642,6 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * Org Roam
 ** Installation
    #+begin_src elisp
-
      (use-package org-roam
        :ensure t
        :init
@@ -1650,6 +1649,15 @@ This is my emacs init org configuration file. Written in org mode style for bett
        :custom
        (org-roam-directory "~/sync/org/org-roam")
        (org-roam-completion-everywhere t)
+       (org-roam-capture-templates
+	'(("d" "default" plain
+	   "%?"
+	   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+	   :unnarrowed t)
+	("l" "programming language" plain
+	 "* Characteristics\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
+	 :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+	 :unnarrowed t)))
        :bind (("C-c n l"   . org-roam-buffer-toggle)
 	      ("C-c n f"   . org-roam-node-find)
 	      ("C-c n i"   . org-roam-node-insert)
