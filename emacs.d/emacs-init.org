@@ -71,7 +71,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 ** Setup package install
    #+BEGIN_SRC elisp
-     ;; (require 'use-package)
+     (require 'use-package)
    #+END_SRC
 
 ** Make cl deprecation warning go away
@@ -581,7 +581,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** load my secrets file
   inspired by http://emacs-fu.blogspot.de/2011/02/keeping-your-secrets-secret.html
   #+BEGIN_SRC emacs-lisp
-    (load-library "~/.secrets.el.gpg")
+    ;; (load-library "~/.secrets.el.gpg")
   #+END_SRC
 
 ** org-passwords
@@ -1279,7 +1279,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+BEGIN_SRC emacs-lisp
      ; Activate org-mode
      (require 'org)
-     (require 'org-install)
+     ;; (require 'org-install)
      ;; (require 'org-habit)
      ;; (setq org-habit-preceding-days 7
 	   ;; org-habit-following-days 1
@@ -1492,7 +1492,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (add-to-list 'org-agenda-files "~/org/calendar.org")
 
      (custom-set-variables
-      '(org-directory "~/org/journal/")
+      '(org-directory "~/sync/org/journal/")
       '(org-agenda-files (list org-directory)))
 
      (add-to-list 'auto-mode-alist '("\\`[^.].*\\.org|[0-9]+" . org-mode))
@@ -1639,6 +1639,57 @@ This is my emacs init org configuration file. Written in org mode style for bett
     #+BEGIN_SRC emacs-lisp
       (setq temporary-file-directory "/tmp/")
     #+END_SRC
+* Org Roam
+** Installation
+   #+begin_src elisp
+
+     (use-package org-roam
+       :ensure t
+       :init
+       (setq org-roam-v2-ack t)
+       :custom
+       (org-roam-directory "~/sync/org/org-roam")
+       (org-roam-completion-everywhere t)
+       :bind (("C-c n l"   . org-roam-buffer-toggle)
+	      ("C-c n f"   . org-roam-node-find)
+	      ("C-c n i"   . org-roam-node-insert)
+	      ("C-c n _"   . org-id-get-create)
+	      ("C-c n a"   . org-roam-alias-add)
+	      ("C-c n d"   . org-roam-dailies-find-date)
+	      ("C-c n c"   . org-roam-dailies-capture-today)
+	      ("C-c n C r" . org-roam-dailies-capture-tomorrow)
+	      ("C-c n t"   . org-roam-dailies-find-today)
+	      ("C-c n y"   . org-roam-dailies-find-yesterday)
+	      ("C-c n r"   . org-roam-dailies-find-tomorrow)
+	      ("C-c n g"   . org-roam-graph)
+	      :map org-mode-map
+	      ("C-M-i"     . completion-at-point))
+       :config
+       (org-roam-setup))
+
+   #+end_src
+
+   #+RESULTS:
+   : org-roam-insert-immediate
+
+** Configuration
+   #+begin_src elisp
+     ;; (make-directory "~/sync/org/org-roam")
+     ;; here is the home directory
+     ;; (setq org-roam-directory (file-truename "~/sync/org/org-roam")) ;
+
+     ;; (org-roam-db-autosync-mode)
+
+   #+end_src
+* Anki
+  #+begin_src elisp
+    (package-require 'anki-editor)
+    (use-package anki-editor
+      :after org
+      :config
+      ; I like making decks
+      (setq anki-editor-create-decks 't))
+  #+end_src
 * Magit
   The best git client available
 ** init magit
