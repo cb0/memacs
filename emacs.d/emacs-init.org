@@ -1397,7 +1397,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (define-key global-map "\C-cl" 'org-store-link)
      (define-key global-map "\C-ca" 'org-agenda)
      ;; add a timestamp when we close an item
-     (setq org-log-done t)
+     (setq org-log-done 'note)
      ;; include a closing note when close an todo item
      ;; (setq org-log-done 'note)
 
@@ -1784,7 +1784,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; here is the home directory
      ;; (setq org-roam-directory (file-truename "~/sync/org/org-roam")) ;
 
-     ;; (org-roam-db-autosync-mode)
+     (org-roam-db-autosync-mode)
 
    #+end_src
 * Anki
