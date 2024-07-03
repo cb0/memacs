@@ -3,8 +3,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files
-   '("~/sync/org/org-roam/20240125144013-tastenkunst.org" "/home/cb0/sync/org/org-roam/20240515150139-my_first_mushrooms.org" "/home/cb0/sync/org/org-roam/20240611184210-upnext.org" "/home/cb0/sync/org/old/homenotes.org"))
+ '(org-agenda-files (list org-directory))
  '(org-agenda-ndays 7)
  '(org-agenda-show-all-dates t)
  '(org-agenda-skip-deadline-if-done t)

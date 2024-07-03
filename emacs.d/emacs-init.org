@@ -190,16 +190,42 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (package-require 'exwm)
    #+end_src
 
+** Helper function
+   #+begin_src elisp
+		  (defun efs/exwm-update-class ()
+		    (exwm-workspace-rename-buffer exwm-class-name))
+
+		  (defun efs/exwm-update-title ()
+		    (pcase exwm-class-name
+		      ("Google-chrome" (exwm-workspace-rename-buffer (format "Chrome %s" exwm-title)))))
+
+	       (defun efs/configure-window-by-class ()
+		 (interactive)
+		 (pcase exwm-class-name
+		   ("Chrome" (exwm-workspace-move-window 1))
+		   ("Firefox" (exwm-workspace-move-window 2))
+		   ("webstorm" (exwm-workspace-move-window 3))
+		   ("thunderbird" (exwm-workspace-move-window 3))
+		   ("TelegramDesktop" (exwm-workspace-move-window 0))))
+   #+end_src
+
 ** Configure WM
    #+begin_src elisp
      (require 'exwm)
 
-     ;; simple system tray
-     ;; (require 'exwm-systemtray)
-     ;; (exwm-systemtray-disable)
+     (setq exwm-workspace-number 5)
 
      ;; example config to be revmoed soon
      (require 'exwm-config)
+
+     ;; simple system tray
+     (require 'exwm-systemtray)
+     (exwm-systemtray-enable)
+
+     (setq exwm-systemtray-height 32)
+
+     ;; use char mode on startup
+     (setq exwm-manage-configurations '((t char-mode t)))
 
      ;; All buffers created in EXWM mode are named "*EXWM*". You may want to
      ;; change it in `exwm-update-class-hook' and `exwm-update-title-hook', which
@@ -216,6 +242,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 		 (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
 			     (string= "gimp" exwm-instance-name))
 		   (exwm-workspace-rename-buffer exwm-class-name))))
+
      (add-hook 'exwm-update-title-hook
 	       (lambda ()
 		 (when (or (not exwm-instance-name)
@@ -223,32 +250,12 @@ This is my emacs init org configuration file. Written in org mode style for bett
 			   (string= "gimp" exwm-instance-name))
 		   (exwm-workspace-rename-buffer exwm-title))))
 
-     ;; ;; Global keybindings can be defined with `exwm-input-global-keys'.
-     ;; ;; Here are a few examples:
-     ;; (setq exwm-input-global-keys
-     ;;       `(
-     ;; 	;; Bind "s-r" to exit char-mode and fullscreen mode.
-     ;; 	;; ([?\s-r] . exwm-reset)
-     ;; 	;; ;; Bind "s-w" to switch workspace interactively.
-     ;; 	;; ([?\s-w] . exwm-workspace-switch)
-     ;; 	;; ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
-     ;; 	;; ,@(mapcar (lambda (i)
-     ;; 	;; 		 `(,(kbd (format "s-%d" i)) .
-     ;; 	;; 		   (lambda ()
-     ;; 	;; 		     (interactive)
-     ;; 	;; 		     (exwm-workspace-switch-create ,i))))
-     ;; 	;; 	       (number-sequence 0 9))
-     ;; 	;; ;; Bind "s-&" to launch applications ('M-&' also works if the output
-     ;; 	;; ;; buffer does not bother you).
-     ;; 	([?\s-&] . (lambda (command)
-     ;; 		     (interactive (list (read-shell-command "$ ")))
-     ;; 		     (start-process-shell-command command nil command)))
-     ;; 	;; Bind "s-<f2>" to "slock", a simple X display locker.
-     ;; 	([s-f2] . (lambda ()
-     ;; 		    (interactive)
-     ;; 		    (start-process "" nil "/usr/bin/slock")))))
+     (add-hook 'exwm-update-class-hook #'efs/exwm-update-class)
+     (add-hook 'exwm-update-title-hook #'efs/exwm-update-title)
+     (add-hook 'exwm-manage-finish-hook #'efs/configure-window-by-class)
 
      (exwm-config-example)
+     (exwm-enable)
 
      (setq exwm-input-simulation-keys
       '(([?\C-b] . [left])
@@ -263,11 +270,25 @@ This is my emacs init org configuration file. Written in org mode style for bett
 	([?\C-k] . [S-end delete])))
 
 
-     ;; using xim input
+     ;using xim input
      (require 'exwm-xim)
+
      (exwm-xim-enable)
-     ;; (exwm-xim--exit)
-     (push ?\C-\\ exwm-input-prefix-keys)   ;; use Ctrl + \ to switch input method
+     ;;(exwm-xim--exit)
+
+     (setq exwm-input-prefix-keys
+	   '(?\C-x
+	     ?\C-u
+	     ?\C-h	   
+	     ?\M-x
+	     ?\M-`
+	     ?\M-&
+	     ?\M-:
+	     ?\C-\\
+	     ?\C-\M-j
+	     ?\C-\ ))
+
+     ;; (push ?\C-\\ exwm-input-prefix-keys)   ;; use Ctrl + \ to switch input method
 
 
    #+end_src
@@ -275,24 +296,44 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** LemonBar
    #+begin_src elisp
      ;; get workspace list in bar
-     (defun feb/exwm-workspace-list ()
-       "Return a lemonbar string showing workspace list."
-       (let* ((num (exwm-workspace--count))
-	  (sequence (number-sequence 0 (1- num)))
-	  (curr (exwm-workspace--position exwm-workspace--current)))
-	 (mapconcat (lambda (i)
-	      (format (if (= i curr) "[%%{F#00ff00}%d%%{F-}] " "%d ") i))
-		sequence "")
-	 ))
+     ;; (defun feb/exwm-workspace-list ()
+     ;;   "Return a lemonbar string showing workspace list."
+     ;;   (let* ((num (exwm-workspace--count))
+     ;; 	 (sequence (number-sequence 0 (1- num)))
+     ;; 	 (curr (exwm-workspace--position exwm-workspace--current)))
+     ;;     (mapconcat (lambda (i)
+     ;; 		 (format (if (= i curr) "[%%{F#00ff00}%d%%{F-}] " "%d ") i))
+     ;; 	       sequence "")
+     ;;     ))
 
-     (defun feb/exwm-report-workspaces-to-lemonbar ()
-       (with-temp-file "/tmp/panel-fifo"
-	 (insert (format "WIN%s\n" (feb/exwm-workspace-list)))))
+     ;; (defun feb/exwm-report-workspaces-to-lemonbar ()
+     ;;   (with-temp-file "/tmp/panel-fifo"
+     ;;   (insert (format "WIN%s\n" (feb/exwm-workspace-list)))))
 
-     (add-hook 'exwm-workspace-switch-hook #'feb/exwm-report-workspaces-to-lemonbar)
-     (add-hook 'exwm-init-hook #'feb/exwm-report-workspaces-to-lemonbar)
+     ;;  (add-hook 'exwm-workspace-switch-hook #'feb/exwm-report-workspaces-to-lemonbar)
+     ;;  (add-hook 'exwm-init-hook #'feb/exwm-report-workspaces-to-lemonbar)
+
+     ;; (defun efs/run-in-background (command)
+     ;;   (let ((command-parts (split-string command "[ ]+")))
+     ;;     (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
+
+     (defun dw/exwm-init-hook ()
+       ;; Make workspace 1 be the
+       ;; one where we land at startup
+       (exwm-workspace-switch-create 1)
+
+       ;; Open eshell by default
+       ;;(eshell)
+
+       ;; Launch apps that will run in the background
+       (efs/run-in-background "nm-applet"))
+
+     ;; (add-hook 'exwm-init-hook #'efs/after-exwm-init)
+
+     ;; (efs/run-in-background "pavucontrol")	
+     ;; (efs/run-in-background "blueman-applet")
    #+end_src
-
+   
 ** Make xinitrc file
    #+begin_src sh :tangle ~/.xinitrc.emacs
      # Disable access control for the current user.
@@ -318,8 +359,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+end_src
 
    #+RESULTS:
-   : localuser:cb0 being added to access control list
-
+   : localuser:cb0 being added to access control li
 ** Modify exwm startup
    #+begin_src elisp
 	;; from https://config.daviwil.com/desktop
@@ -330,6 +370,24 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      ;; Ctrl+Q will enable the next key to be sent directly
      (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
+
+   #+end_src
+
+** Window looks and theme
+   #+begin_src elisp
+     ;; (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+     ;; (add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+     ;; (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+     ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+     (display-battery-mode 1)
+     
+     (setq display-time-day-and-date t)
+     (setq display-time-format "%H:%M")
+     (display-time-mode 1)
+
+     (exwm-input-set-key (kbd "s-SPC") 'counsel-linux-app)
+     (exwm-input-set-key (kbd "s-f") 'exwm-layout-toggle-fullscreen)
 
    #+end_src
 
@@ -347,7 +405,6 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (add-to-list 'load-path "~/.emacs.d/lib/desktop-environment/")
      (require 'desktop-environment)
 
-
      (use-package desktop-environment
        :after exwm
        :config (desktop-environment-mode)
@@ -357,6 +414,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
        (desktop-environment-brightness-normal-increment "5%+")
        (desktop-environment-brightness-normal-decrement "5%-")
        (desktop-environment-screenshot-command "flameshot gui"))
+
+
 
      ;; This needs a more elegant ASCII banner
      (defhydra hydra-exwm-move-resize (:timeout 4)
@@ -382,30 +441,55 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 
      ;; Workspace switching
-     (setq exwm-input-global-keys
-	 `(([?\s-\C-r] . exwm-reset)
-	     ([?\s-w] . exwm-workspace-switch)
-	     ([?\s-r] . hydra-exwm-move-resize/body)
-	     ([?\s-e] . dired-jump)
-	     ([?\s-E] . (lambda () (interactive) (dired "~")))
-	     ([?\s-Q] . (lambda () (interactive) (kill-buffer)))
-	     ([?\s-`] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
-	     ([?\s-&] . (lambda (command)
-			  (interactive (list (read-shell-command "$ ")))
-			  (start-process-shell-command command nil command)))
-	     ([?\C-\s-l] . (lambda ()
-			      (interactive)
-			      (start-process "" nil "/usr/bin/slock")))
-	     ,@(mapcar (lambda (i)
-			 `(,(kbd (format "s-%d" i)) .
-			   (lambda ()
-			     (interactive)
-			     (exwm-workspace-switch-create ,i))))
-		       (number-sequence 0 9))))
+     (setq exwm-input-global-keys	   
+	 `(;; reset to line mode (C-c C-k switch to char mode)
+	   ([?\s-\C-r] . exwm-reset)
+	   ;; switch workspaces
+	   ([?\s-w] . exwm-workspace-switch)
+	   ;; hydro to rresize windows
+	   ([?\s-r] . hydra-exwm-move-resize/body)
+	   ;; quick jump to current directory
+	   ([?\s-e] . dired-jump)
+	   ;; quick jump to home directory
+	   ([?\s-E] . (lambda () (interactive) (dired "~")))
 
+	   ([?\s-Q] . (lambda () (interactive) (kill-buffer)))
+	   ([?\s-`] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
+	   ([?\s-&] . (lambda (command)
+			(interactive (list (read-shell-command "$ ")))
+			(start-process-shell-command command nil command)))
+	   ([?\C-\s-l] . (lambda ()
+			   (interactive)
+			   (start-process "" nil "/usr/bin/slock")))
+	   ,@(mapcar (lambda (i)
+		       `(,(kbd (format "s-%d" i)) .
+			 (lambda ()
+			   (interactive)
+			   (exwm-workspace-switch-create ,i))))
+		     (number-sequence 0 9))))
 
+     ;; setting these in exwm-input-global-keys does not work
+     (exwm-input-set-key (kbd "s-<left>") 'windmove-left)
+     (exwm-input-set-key (kbd "s-<right>") 'windmove-right)
+     (exwm-input-set-key (kbd "s-<up>") 'windmove-up)
+     (exwm-input-set-key (kbd "s-<down>") 'windmove-down)
+
+     (exwm-input-set-key (kbd "S-s-<down>") 'windmove-swap-states-down)
+     (exwm-input-set-key (kbd "S-s-<up>") 'windmove-swap-states-up)
+     (exwm-input-set-key (kbd "S-s-<left>") 'windmove-swap-states-left)
+     (exwm-input-set-key (kbd "S-s-<right>") 'windmove-swap-states-right)
+
+     ;; (exwm-enable)
    #+end_src
+   
+** Screen resolution
 
+   #+begin_src elisp
+     (package-require 'exwm-randr)
+     (exwm-randr-enable)
+
+     (start-process-shell-command "xrandr" nil "")
+   #+end_src
    
 ** Process handling
    When using exwm and you open a new async process using 'C-&', you will see the this prompt every time.
@@ -419,8 +503,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+begin_src elisp
      (setq async-shell-command-buffer 'new-buffer)
      ;;(setq async-shell-command-display-buffer nil) ;; this would keep the new buffer in background. Might be attached to C-s-&
-   #+end_src
-
+     
 ** Window handling
    I want to be able to switch to a buffer even if it is not in the current workspace.
    This will move a buffer to my current workspace when I select the buffer.
@@ -534,7 +617,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** EXWM Adjustments
    #+begin_src elisp
      ;; let's get encryption established
-     (setenv "GPG_AGENT_INFO" nil)  ;; use emacs pinentry
+     (setenv "GPG_AGENdaT_INFO" nil)  ;; use emacs pinentry
      (setq auth-source-debug t)
 
      (setq epg-gpg-program "gpg2")  ;; not necessary
@@ -1188,6 +1271,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
   #+BEGIN_SRC emacs-lisp
     (package-require 'counsel)
     (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+    (use-package counsel
+      :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only))
   #+END_SRC
 * Projectile
 ** Install

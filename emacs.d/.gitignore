@@ -8,3 +8,6 @@ auto-save-list/
 auto-install
 ac-comphist.dat
 org-clock-save.el
+*~
+/org-roam.db
+/smex-items
