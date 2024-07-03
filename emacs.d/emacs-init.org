@@ -79,7 +79,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 		    (require 'cl-lib)
 
 		    (require 'loadhist)
-		    ;; (file-dependents (feature-file 'cl)) 
+		    ;; (file-dependents (feature-file 'cl))
 
 ;;		    (file-dependents (feature-file 'yaxception))
 ;;     ("/home/cb0/.emacs.d/elpa/auto-complete-pcmp-20140227.651/auto-complete-pcmp.elc" "/home/cb0/.emacs.d/elpa/org-ac-20170401.1307/org-ac.elc" ;;"/home/cb0/projects/memacs/emacs.d/elpa/auto-complete-pcmp-20140303.255/auto-complete-pcmp.el")
@@ -110,7 +110,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
  (add-to-list 'package-archives
          '("gnu" . "http://elpa.gnu.org/packages/"))
 
-    
+
    #+END_SRC
 
    #+RESULTS:
@@ -121,7 +121,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
        #+BEGIN_SRC emacs-lisp
          ;; Make sure a package is installed
          (defun package-require (package)
-           "Install a PACKAGE unless it is already installed 
+           "Install a PACKAGE unless it is already installed
          or a feature with the same name is already active.
 
          Usage: (package-require 'package)"
@@ -137,7 +137,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 *** Initialize the package manager
     #+BEGIN_SRC emacs-lisp
       ;; Initialize installed packages
-      ;;(package-initialize)  
+      ;;(package-initialize)
       ;; package init not needed, since it is done anyway in emacs 24 after reading the init
       ;; but we have to load the list of available packages
       (unless package-archive-contents
@@ -147,8 +147,13 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
       (unless (package-installed-p 'org)  ;; Make sure the Org package is
         (package-install 'org))           ;; installed, install it if not
-      ;;(package-initialize) 
+      ;;(package-initialize)
     #+END_SRC
+
+*** Setup package install
+   #+BEGIN_SRC elisp
+     (package-require 'use-package)
+   #+END_SRC
 
 ** Benchmarking startuo time
    #+BEGIN_SRC elisp
@@ -157,7 +162,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 * Buffer handling
 
-  
+
 ** Pin buffer to window
    When working in slime mode I do not want ANY window to get into my sbcl repl.
    I therefore want to pin the window. I found https://www.reddit.com/r/emacs/comments/1xfeuw/how_do_i_pin_windows_in_place/ which links to https://lists.gnu.org/archive/html/help-gnu-emacs/2007-05/msg00975.html which includes this nice function:
@@ -187,7 +192,10 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 ** Install exwm
    #+begin_src elisp
-     (package-require 'exwm)
+     (cond
+      ((not (string-equal system-type "darwin"))
+       (progn
+	 (package-require 'exwm))))
    #+end_src
 
 ** Helper function
@@ -490,11 +498,12 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      (start-process-shell-command "xrandr" nil "")
    #+end_src
-   
+
+
 ** Process handling
    When using exwm and you open a new async process using 'C-&', you will see the this prompt every time.
    #+begin_quote
-   A command is running in the default buffer. Use a new buffer? (yes or no)   
+   A command is running in the default buffer. Use a new buffer? (yes or no)
    #+end_quote
 
    As in exwm, you probably answer this question with yes all the time, it's best to disable this question.
@@ -503,22 +512,31 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+begin_src elisp
      (setq async-shell-command-buffer 'new-buffer)
      ;;(setq async-shell-command-display-buffer nil) ;; this would keep the new buffer in background. Might be attached to C-s-&
-     
+   #+end_src
+
 ** Window handling
    I want to be able to switch to a buffer even if it is not in the current workspace.
    This will move a buffer to my current workspace when I select the buffer.
    #+begin_src elisp
-     (setq exwm-workspace-show-all-buffers t)
-     (setq exwm-layout-show-all-buffers t)
+     (cond
+      ((not (string-equal system-type "darwin"))
+       (progn
+	 (setq exwm-workspace-show-all-buffers t)
+	 (setq exwm-layout-show-all-buffers t))))
+
    #+end_src
 
 ** Hide minibuffer and echo area
    Get more space by hiding the echo area and the mini buffer when not required.
    #+begin_src elisp
-     (setq exwm-workspace-minibuffer-position 'bottom)
-     (setq exwm-workspace-display-echo-area-timeout 5)
-     ;; (exwm-workspace-attach-minibuffer)
-     ;; (exwm-workspace-detach-minibuffer)
+     (cond
+      ((not (string-equal system-type "darwin"))
+       (progn (setq exwm-workspace-minibuffer-position 'bottom)
+	      (setq exwm-workspace-display-echo-area-timeout 5)
+	      ;; (exwm-workspace-attach-minibuffer)
+	      ;; (exwm-workspace-detach-minibuffer)
+	      )))
+
    #+end_src
 ** Process helper functions
    #+begin_src elisp
@@ -642,7 +660,6 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 ** Load secrets and epa
    #+BEGIN_SRC emacs-lisp
-     (package-require 'secrets)
      (package-require 'epa-file)
      (setq epg-debug t)
      (epa-file-enable)
@@ -665,6 +682,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
   inspired by http://emacs-fu.blogspot.de/2011/02/keeping-your-secrets-secret.html
   #+BEGIN_SRC emacs-lisp
     ;; (load-library "~/.secrets.el.gpg")
+    (require 'secrets)
   #+END_SRC
 
 ** org-passwords
@@ -753,7 +771,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      ;; ;; shortcuts
      ;; (setq mu4e-maildir-shor;; tcuts
-     ;; ;;  
+     ;; ;;
         ;; '( ("/INBOX"               . ?i)))
 
      ;; ;; something about ourselves
@@ -769,12 +787,17 @@ This is my emacs init org configuration file. Written in org mode style for bett
    Which however does not seem to work.
    ----
    Ok, I forgot to use 'package-require to acutally install mu4e after adding it to the path.
-   
+
 ** NotMuch
    notmuch
    #+begin_src emacs-lisp
      (package-require 'notmuch)
    #+end_src
+
+* Chrome Handling
+  #+begin_src emacs-lisp
+    (package-require 'osa-chrome)
+  #+end_src
 
 * Blogging
 ** Config
@@ -792,7 +815,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
          :html-head "<link rel=\"stylesheet\"
                     href=\"../other/mystyle.css\"
                     type=\"text/css\"/>")
-                    
+
    ("images"
          :base-directory "~/images/"
          :base-extension "jpg\\|gif\\|png"
@@ -934,7 +957,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+RESULTS:
    : t
 
-** Workgroup 
+** Workgroup
    #+BEGIN_SRC emacs-lisp
      ;; (package-require 'workgroups)
 
@@ -970,7 +993,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
       (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
       (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
       (global-set-key (kbd "S-C-<up>") 'shrink-window)
-      (global-set-key (kbd "S-C-<down>") 'enlarge-window)          
+      (global-set-key (kbd "S-C-<down>") 'enlarge-window)
     #+END_SRC
 *** Jump between windows
     #+BEGIN_SRC emacs-lisp
@@ -982,18 +1005,38 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
       ;;bind switching between windows to SHIFT-UP/DOWN (super usefull!!!!)
       (global-set-key [(shift down)] 'other-window)
-      (global-set-key [(shift up)] 'other-window-backward)          
+      (global-set-key [(shift up)] 'other-window-backward)
     #+END_SRC
-    
+
 *** Zoom windows
     #+BEGIN_SRC emacs-lisp
       ;; (package-require 'zoom-window)
       ;; ;;(setq zoom-window-use-elscreen t)
       ;; (zoom-window-setup)
 
-      ;; (global-set-key (kbd "C-x C-z") 'zoom-window-zoom)    
+      ;; (global-set-key (kbd "C-x C-z") 'zoom-window-zoom)
     #+END_SRC
 * IDE
+
+** TreeSitter
+
+
+*** Installation
+    #+begin_src elisp
+      (package-require 'tree-sitter)
+      (package-require 'tree-sitter-langs)
+
+      (global-tree-sitter-mode)
+
+      (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+    #+end_src
+
+*** Hooks for languages
+
+    #+begin_src elisp
+      (add-hook 'typescript-mode-hook #'tree-sitter-mode)
+
+    #+end_src
 ** CEDET
    #+BEGIN_SRC emacs-lisp
      ;; (add-to-list 'load-path "./submodules/")
@@ -1099,7 +1142,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
       ;; (define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
     #+end_src
 *** Install and configuartion
-    
+
 ** php
    #+BEGIN_SRC emacs-lisp
      ;; (package-require 'ac-php)
@@ -1146,16 +1189,33 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (eval-after-load "haskell-cabal"
 	 '(define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-compile))
      #+END_SRC
-   
+
 ** Lisp
    #+begin_src elisp
      (package-require 'slime)
      (setq inferior-lisp-program "sbcl")
      (add-hook 'lisp-mode-hook (lambda () (slime-mode t)))
      (add-hook 'inferior-lisp-mode-hook (lambda () (inferior-slime-mode t)))
-     ;; (load "~/quicklisp/setup.lisp")	
+     ;; (load "~/quicklisp/setup.lisp")
      ;; (ql:add-to-init-file)
    #+end_src
+
+** Typescript
+   Taken from https://sagot.dev/en/articles/emacs-typescript/
+*** Installation dpa mode
+    #+begin_src elisp
+      (package-require 'dap-mode)
+      (package-require 'typescript-mode)
+
+
+      (setq package-list '(dap-mode typescript-mode tree-sitter tree-sitter-langs lsp-mode lsp-ui))
+
+      (package-require 'lsp-mode)
+
+      (add-hook 'typescript-mode-hook 'lsp-deferred)
+      (add-hook 'javascript-mode-hook 'lsp-deferred)
+
+    #+end_src
 * Sudo Edit Files
 ** local ssh
    #+BEGIN_SRC emacs-lisp
@@ -1172,7 +1232,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
        (interactive)
        (let ((my-file-name) ; fill this with the file to open
              (position))    ; if the file is already open save position
-         (if (equal major-mode 'dired-mode) ; test if we are in dired-mode 
+         (if (equal major-mode 'dired-mode) ; test if we are in dired-mode
              (progn
                (setq my-file-name (dired-get-file-for-visit))
                (find-alternate-file (prepare-tramp-sudo-string my-file-name)))
@@ -1201,7 +1261,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;;(define-key dired-mode-map [s-return] 'sudo-edit-current-file)
 
      ;;(setq tramp-default-method "ssh")
-        
+
    #+END_SRC
 ** sudo-edit.el
    #+BEGIN_SRC emacs-lisp
@@ -1397,7 +1457,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (define-key global-map "\C-cl" 'org-store-link)
      (define-key global-map "\C-ca" 'org-agenda)
      ;; add a timestamp when we close an item
-     (setq org-log-done t)
+     (setq org-log-done 'note)
      ;; include a closing note when close an todo item
      ;; (setq org-log-done 'note)
 
@@ -1435,7 +1495,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;;      (define-key org-agenda-mode-map "\C-p" 'previous-line)
      ;;      (define-key org-agenda-keymap "\C-p" 'previous-line)))
 
-     (custom-set-variables 
+     (custom-set-variables
       ;; '(org-agenda-files (quote ("~/todo.org")))
       ;; '(org-default-notes-file "~/notes.org")
       '(org-agenda-ndays 7)
@@ -1559,7 +1619,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
     As written [[https://github.com/syl20bnr/spacemacs/issues/11798#issuecomment-454941024][here]] the short syntax '>s' + 'TAB' does not expand into a bable source code block.
     The next code block will fix this.
-    
+
     #+begin_src emacs-lisp
 	(when (version<= "9.2" (org-version))
 	  (require 'org-tempo))
@@ -1577,14 +1637,14 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (add-to-list 'org-agenda-files "~/org/calendar.org")
 
      (custom-set-variables
-      '(org-directory "~/sync/org/journal/")
-      '(org-agenda-files (list org-directory)))
+      '(org-directory "~/sync/org/")
+      '(org-agenda-files (directory-files-recursively "~/sync/org/" "\\.org$")))
 
      (add-to-list 'auto-mode-alist '("\\`[^.].*\\.org|[0-9]+" . org-mode))
 
      (setq org-capture-templates
 	   '(("j" "Journal Entry"
-	      entry (file+datetree "~/org/journaljournal.org")
+	      entry (file+datetree "~/sync/org/journal/journal.org")
 	      "* Event: %?\n\n  %i\n\n  From: %a"
 	      :empty-lines 1)))
 
@@ -1647,8 +1707,21 @@ This is my emacs init org configuration file. Written in org mode style for bett
       ;; use the same diary file as the one from caldav
       (setq diary-file org-caldav-inbox)
     #+end_src
+*** Show week number in calendar
+    #+begin_src elisp
+      (copy-face font-lock-constant-face 'calendar-iso-week-face)
+      (set-face-attribute 'calendar-iso-week-face nil
+			  :height 0.7)
+      (setq calendar-intermonth-text
+	    '(propertize
+	      (format "%2d"
+		      (car
+		       (calendar-iso-from-absolute
+			(calendar-absolute-from-gregorian (list month day year)))))
+	      'font-lock-face 'calendar-iso-week-face))
+    #+end_src
 ** WC
-   [[https://github.com/bnbeckwith/wc-mode][org-wd]] is a minor mode for counting words. 
+   [[https://github.com/bnbeckwith/wc-mode][org-wd]] is a minor mode for counting words.
    #+BEGIN_SRC emacs-lisp
      (package-require 'org-wc)
 
@@ -1680,8 +1753,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
 *** Quick open homenotes
     As I use the file `homenotes.org` the most often, I set up a key binding to open it up very quickly.
     #+BEGIN_SRC emacs-lisp
-      (global-set-key (kbd "C-c o") 
-                      (lambda () (interactive) (find-file "~/ownCloud/org/homenotes.org")))
+      (global-set-key (kbd "C-c o")
+                      (lambda () (interactive) (find-file "~/sync/org/old/homenotes.org")))
     #+END_SRC
 *** Increase refile level
     By default org-refile only shows top level entries. With inspiration taken from [[http://sachachua.com/blog/2015/02/learn-take-notes-efficiently-org-mode/][sachachua]] I will increase this level to 5.
@@ -1707,12 +1780,12 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (global-set-key (kbd "C-c c") 'org-capture)
 
      (setq org-capture-templates
-       '(("t" "Todo" entry (file+headline "~/ownCloud/org/homenotes.org" "Todos")
+       '(("t" "Todo" entry (file+headline "~/sync/org/old/homenotes.org" "Todos")
              "* TODO %?\n  %i\n %a")
-	 ("b" "Book" entry (file+headline "~/ownCloud/org/homenotes.org" "Books")
+	 ("b" "Book" entry (file+headline "~/sync/org/old/homenotes.org" "Books")
              "* TODO Description: %?
 	             %^{Author}p \n Created: %T")
-	("j" "Journal Entry" entry (file+datetree "~/ownCloud/org/journal.org")
+	("j" "Journal Entry" entry (file+datetree "~/sync/org/journalEntry.org")
               "* Event: %?\n\n  %i\n\n  From: %a"
               :empty-lines 1)
          ))
@@ -1771,7 +1844,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; here is the home directory
      ;; (setq org-roam-directory (file-truename "~/sync/org/org-roam")) ;
 
-     ;; (org-roam-db-autosync-mode)
+     (org-roam-db-autosync-mode)
 
    #+end_src
 * Anki
@@ -1865,16 +1938,16 @@ This is my emacs init org configuration file. Written in org mode style for bett
   #+END_SRC
 * XML Processing
 ** reformat/pretty print xml
-   As always in emacs, there are [[http://stackoverflow.com/questions/12492/pretty-printing-xml-files-on-emacs][multiple options]] for the task of reformating a xml. 
+   As always in emacs, there are [[http://stackoverflow.com/questions/12492/pretty-printing-xml-files-on-emacs][multiple options]] for the task of reformating a xml.
 *** build in sgml mode
     Here I use sgml mode with pretty print and my known key combination "Control+Shift+L" to reformat code.
     #+BEGIN_SRC emacs-lisp
       (global-set-key (kbd "C-S-l") 'sgml-pretty-print)
     #+END_SRC
 *** using external xmllint
-    We could also use `xmllint` which "might" be more applicable for large xml (to be tested). 
+    We could also use `xmllint` which "might" be more applicable for large xml (to be tested).
     #+BEGIN_SRC emacs-lisp
-      (defun xmllint-region (&optional b e) 
+      (defun xmllint-region (&optional b e)
         (interactive "r")
         (shell-command-on-region b e "xmllint --format -" t))
       ;;(global-set-key (kbd "C-M-l") 'xmlling-region)
@@ -1934,7 +2007,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
      (global-set-key (kbd "C-c C-<down>") 'mc/mark-all-like-this)
 
-        
+
    #+END_SRC
 
    #+RESULTS:
@@ -1966,8 +2039,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** Keysettings
    #+BEGIN_SRC emacs-lisp
      (global-set-key (kbd "C-c i l") 'octave-send-line)
-     (global-set-key (kbd "C-c i b") 'octave-send-block)    
-     (global-set-key (kbd "C-c i r") 'octave-send-region)    
+     (global-set-key (kbd "C-c i b") 'octave-send-block)
+     (global-set-key (kbd "C-c i r") 'octave-send-region)
      (global-set-key (kbd "C-c i s") 'octave-show-process-buffer)
 
    #+END_SRC
