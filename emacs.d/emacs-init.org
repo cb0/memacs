@@ -40,6 +40,10 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (set-keyboard-coding-system nil)
    #+END_SRC
 * Startup customization
+** Start server
+   #+begin_src elisp
+     (server-start)
+   #+end_src
 ** Ask before qutting emacs
    Especially when running exwm, closing the current emacs would close the whole window manager.
    To cope with this, just ask before doing it.
@@ -84,8 +88,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ;;		    (file-dependents (feature-file 'yaxception))
 ;;     ("/home/cb0/.emacs.d/elpa/auto-complete-pcmp-20140227.651/auto-complete-pcmp.elc" "/home/cb0/.emacs.d/elpa/org-ac-20170401.1307/org-ac.elc" ;;"/home/cb0/projects/memacs/emacs.d/elpa/auto-complete-pcmp-20140303.255/auto-complete-pcmp.el")
 
-;;	  ("/home/cb0/.emacs.d/elpa/yaxception-20150105.1452/yaxception.elc" "/home/cb0/projects/memacs/emacs.d/elpa/yaxception-20150105.1540/yaxception.el" ;;"/home/cb0/projects/memacs/emacs.d/elpa/yaxception-20150105.1540/yaxception.elc" ;;"/home/cb0/projects/memacs/emacs.d/elpa/auto-complete-pcmp-20140303.255/auto-complete-pcmp.el")
-
+;;	  ("/home/cb0/.emacs.d/elpa/yaxception-20150105.1452/yaxception.elc" "/home/cb0/projects/memacs/emacs.d/elpa/yaxception-20150105.1540/yaxception.el" ;;"/home/cb0/projects/memacs/emacs.d/elpa/yaxception-20150105.1540/yaxception.elc" ;;"/home/cb0/projects/memacs/emacs.d/elpa/auto-complete-pcmp-20140303.255/auto-complete-
    #+end_src
 * Package repos and installation
 ** Package
@@ -200,21 +203,46 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 ** Helper function
    #+begin_src elisp
-		  (defun efs/exwm-update-class ()
-		    (exwm-workspace-rename-buffer exwm-class-name))
+     (defun efs/exwm-update-class ()
+       (exwm-workspace-rename-buffer exwm-class-name))
 
-		  (defun efs/exwm-update-title ()
-		    (pcase exwm-class-name
-		      ("Google-chrome" (exwm-workspace-rename-buffer (format "Chrome %s" exwm-title)))))
+     (defun efs/exwm-update-title ()
+       (pcase exwm-class-name
+	 ("Google-chrome" (exwm-workspace-rename-buffer (format "Chrome %s" exwm-title)))))
 
-	       (defun efs/configure-window-by-class ()
-		 (interactive)
-		 (pcase exwm-class-name
-		   ("Chrome" (exwm-workspace-move-window 1))
-		   ("Firefox" (exwm-workspace-move-window 2))
-		   ("webstorm" (exwm-workspace-move-window 3))
-		   ("thunderbird" (exwm-workspace-move-window 3))
-		   ("TelegramDesktop" (exwm-workspace-move-window 0))))
+     (defun efs/configure-window-by-class ()
+       (interactive)
+       (pcase exwm-class-name
+	 ("Chrome" (exwm-workspace-move-window 1))
+	 ("Firefox" (exwm-workspace-move-window 2))
+	 ("webstorm" (exwm-workspace-move-window 3))
+	 ("thunderbird" (exwm-workspace-move-window 3))
+	 ("TelegramDesktop" (exwm-workspace-move-window 0))))
+
+     (defun efs/polybar-exwm-workspace ()
+       (pcase exwm-workspace-current-index
+	 (0 "")
+	 (1 "")
+	 (2 "")
+	 (3 "")
+	 (4 "")))
+
+
+     (defun efs/send-polybar-hook (module-name hook-index)
+       (start-process-shell-command "polybar-msg" nil (format "polybar-msg hook %s %s" module-name hook-index)))
+
+     (defun efs/send-polybar-exwm-workspace ()
+       (efs/send-polybar-hook "exwm-workspace" 1))
+
+     ;; Update panel indicator when workspace changes
+     (add-hook 'exwm-workspace-switch-hook #'efs/send-polybar-exwm-workspace)
+
+     (defun efs/run-in-background (command)
+       (let ((command-parts (split-string command "[ ]+")))
+	 (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
+
+
+
    #+end_src
 
 ** Configure WM
@@ -227,8 +255,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (require 'exwm-config)
 
      ;; simple system tray
-     (require 'exwm-systemtray)
-     (exwm-systemtray-enable)
+     ;; (require 'exwm-systemtray)
+     ;; (exwm-systemtray-enable)
 
      (setq exwm-systemtray-height 32)
 
@@ -301,47 +329,6 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
    #+end_src
 
-** LemonBar
-   #+begin_src elisp
-     ;; get workspace list in bar
-     ;; (defun feb/exwm-workspace-list ()
-     ;;   "Return a lemonbar string showing workspace list."
-     ;;   (let* ((num (exwm-workspace--count))
-     ;; 	 (sequence (number-sequence 0 (1- num)))
-     ;; 	 (curr (exwm-workspace--position exwm-workspace--current)))
-     ;;     (mapconcat (lambda (i)
-     ;; 		 (format (if (= i curr) "[%%{F#00ff00}%d%%{F-}] " "%d ") i))
-     ;; 	       sequence "")
-     ;;     ))
-
-     ;; (defun feb/exwm-report-workspaces-to-lemonbar ()
-     ;;   (with-temp-file "/tmp/panel-fifo"
-     ;;   (insert (format "WIN%s\n" (feb/exwm-workspace-list)))))
-
-     ;;  (add-hook 'exwm-workspace-switch-hook #'feb/exwm-report-workspaces-to-lemonbar)
-     ;;  (add-hook 'exwm-init-hook #'feb/exwm-report-workspaces-to-lemonbar)
-
-     ;; (defun efs/run-in-background (command)
-     ;;   (let ((command-parts (split-string command "[ ]+")))
-     ;;     (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
-
-     (defun dw/exwm-init-hook ()
-       ;; Make workspace 1 be the
-       ;; one where we land at startup
-       (exwm-workspace-switch-create 1)
-
-       ;; Open eshell by default
-       ;;(eshell)
-
-       ;; Launch apps that will run in the background
-       (efs/run-in-background "nm-applet"))
-
-     ;; (add-hook 'exwm-init-hook #'efs/after-exwm-init)
-
-     ;; (efs/run-in-background "pavucontrol")	
-     ;; (efs/run-in-background "blueman-applet")
-   #+end_src
-   
 ** Make xinitrc file
    #+begin_src sh :tangle ~/.xinitrc.emacs
      # Disable access control for the current user.
@@ -489,7 +476,15 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      ;; (exwm-enable)
    #+end_src
-   
+  
+*** Desktop notifications with dust
+    
+**** Create config
+     #+begin_src shell :tangle ~/.config/dunst/dunstrc
+            #+end_src
+
+     #+RESULTS:
+
 ** Screen resolution
 
    #+begin_src elisp
@@ -498,7 +493,6 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      (start-process-shell-command "xrandr" nil "")
    #+end_src
-
 
 ** Process handling
    When using exwm and you open a new async process using 'C-&', you will see the this prompt every time.
@@ -554,6 +548,52 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      ;; (get-exwm-process-id)
    #+end_src
+** Polybar
+   #+begin_src elisp
+
+     (defvar efs/polybar-process nil
+       "Holds the process of the running Polybar instance, if any")
+
+     (defun efs/kill-panel ()
+       (interactive)
+       (when efs/polybar-process
+	 (ignore-errors
+	   (kill-process efs/polybar-process)))
+       (setq efs/polybar-process nil))
+
+     (defun efs/start-panel ()
+       (interactive)
+       (efs/kill-panel)
+       (setq efs/polybar-process (start-process-shell-command "polybar" nil "polybar panel")))
+
+
+
+   #+end_src
+** Init Hook
+   #+begin_src elisp
+
+     (defun dw/exwm-init-hook ()
+       ;; Make workspace 1 be the
+       ;; one where we land at startup
+       (exwm-workspace-switch-create 1)
+
+       ;; Open eshell by default
+       ;;(eshell)
+       (efs/start-panel)
+       ;; (efs/kill-panel)
+       (efs/run-in-background "dunst")
+
+
+
+       ;; Launch apps that will run in the background
+       (efs/run-in-background "nm-applet"))
+
+     (add-hook 'exwm-init-hook #'efs/after-exwm-init)
+
+     ;; (efs/run-in-background "pavucontrol")	
+     ;; (efs/run-in-background "blueman-applet")
+   #+end_src
+   
 * Customize my theme:
 ** Line Wrapping
    I really like when long lines are wrapped so I don't have to scroll to the right.
@@ -796,7 +836,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 * Chrome Handling
   #+begin_src emacs-lisp
-    (package-require 'osa-chrome)
+    ;; (package-require 'osa-chrome)
   #+end_src
 
 * Blogging
@@ -1023,18 +1063,18 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 *** Installation
     #+begin_src elisp
-      (package-require 'tree-sitter)
-      (package-require 'tree-sitter-langs)
+      ;; (package-require 'tree-sitter)
+      ;; (package-require 'tree-sitter-langs)
 
-      (global-tree-sitter-mode)
+      ;; (global-tree-sitter-mode)
 
-      (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+      ;; (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
     #+end_src
 
 *** Hooks for languages
 
     #+begin_src elisp
-      (add-hook 'typescript-mode-hook #'tree-sitter-mode)
+;;      (add-hook 'typescript-mode-hook #'tree-sitter-mode)
 
     #+end_src
 ** CEDET
@@ -1204,16 +1244,16 @@ This is my emacs init org configuration file. Written in org mode style for bett
    Taken from https://sagot.dev/en/articles/emacs-typescript/
 *** Installation dpa mode
     #+begin_src elisp
-      (package-require 'dap-mode)
-      (package-require 'typescript-mode)
+      ;; (package-require 'dap-mode)
+      ;; (package-require 'typescript-mode)
 
 
-      (setq package-list '(dap-mode typescript-mode tree-sitter tree-sitter-langs lsp-mode lsp-ui))
+      ;; (setq package-list '(dap-mode typescript-mode tree-sitter tree-sitter-langs lsp-mode lsp-ui))
 
-      (package-require 'lsp-mode)
+      ;; (package-require 'lsp-mode)
 
-      (add-hook 'typescript-mode-hook 'lsp-deferred)
-      (add-hook 'javascript-mode-hook 'lsp-deferred)
+      ;; (add-hook 'typescript-mode-hook 'lsp-deferred)
+      ;; (add-hook 'javascript-mode-hook 'lsp-deferred)
 
     #+end_src
 * Sudo Edit Files
@@ -1422,27 +1462,28 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * Org Mode
 ** Install and set custom things for org-mode
    #+BEGIN_SRC emacs-lisp
-     ; Activate org-mode
+					     ; Activate org-mode
      (require 'org)
      ;; (require 'org-install)
      ;; (require 'org-habit)
      ;; (setq org-habit-preceding-days 7
-	   ;; org-habit-following-days 1
-	   ;; org-habit-graph-column 80
-	   ;; org-habit-show-habits-only-for-today t
-	   ;; org-habit-show-all-today t)
+     ;; org-habit-following-days 1
+     ;; org-habit-graph-column 80
+     ;; org-habit-show-habits-only-for-today t
+     ;; org-habit-show-all-today t)
      ;;(require 'ess-site)
-					     ;; http://orgmode.org/guide/Activation.html#Activation
+     ;; http://orgmode.org/guide/Activation.html#Activation
 
-					     ;; The following lines are always needed.  Choose your own keys.
+     ;; The following lines are always needed.  Choose your own keys.
      (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
-					     ;; And add babel inline code execution
-					     ;; babel, for executing code in org-mode.
+     ;; And add babel inline code execution
+     ;; babel, for executing code in org-mode.
      (org-babel-do-load-languages
       'org-babel-load-languages
-					     ;; load all language marked with (lang . t).
+      ;; load all language marked with (lang . t).
       '((C . t)
+	(org . t)
 	(shell . t)))
 
      ;; turn off "evaluate code question" in org-mode code blocks
@@ -1511,10 +1552,10 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      ;; Org Capture
      ;; (setq org-capture-templates
-	   ;; '(("t" "Todo" entry (file+headline (concat org-directory "/gtd.org") "Tasks")
-	      ;; "* TODO %?\n %i\n")
-	     ;; ("l" "Link" plain (file (concat org-directory "/links.org"))
-	      ;; "- %?\n %x\n")))
+     ;; '(("t" "Todo" entry (file+headline (concat org-directory "/gtd.org") "Tasks")
+     ;; "* TODO %?\n %i\n")
+     ;; ("l" "Link" plain (file (concat org-directory "/links.org"))
+     ;; "- %?\n %x\n")))
 
 
      ;; (custom-set-variables
@@ -1800,12 +1841,15 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * Org Roam
 ** Installation
    #+begin_src elisp
+     (package-require 'org-roam-dailies)
+
      (use-package org-roam
        :ensure t
        :init
        (setq org-roam-v2-ack t)
        :custom
        (org-roam-directory "~/sync/org/org-roam")
+       (org-roam-dailies-directory "journal/")
        (org-roam-completion-everywhere t)
        (org-roam-capture-templates
 	'(("d" "default" plain
@@ -1829,10 +1873,15 @@ This is my emacs init org configuration file. Written in org mode style for bett
 	      ("C-c n r"   . org-roam-dailies-find-tomorrow)
 	      ("C-c n g"   . org-roam-graph)
 	      :map org-mode-map
-	      ("C-M-i"     . completion-at-point))
+	      ("C-M-i"     . completion-at-point)
+	      :map org-roam-dailies-map
+	      ("Y" . org-roam-dailies-capture-yesterday)
+	      ("T" . org-roam-dailies-capture-tomorrow))
+       :bind-keymap
+       ("C-c n d" . org-roam-dailies-map)
        :config
-       (org-roam-setup))
-
+       (require 'org-roam-dailies)
+       (org-roam-db-autosync-mode))
    #+end_src
 
    #+RESULTS:
