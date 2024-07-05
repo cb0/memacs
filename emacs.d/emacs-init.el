@@ -51,7 +51,7 @@
 (require 'cl-lib)
 
 		    (require 'loadhist)
-		    ;; (file-dependents (feature-file 'cl)) 
+		    ;; (file-dependents (feature-file 'cl))
 
 ;;		    (file-dependents (feature-file 'yaxception))
 ;;     ("/home/cb0/.emacs.d/elpa/auto-complete-pcmp-20140227.651/auto-complete-pcmp.elc" "/home/cb0/.emacs.d/elpa/org-ac-20170401.1307/org-ac.elc" ;;"/home/cb0/projects/memacs/emacs.d/elpa/auto-complete-pcmp-20140303.255/auto-complete-pcmp.el")
@@ -78,7 +78,7 @@
 
 ;; Make sure a package is installed
 (defun package-require (package)
-  "Install a PACKAGE unless it is already installed 
+  "Install a PACKAGE unless it is already installed
 or a feature with the same name is already active.
 
 Usage: (package-require 'package)"
@@ -91,7 +91,7 @@ Usage: (package-require 'package)"
     (error (package-install package))))
 
 ;; Initialize installed packages
-;;(package-initialize)  
+;;(package-initialize)
 ;; package init not needed, since it is done anyway in emacs 24 after reading the init
 ;; but we have to load the list of available packages
 (unless package-archive-contents
@@ -102,6 +102,8 @@ Usage: (package-require 'package)"
 (unless (package-installed-p 'org)  ;; Make sure the Org package is
   (package-install 'org))           ;; installed, install it if not
 ;;(package-initialize)
+
+(package-require 'use-package)
 
 (package-require 'esup)
 
@@ -120,7 +122,26 @@ Usage: (package-require 'package)"
 
 (package-require 'hydra)
 
-(package-require 'exwm)
+(cond
+ ((not (string-equal system-type "darwin"))
+  (progn
+    (package-require 'exwm))))
+
+(defun efs/exwm-update-class ()
+     (exwm-workspace-rename-buffer exwm-class-name))
+
+   (defun efs/exwm-update-title ()
+     (pcase exwm-class-name
+       ("Google-chrome" (exwm-workspace-rename-buffer (format "Chrome %s" exwm-title)))))
+
+(defun efs/configure-window-by-class ()
+  (interactive)
+  (pcase exwm-class-name
+    ("Chrome" (exwm-workspace-move-window 1))
+    ("Firefox" (exwm-workspace-move-window 2))
+    ("webstorm" (exwm-workspace-move-window 3))
+    ("thunderbird" (exwm-workspace-move-window 3))
+    ("TelegramDesktop" (exwm-workspace-move-window 0))))
 
 (require 'exwm)
 
@@ -134,6 +155,9 @@ Usage: (package-require 'package)"
 (exwm-systemtray-enable)
 
 (setq exwm-systemtray-height 32)
+
+;; use char mode on startup
+(setq exwm-manage-configurations '((t char-mode t)))
 
 ;; All buffers created in EXWM mode are named "*EXWM*". You may want to
 ;; change it in `exwm-update-class-hook' and `exwm-update-title-hook', which
@@ -150,15 +174,17 @@ Usage: (package-require 'package)"
 	    (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
 			(string= "gimp" exwm-instance-name))
 	      (exwm-workspace-rename-buffer exwm-class-name))))
+
 (add-hook 'exwm-update-title-hook
 	  (lambda ()
 	    (when (or (not exwm-instance-name)
 		      (string-prefix-p "sun-awt-X11-" exwm-instance-name)
 		      (string= "gimp" exwm-instance-name))
 	      (exwm-workspace-rename-buffer exwm-title))))
-(add-hook 'exwm-update-class-hook
-     (lambda ()
-     (exwm-workspace-rename-buffer exwm-class-name)))
+
+(add-hook 'exwm-update-class-hook #'efs/exwm-update-class)
+(add-hook 'exwm-update-title-hook #'efs/exwm-update-title)
+(add-hook 'exwm-manage-finish-hook #'efs/configure-window-by-class)
 
 (exwm-config-example)
 (exwm-enable)
@@ -184,12 +210,13 @@ Usage: (package-require 'package)"
 
 (setq exwm-input-prefix-keys
       '(?\C-x
-	?\C-\\
-	?\C-h
+	?\C-u
+	?\C-h	   
 	?\M-x
 	?\M-`
 	?\M-&
 	?\M-:
+	?\C-\\
 	?\C-\M-j
 	?\C-\ ))
 
@@ -248,6 +275,7 @@ Usage: (package-require 'package)"
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 (display-battery-mode 1)
+
 (setq display-time-day-and-date t)
 (setq display-time-format "%H:%M")
 (display-time-mode 1)
@@ -261,85 +289,90 @@ Usage: (package-require 'package)"
 ;;    (enwc)
 ;;  (error nil))
 
-(add-to-list 'load-path "~/.emacs.d/lib/desktop-environment/")
-(require 'desktop-environment)
+(cond
+ ((not (string-equal system-type "darwin"))
+  (progn
 
-(use-package desktop-environment
-  :after exwm
-  :config (desktop-environment-mode)
-  :custom
-  (desktop-environment-brightness-small-increment "2%+")
-  (desktop-environment-brightness-small-decrement "2%-")
-  (desktop-environment-brightness-normal-increment "5%+")
-  (desktop-environment-brightness-normal-decrement "5%-")
-  (desktop-environment-screenshot-command "flameshot gui"))
+    (add-to-list 'load-path "~/.emacs.d/lib/desktop-environment/")
+    (require 'desktop-environment)
 
-
-
-;; This needs a more elegant ASCII banner
-(defhydra hydra-exwm-move-resize (:timeout 4)
-  "Move/Resize Window (Shift is bigger steps, Ctrl moves window)"
-  ("j" (lambda () (interactive) (exwm-layout-enlarge-window 10)) "V 10")
-  ("J" (lambda () (interactive) (exwm-layout-enlarge-window 30)) "V 30")
-  ("k" (lambda () (interactive) (exwm-layout-shrink-window 10)) "^ 10")
-  ("K" (lambda () (interactive) (exwm-layout-shrink-window 30)) "^ 30")
-  ("h" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 10)) "< 10")
-  ("H" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 30)) "< 30")
-  ("l" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 10)) "> 10")
-  ("L" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 30)) "> 30")
-  ("C-j" (lambda () (interactive) (exwm-floating-move 0 10)) "V 10")
-  ("C-S-j" (lambda () (interactive) (exwm-floating-move 0 30)) "V 30")
-  ("C-k" (lambda () (interactive) (exwm-floating-move 0 -10)) "^ 10")
-  ("C-S-k" (lambda () (interactive) (exwm-floating-move 0 -30)) "^ 30")
-  ("C-h" (lambda () (interactive) (exwm-floating-move -10 0)) "< 10")
-  ("C-S-h" (lambda () (interactive) (exwm-floating-move -30 0)) "< 30")
-  ("C-l" (lambda () (interactive) (exwm-floating-move 10 0)) "> 10")
-  ("C-S-l" (lambda () (interactive) (exwm-floating-move 30 0)) "> 30")
-  ("f" nil "finished" :exit t))
+    (use-package desktop-environment
+      :after exwm
+      :config (desktop-environment-mode)
+      :custom
+      (desktop-environment-brightness-small-increment "2%+")
+      (desktop-environment-brightness-small-decrement "2%-")
+      (desktop-environment-brightness-normal-increment "5%+")
+      (desktop-environment-brightness-normal-decrement "5%-")
+      (desktop-environment-screenshot-command "flameshot gui"))
 
 
 
-;; Workspace switching
-(setq exwm-input-global-keys	   
-    `(;; reset to line mode (C-c C-k switch to char mode)
-      ([?\s-\C-r] . exwm-reset)
+    ;; This needs a more elegant ASCII banner
+    (defhydra hydra-exwm-move-resize (:timeout 4)
+      "Move/Resize Window (Shift is bigger steps, Ctrl moves window)"
+      ("j" (lambda () (interactive) (exwm-layout-enlarge-window 10)) "V 10")
+      ("J" (lambda () (interactive) (exwm-layout-enlarge-window 30)) "V 30")
+      ("k" (lambda () (interactive) (exwm-layout-shrink-window 10)) "^ 10")
+      ("K" (lambda () (interactive) (exwm-layout-shrink-window 30)) "^ 30")
+      ("h" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 10)) "< 10")
+      ("H" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 30)) "< 30")
+      ("l" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 10)) "> 10")
+      ("L" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 30)) "> 30")
+      ("C-j" (lambda () (interactive) (exwm-floating-move 0 10)) "V 10")
+      ("C-S-j" (lambda () (interactive) (exwm-floating-move 0 30)) "V 30")
+      ("C-k" (lambda () (interactive) (exwm-floating-move 0 -10)) "^ 10")
+      ("C-S-k" (lambda () (interactive) (exwm-floating-move 0 -30)) "^ 30")
+      ("C-h" (lambda () (interactive) (exwm-floating-move -10 0)) "< 10")
+      ("C-S-h" (lambda () (interactive) (exwm-floating-move -30 0)) "< 30")
+      ("C-l" (lambda () (interactive) (exwm-floating-move 10 0)) "> 10")
+      ("C-S-l" (lambda () (interactive) (exwm-floating-move 30 0)) "> 30")
+      ("f" nil "finished" :exit t))
 
-      ;; switch workspaces
-      ([?\s-w] . exwm-workspace-switch)
-      ;; hydro to rresize windows
-      ([?\s-r] . hydra-exwm-move-resize/body)
-      ;; quick jump to current directory
-      ([?\s-e] . dired-jump)
-      ;; quick jump to home directory
-      ([?\s-E] . (lambda () (interactive) (dired "~")))
 
-      ([?\s-Q] . (lambda () (interactive) (kill-buffer)))
-      ([?\s-`] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
-      ([?\s-&] . (lambda (command)
-		   (interactive (list (read-shell-command "$ ")))
-		   (start-process-shell-command command nil command)))
-      ([?\C-\s-l] . (lambda ()
-		      (interactive)
-		      (start-process "" nil "/usr/bin/slock")))
-      ,@(mapcar (lambda (i)
-		  `(,(kbd (format "s-%d" i)) .
-		    (lambda ()
-		      (interactive)
-		      (exwm-workspace-switch-create ,i))))
-		(number-sequence 0 9))))
 
-;; setting these in exwm-input-global-keys does not work
-(exwm-input-set-key (kbd "s-<left>") 'windmove-left)
-(exwm-input-set-key (kbd "s-<right>") 'windmove-right)
-(exwm-input-set-key (kbd "s-<up>") 'windmove-up)
-(exwm-input-set-key (kbd "s-<down>") 'windmove-down)
+    ;; Workspace switching
+    (setq exwm-input-global-keys	   
+	  `(;; reset to line mode (C-c C-k switch to char mode)
+	    ([?\s-\C-r] . exwm-reset)
+	    ;; switch workspaces
+	    ([?\s-w] . exwm-workspace-switch)
+	    ;; hydro to rresize windows
+	    ([?\s-r] . hydra-exwm-move-resize/body)
+	    ;; quick jump to current directory
+	    ([?\s-e] . dired-jump)
+	    ;; quick jump to home directory
+	    ([?\s-E] . (lambda () (interactive) (dired "~")))
 
-(exwm-input-set-key (kbd "S-s-<down>") 'windmove-swap-states-down)
-(exwm-input-set-key (kbd "S-s-<up>") 'windmove-swap-states-up)
-(exwm-input-set-key (kbd "S-s-<left>") 'windmove-swap-states-left)
-(exwm-input-set-key (kbd "S-s-<right>") 'windmove-swap-states-right)
+	    ([?\s-Q] . (lambda () (interactive) (kill-buffer)))
+	    ([?\s-`] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
+	    ([?\s-&] . (lambda (command)
+			 (interactive (list (read-shell-command "$ ")))
+			 (start-process-shell-command command nil command)))
+	    ([?\C-\s-l] . (lambda ()
+			    (interactive)
+			    (start-process "" nil "/usr/bin/slock")))
+	    ,@(mapcar (lambda (i)
+			`(,(kbd (format "s-%d" i)) .
+			  (lambda ()
+			    (interactive)
+			    (exwm-workspace-switch-create ,i))))
+		      (number-sequence 0 9))))
 
-;; (exwm-enable)
+    ;; setting these in exwm-input-global-keys does not work
+    (exwm-input-set-key (kbd "s-<left>") 'windmove-left)
+    (exwm-input-set-key (kbd "s-<right>") 'windmove-right)
+    (exwm-input-set-key (kbd "s-<up>") 'windmove-up)
+    (exwm-input-set-key (kbd "s-<down>") 'windmove-down)
+
+    (exwm-input-set-key (kbd "S-s-<down>") 'windmove-swap-states-down)
+    (exwm-input-set-key (kbd "S-s-<up>") 'windmove-swap-states-up)
+    (exwm-input-set-key (kbd "S-s-<left>") 'windmove-swap-states-left)
+    (exwm-input-set-key (kbd "S-s-<right>") 'windmove-swap-states-right)
+
+    ;; (exwm-enable)
+
+    )))
 
 (package-require 'exwm-randr)
 (exwm-randr-enable)
@@ -349,13 +382,19 @@ Usage: (package-require 'package)"
 (setq async-shell-command-buffer 'new-buffer)
 ;;(setq async-shell-command-display-buffer nil) ;; this would keep the new buffer in background. Might be attached to C-s-&
 
-(setq exwm-workspace-show-all-buffers t)
-(setq exwm-layout-show-all-buffers t)
+(cond
+ ((not (string-equal system-type "darwin"))
+  (progn
+    (setq exwm-workspace-show-all-buffers t)
+    (setq exwm-layout-show-all-buffers t))))
 
-(setq exwm-workspace-minibuffer-position 'bottom)
-(setq exwm-workspace-display-echo-area-timeout 5)
-;; (exwm-workspace-attach-minibuffer)
-;; (exwm-workspace-detach-minibuffer)
+(cond
+ ((not (string-equal system-type "darwin"))
+  (progn (setq exwm-workspace-minibuffer-position 'bottom)
+	 (setq exwm-workspace-display-echo-area-timeout 5)
+	 ;; (exwm-workspace-attach-minibuffer)
+	 ;; (exwm-workspace-detach-minibuffer)
+	 )))
 
 ;; (defun get-exwm-process-id (&optional buffer-or-name)
 ;;   (interactive)
@@ -433,7 +472,6 @@ Usage: (package-require 'package)"
 
 (setq epa-file-select-keys nil)
 
-(package-require 'secrets)
 (package-require 'epa-file)
 (setq epg-debug t)
 (epa-file-enable)
@@ -451,6 +489,7 @@ Usage: (package-require 'package)"
 (setf epa-pinentry-mode 'loopback)
 
 ;; (load-library "~/.secrets.el.gpg")
+(require 'secrets)
 
 ;; (package-require 'org-passwords)
 ;; (setq org-passwords-file "/home/mpuchalla/ownCloud/org/secrets.org.gpg")
@@ -515,7 +554,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 
      ;; ;; shortcuts
      ;; (setq mu4e-maildir-shor;; tcuts
-     ;; ;;  
+     ;; ;;
         ;; '( ("/INBOX"               . ?i)))
 
      ;; ;; something about ourselves
@@ -528,6 +567,8 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
      ;;    "Marcus Puchalla\n"))
 
 (package-require 'notmuch)
+
+(package-require 'osa-chrome)
 
 (defun comment-or-uncomment-region-or-line ()
   "Comments or uncomments the region or the current line if there's no active region."
@@ -678,6 +719,15 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 
 ;; (global-set-key (kbd "C-x C-z") 'zoom-window-zoom)
 
+(package-require 'tree-sitter)
+(package-require 'tree-sitter-langs)
+
+(global-tree-sitter-mode)
+
+(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+
+(add-hook 'typescript-mode-hook #'tree-sitter-mode)
+
 ;; (add-to-list 'load-path "./submodules/")
 ;;   ; Semantic
 ;;   (global-semantic-idle-completions-mode t)
@@ -799,8 +849,19 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 (setq inferior-lisp-program "sbcl")
 (add-hook 'lisp-mode-hook (lambda () (slime-mode t)))
 (add-hook 'inferior-lisp-mode-hook (lambda () (inferior-slime-mode t)))
-;; (load "~/quicklisp/setup.lisp")	
+;; (load "~/quicklisp/setup.lisp")
 ;; (ql:add-to-init-file)
+
+(package-require 'dap-mode)
+(package-require 'typescript-mode)
+
+
+(setq package-list '(dap-mode typescript-mode tree-sitter tree-sitter-langs lsp-mode lsp-ui))
+
+(package-require 'lsp-mode)
+
+(add-hook 'typescript-mode-hook 'lsp-deferred)
+(add-hook 'javascript-mode-hook 'lsp-deferred)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TRAMP for president (switch to edit file as root on remote machines)
@@ -815,7 +876,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (interactive)
   (let ((my-file-name) ; fill this with the file to open
         (position))    ; if the file is already open save position
-    (if (equal major-mode 'dired-mode) ; test if we are in dired-mode 
+    (if (equal major-mode 'dired-mode) ; test if we are in dired-mode
         (progn
           (setq my-file-name (dired-get-file-for-visit))
           (find-alternate-file (prepare-tramp-sudo-string my-file-name)))
@@ -1007,7 +1068,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 (define-key global-map "\C-cl" 'org-store-link)
 (define-key global-map "\C-ca" 'org-agenda)
 ;; add a timestamp when we close an item
-(setq org-log-done t)
+(setq org-log-done 'note)
 ;; include a closing note when close an todo item
 ;; (setq org-log-done 'note)
 
@@ -1045,7 +1106,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 ;;      (define-key org-agenda-mode-map "\C-p" 'previous-line)
 ;;      (define-key org-agenda-keymap "\C-p" 'previous-line)))
 
-(custom-set-variables 
+(custom-set-variables
  ;; '(org-agenda-files (quote ("~/todo.org")))
  ;; '(org-default-notes-file "~/notes.org")
  '(org-agenda-ndays 7)
@@ -1176,14 +1237,14 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 (add-to-list 'org-agenda-files "~/org/calendar.org")
 
 (custom-set-variables
- '(org-directory "~/sync/org/journal/")
- '(org-agenda-files (list org-directory)))
+ '(org-directory "~/sync/org/")
+ '(org-agenda-files (directory-files-recursively "~/sync/org/" "\\.org$")))
 
 (add-to-list 'auto-mode-alist '("\\`[^.].*\\.org|[0-9]+" . org-mode))
 
 (setq org-capture-templates
       '(("j" "Journal Entry"
-	 entry (file+datetree "~/org/journaljournal.org")
+	 entry (file+datetree "~/sync/org/journal/journal.org")
 	 "* Event: %?\n\n  %i\n\n  From: %a"
 	 :empty-lines 1)))
 
@@ -1236,6 +1297,17 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 ;; use the same diary file as the one from caldav
 (setq diary-file org-caldav-inbox)
 
+(copy-face font-lock-constant-face 'calendar-iso-week-face)
+(set-face-attribute 'calendar-iso-week-face nil
+		    :height 0.7)
+(setq calendar-intermonth-text
+      '(propertize
+	(format "%2d"
+		(car
+		 (calendar-iso-from-absolute
+		  (calendar-absolute-from-gregorian (list month day year)))))
+	'font-lock-face 'calendar-iso-week-face))
+
 (package-require 'org-wc)
 
 ;; and run org-wc-display on a timer every time I go idle for 5 seconds
@@ -1261,8 +1333,8 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (when (timerp pc/org-wc-display-timer)
     (cancel-timer pc/org-wc-display-timer)))
 
-(global-set-key (kbd "C-c o") 
-                (lambda () (interactive) (find-file "~/ownCloud/org/homenotes.org")))
+(global-set-key (kbd "C-c o")
+                (lambda () (interactive) (find-file "~/sync/org/old/homenotes.org")))
 
 (setq org-refile-targets '((org-agenda-files . (:maxlevel . 5))))
 
@@ -1275,12 +1347,12 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 (global-set-key (kbd "C-c c") 'org-capture)
 
 (setq org-capture-templates
-  '(("t" "Todo" entry (file+headline "~/ownCloud/org/homenotes.org" "Todos")
+  '(("t" "Todo" entry (file+headline "~/sync/org/old/homenotes.org" "Todos")
         "* TODO %?\n  %i\n %a")
-    ("b" "Book" entry (file+headline "~/ownCloud/org/homenotes.org" "Books")
+    ("b" "Book" entry (file+headline "~/sync/org/old/homenotes.org" "Books")
         "* TODO Description: %?
 	        %^{Author}p \n Created: %T")
-   ("j" "Journal Entry" entry (file+datetree "~/ownCloud/org/journal.org")
+   ("j" "Journal Entry" entry (file+datetree "~/sync/org/journalEntry.org")
          "* Event: %?\n\n  %i\n\n  From: %a"
          :empty-lines 1)
     ))
@@ -1311,7 +1383,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 	 ("C-c n d"   . org-roam-dailies-find-date)
 	 ("C-c n c"   . org-roam-dailies-capture-today)
 	 ("C-c n C r" . org-roam-dailies-capture-tomorrow)
-	 ("C-c n t"   . org-roam-dailies-find-today)
+	 ("C-c n t"   . org-roam-dailies-goto-today)
 	 ("C-c n y"   . org-roam-dailies-find-yesterday)
 	 ("C-c n r"   . org-roam-dailies-find-tomorrow)
 	 ("C-c n g"   . org-roam-graph)
@@ -1324,7 +1396,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 ;; here is the home directory
 ;; (setq org-roam-directory (file-truename "~/sync/org/org-roam")) ;
 
-;; (org-roam-db-autosync-mode)
+(org-roam-db-autosync-mode)
 
 (package-require 'anki-editor)
 (use-package anki-editor
@@ -1397,7 +1469,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 
 (global-set-key (kbd "C-S-l") 'sgml-pretty-print)
 
-(defun xmllint-region (&optional b e) 
+(defun xmllint-region (&optional b e)
   (interactive "r")
   (shell-command-on-region b e "xmllint --format -" t))
 ;;(global-set-key (kbd "C-M-l") 'xmlling-region)
@@ -1457,8 +1529,8 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 ;; (gnuserv-start)
 
 (global-set-key (kbd "C-c i l") 'octave-send-line)
-(global-set-key (kbd "C-c i b") 'octave-send-block)    
-(global-set-key (kbd "C-c i r") 'octave-send-region)    
+(global-set-key (kbd "C-c i b") 'octave-send-block)
+(global-set-key (kbd "C-c i r") 'octave-send-region)
 (global-set-key (kbd "C-c i s") 'octave-show-process-buffer)
 
 ;; (package-require 'ansible)
