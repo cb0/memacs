@@ -8,3 +8,13 @@ auto-save-list/
 auto-install
 ac-comphist.dat
 org-clock-save.el
+/bookmarks~
+/.mc-lists.el
+/.lsp-session-v1
+*.el~
+/org-roam.db
+/network-security.data
+/projects
+/recentf~
+/smex-items
+/emacs-init.el
