@@ -27,6 +27,8 @@
 (setq mac-command-modifier 'meta)
 (set-keyboard-coding-system nil)
 
+(server-start)
+
 (defun ask-before-closing ()
   "Close only if y was pressed."
   (interactive)
@@ -56,7 +58,7 @@
 ;;		    (file-dependents (feature-file 'yaxception))
 ;;     ("/home/cb0/.emacs.d/elpa/auto-complete-pcmp-20140227.651/auto-complete-pcmp.elc" "/home/cb0/.emacs.d/elpa/org-ac-20170401.1307/org-ac.elc" ;;"/home/cb0/projects/memacs/emacs.d/elpa/auto-complete-pcmp-20140303.255/auto-complete-pcmp.el")
 
-;;	  ("/home/cb0/.emacs.d/elpa/yaxception-20150105.1452/yaxception.elc" "/home/cb0/projects/memacs/emacs.d/elpa/yaxception-20150105.1540/yaxception.el" ;;"/home/cb0/projects/memacs/emacs.d/elpa/yaxception-20150105.1540/yaxception.elc" ;;"/home/cb0/projects/memacs/emacs.d/elpa/auto-complete-pcmp-20140303.255/auto-complete-pcmp.el")
+;;	  ("/home/cb0/.emacs.d/elpa/yaxception-20150105.1452/yaxception.elc" "/home/cb0/projects/memacs/emacs.d/elpa/yaxception-20150105.1540/yaxception.el" ;;"/home/cb0/projects/memacs/emacs.d/elpa/yaxception-20150105.1540/yaxception.elc" ;;"/home/cb0/projects/memacs/emacs.d/elpa/auto-complete-pcmp-20140303.255/auto-complete-
 
 (require 'package)
 
@@ -128,11 +130,11 @@ Usage: (package-require 'package)"
     (package-require 'exwm))))
 
 (defun efs/exwm-update-class ()
-     (exwm-workspace-rename-buffer exwm-class-name))
+  (exwm-workspace-rename-buffer exwm-class-name))
 
-   (defun efs/exwm-update-title ()
-     (pcase exwm-class-name
-       ("Google-chrome" (exwm-workspace-rename-buffer (format "Chrome %s" exwm-title)))))
+(defun efs/exwm-update-title ()
+  (pcase exwm-class-name
+    ("Google-chrome" (exwm-workspace-rename-buffer (format "Chrome %s" exwm-title)))))
 
 (defun efs/configure-window-by-class ()
   (interactive)
@@ -143,6 +145,14 @@ Usage: (package-require 'package)"
     ("thunderbird" (exwm-workspace-move-window 3))
     ("TelegramDesktop" (exwm-workspace-move-window 0))))
 
+(defun efs/polybar-exwm-workspace ()
+  (pcase exwm-workspace-current-index
+    (0 "0")
+    (1 "1")
+    (2 "2")
+    (3 "3")
+    (4 "4")))
+
 (require 'exwm)
 
 (setq exwm-workspace-number 5)
@@ -151,8 +161,8 @@ Usage: (package-require 'package)"
 (require 'exwm-config)
 
 ;; simple system tray
-(require 'exwm-systemtray)
-(exwm-systemtray-enable)
+;; (require 'exwm-systemtray)
+;; (exwm-systemtray-enable)
 
 (setq exwm-systemtray-height 32)
 
@@ -289,90 +299,84 @@ Usage: (package-require 'package)"
 ;;    (enwc)
 ;;  (error nil))
 
-(cond
- ((not (string-equal system-type "darwin"))
-  (progn
+(add-to-list 'load-path "~/.emacs.d/lib/desktop-environment/")
+(require 'desktop-environment)
 
-    (add-to-list 'load-path "~/.emacs.d/lib/desktop-environment/")
-    (require 'desktop-environment)
-
-    (use-package desktop-environment
-      :after exwm
-      :config (desktop-environment-mode)
-      :custom
-      (desktop-environment-brightness-small-increment "2%+")
-      (desktop-environment-brightness-small-decrement "2%-")
-      (desktop-environment-brightness-normal-increment "5%+")
-      (desktop-environment-brightness-normal-decrement "5%-")
-      (desktop-environment-screenshot-command "flameshot gui"))
+(use-package desktop-environment
+  :after exwm
+  :config (desktop-environment-mode)
+  :custom
+  (desktop-environment-brightness-small-increment "2%+")
+  (desktop-environment-brightness-small-decrement "2%-")
+  (desktop-environment-brightness-normal-increment "5%+")
+  (desktop-environment-brightness-normal-decrement "5%-")
+  (desktop-environment-screenshot-command "flameshot gui"))
 
 
 
-    ;; This needs a more elegant ASCII banner
-    (defhydra hydra-exwm-move-resize (:timeout 4)
-      "Move/Resize Window (Shift is bigger steps, Ctrl moves window)"
-      ("j" (lambda () (interactive) (exwm-layout-enlarge-window 10)) "V 10")
-      ("J" (lambda () (interactive) (exwm-layout-enlarge-window 30)) "V 30")
-      ("k" (lambda () (interactive) (exwm-layout-shrink-window 10)) "^ 10")
-      ("K" (lambda () (interactive) (exwm-layout-shrink-window 30)) "^ 30")
-      ("h" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 10)) "< 10")
-      ("H" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 30)) "< 30")
-      ("l" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 10)) "> 10")
-      ("L" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 30)) "> 30")
-      ("C-j" (lambda () (interactive) (exwm-floating-move 0 10)) "V 10")
-      ("C-S-j" (lambda () (interactive) (exwm-floating-move 0 30)) "V 30")
-      ("C-k" (lambda () (interactive) (exwm-floating-move 0 -10)) "^ 10")
-      ("C-S-k" (lambda () (interactive) (exwm-floating-move 0 -30)) "^ 30")
-      ("C-h" (lambda () (interactive) (exwm-floating-move -10 0)) "< 10")
-      ("C-S-h" (lambda () (interactive) (exwm-floating-move -30 0)) "< 30")
-      ("C-l" (lambda () (interactive) (exwm-floating-move 10 0)) "> 10")
-      ("C-S-l" (lambda () (interactive) (exwm-floating-move 30 0)) "> 30")
-      ("f" nil "finished" :exit t))
+;; This needs a more elegant ASCII banner
+(defhydra hydra-exwm-move-resize (:timeout 4)
+  "Move/Resize Window (Shift is bigger steps, Ctrl moves window)"
+  ("j" (lambda () (interactive) (exwm-layout-enlarge-window 10)) "V 10")
+  ("J" (lambda () (interactive) (exwm-layout-enlarge-window 30)) "V 30")
+  ("k" (lambda () (interactive) (exwm-layout-shrink-window 10)) "^ 10")
+  ("K" (lambda () (interactive) (exwm-layout-shrink-window 30)) "^ 30")
+  ("h" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 10)) "< 10")
+  ("H" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 30)) "< 30")
+  ("l" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 10)) "> 10")
+  ("L" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 30)) "> 30")
+  ("C-j" (lambda () (interactive) (exwm-floating-move 0 10)) "V 10")
+  ("C-S-j" (lambda () (interactive) (exwm-floating-move 0 30)) "V 30")
+  ("C-k" (lambda () (interactive) (exwm-floating-move 0 -10)) "^ 10")
+  ("C-S-k" (lambda () (interactive) (exwm-floating-move 0 -30)) "^ 30")
+  ("C-h" (lambda () (interactive) (exwm-floating-move -10 0)) "< 10")
+  ("C-S-h" (lambda () (interactive) (exwm-floating-move -30 0)) "< 30")
+  ("C-l" (lambda () (interactive) (exwm-floating-move 10 0)) "> 10")
+  ("C-S-l" (lambda () (interactive) (exwm-floating-move 30 0)) "> 30")
+  ("f" nil "finished" :exit t))
 
 
 
-    ;; Workspace switching
-    (setq exwm-input-global-keys	   
-	  `(;; reset to line mode (C-c C-k switch to char mode)
-	    ([?\s-\C-r] . exwm-reset)
-	    ;; switch workspaces
-	    ([?\s-w] . exwm-workspace-switch)
-	    ;; hydro to rresize windows
-	    ([?\s-r] . hydra-exwm-move-resize/body)
-	    ;; quick jump to current directory
-	    ([?\s-e] . dired-jump)
-	    ;; quick jump to home directory
-	    ([?\s-E] . (lambda () (interactive) (dired "~")))
+;; Workspace switching
+(setq exwm-input-global-keys	   
+    `(;; reset to line mode (C-c C-k switch to char mode)
+      ([?\s-\C-r] . exwm-reset)
+      ;; switch workspaces
+      ([?\s-w] . exwm-workspace-switch)
+      ;; hydro to rresize windows
+      ([?\s-r] . hydra-exwm-move-resize/body)
+      ;; quick jump to current directory
+      ([?\s-e] . dired-jump)
+      ;; quick jump to home directory
+      ([?\s-E] . (lambda () (interactive) (dired "~")))
 
-	    ([?\s-Q] . (lambda () (interactive) (kill-buffer)))
-	    ([?\s-`] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
-	    ([?\s-&] . (lambda (command)
-			 (interactive (list (read-shell-command "$ ")))
-			 (start-process-shell-command command nil command)))
-	    ([?\C-\s-l] . (lambda ()
-			    (interactive)
-			    (start-process "" nil "/usr/bin/slock")))
-	    ,@(mapcar (lambda (i)
-			`(,(kbd (format "s-%d" i)) .
-			  (lambda ()
-			    (interactive)
-			    (exwm-workspace-switch-create ,i))))
-		      (number-sequence 0 9))))
+      ([?\s-Q] . (lambda () (interactive) (kill-buffer)))
+      ([?\s-`] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
+      ([?\s-&] . (lambda (command)
+		   (interactive (list (read-shell-command "$ ")))
+		   (start-process-shell-command command nil command)))
+      ([?\C-\s-l] . (lambda ()
+		      (interactive)
+		      (start-process "" nil "/usr/bin/slock")))
+      ,@(mapcar (lambda (i)
+		  `(,(kbd (format "s-%d" i)) .
+		    (lambda ()
+		      (interactive)
+		      (exwm-workspace-switch-create ,i))))
+		(number-sequence 0 9))))
 
-    ;; setting these in exwm-input-global-keys does not work
-    (exwm-input-set-key (kbd "s-<left>") 'windmove-left)
-    (exwm-input-set-key (kbd "s-<right>") 'windmove-right)
-    (exwm-input-set-key (kbd "s-<up>") 'windmove-up)
-    (exwm-input-set-key (kbd "s-<down>") 'windmove-down)
+;; setting these in exwm-input-global-keys does not work
+(exwm-input-set-key (kbd "s-<left>") 'windmove-left)
+(exwm-input-set-key (kbd "s-<right>") 'windmove-right)
+(exwm-input-set-key (kbd "s-<up>") 'windmove-up)
+(exwm-input-set-key (kbd "s-<down>") 'windmove-down)
 
-    (exwm-input-set-key (kbd "S-s-<down>") 'windmove-swap-states-down)
-    (exwm-input-set-key (kbd "S-s-<up>") 'windmove-swap-states-up)
-    (exwm-input-set-key (kbd "S-s-<left>") 'windmove-swap-states-left)
-    (exwm-input-set-key (kbd "S-s-<right>") 'windmove-swap-states-right)
+(exwm-input-set-key (kbd "S-s-<down>") 'windmove-swap-states-down)
+(exwm-input-set-key (kbd "S-s-<up>") 'windmove-swap-states-up)
+(exwm-input-set-key (kbd "S-s-<left>") 'windmove-swap-states-left)
+(exwm-input-set-key (kbd "S-s-<right>") 'windmove-swap-states-right)
 
-    ;; (exwm-enable)
-
-    )))
+;; (exwm-enable)
 
 (package-require 'exwm-randr)
 (exwm-randr-enable)
@@ -568,7 +572,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 
 (package-require 'notmuch)
 
-(package-require 'osa-chrome)
+;; (package-require 'osa-chrome)
 
 (defun comment-or-uncomment-region-or-line ()
   "Comments or uncomments the region or the current line if there's no active region."
@@ -719,14 +723,14 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 
 ;; (global-set-key (kbd "C-x C-z") 'zoom-window-zoom)
 
-(package-require 'tree-sitter)
-(package-require 'tree-sitter-langs)
+;; (package-require 'tree-sitter)
+;; (package-require 'tree-sitter-langs)
 
-(global-tree-sitter-mode)
+;; (global-tree-sitter-mode)
 
-(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+;; (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 
-(add-hook 'typescript-mode-hook #'tree-sitter-mode)
+;;      (add-hook 'typescript-mode-hook #'tree-sitter-mode)
 
 ;; (add-to-list 'load-path "./submodules/")
 ;;   ; Semantic
@@ -852,16 +856,16 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 ;; (load "~/quicklisp/setup.lisp")
 ;; (ql:add-to-init-file)
 
-(package-require 'dap-mode)
-(package-require 'typescript-mode)
+;; (package-require 'dap-mode)
+;; (package-require 'typescript-mode)
 
 
-(setq package-list '(dap-mode typescript-mode tree-sitter tree-sitter-langs lsp-mode lsp-ui))
+;; (setq package-list '(dap-mode typescript-mode tree-sitter tree-sitter-langs lsp-mode lsp-ui))
 
-(package-require 'lsp-mode)
+;; (package-require 'lsp-mode)
 
-(add-hook 'typescript-mode-hook 'lsp-deferred)
-(add-hook 'javascript-mode-hook 'lsp-deferred)
+;; (add-hook 'typescript-mode-hook 'lsp-deferred)
+;; (add-hook 'javascript-mode-hook 'lsp-deferred)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TRAMP for president (switch to edit file as root on remote machines)
@@ -1383,7 +1387,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 	 ("C-c n d"   . org-roam-dailies-find-date)
 	 ("C-c n c"   . org-roam-dailies-capture-today)
 	 ("C-c n C r" . org-roam-dailies-capture-tomorrow)
-	 ("C-c n t"   . org-roam-dailies-goto-today)
+	 ("C-c n t"   . org-roam-dailies-find-today)
 	 ("C-c n y"   . org-roam-dailies-find-yesterday)
 	 ("C-c n r"   . org-roam-dailies-find-tomorrow)
 	 ("C-c n g"   . org-roam-graph)
