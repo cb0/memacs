@@ -42,7 +42,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * Startup customization
 ** Start server
    #+begin_src elisp
-     (server-start)
+     ;; (server-start)
    #+end_src
 ** Ask before qutting emacs
    Especially when running exwm, closing the current emacs would close the whole window manager.
@@ -572,23 +572,24 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** Init Hook
    #+begin_src elisp
 
-     (defun dw/exwm-init-hook ()
+     (defun efs/exwm-init-hook ()
        ;; Make workspace 1 be the
        ;; one where we land at startup
        (exwm-workspace-switch-create 1)
 
        ;; Open eshell by default
        ;;(eshell)
-       (efs/start-panel)
+       ;; (efs/start-panel)
        ;; (efs/kill-panel)
-       (efs/run-in-background "dunst")
+       ;;(efs/run-in-background "dunst")
 
 
 
        ;; Launch apps that will run in the background
-       (efs/run-in-background "nm-applet"))
+       ;;(efs/run-in-background "nm-applet"))
+     )
 
-     (add-hook 'exwm-init-hook #'efs/after-exwm-init)
+     ;; (add-hook 'efs/exwm-init-hook #'efs/after-exwm-init)
 
      ;; (efs/run-in-background "pavucontrol")	
      ;; (efs/run-in-background "blueman-applet")
@@ -655,7 +656,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (defun copy-file-name-to-clipboard ()
        "Copy the current buffer file name to the clipboard."
        (interactive)
-       (let ((filename (if (equal major-mode 'dired-mode)
+       (let ((filename (if (equal majournalor-mode 'dired-mode)
                            default-directory
                          (buffer-file-name))))
          (when filename
@@ -1483,7 +1484,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
       'org-babel-load-languages
       ;; load all language marked with (lang . t).
       '((C . t)
-	(org . t)
+;;	(org . t)
 	(shell . t)))
 
      ;; turn off "evaluate code question" in org-mode code blocks
@@ -1880,8 +1881,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
        :bind-keymap
        ("C-c n d" . org-roam-dailies-map)
        :config
-       (require 'org-roam-dailies)
-       (org-roam-db-autosync-mode))
+       (org-roam-setup))
    #+end_src
 
    #+RESULTS:

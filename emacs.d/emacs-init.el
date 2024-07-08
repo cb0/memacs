@@ -27,7 +27,7 @@
 (setq mac-command-modifier 'meta)
 (set-keyboard-coding-system nil)
 
-(server-start)
+;; (server-start)
 
 (defun ask-before-closing ()
   "Close only if y was pressed."
@@ -147,11 +147,25 @@ Usage: (package-require 'package)"
 
 (defun efs/polybar-exwm-workspace ()
   (pcase exwm-workspace-current-index
-    (0 "0")
-    (1 "1")
-    (2 "2")
-    (3 "3")
-    (4 "4")))
+    (0 "")
+    (1 "")
+    (2 "")
+    (3 "")
+    (4 "")))
+
+
+(defun efs/send-polybar-hook (module-name hook-index)
+  (start-process-shell-command "polybar-msg" nil (format "polybar-msg hook %s %s" module-name hook-index)))
+
+(defun efs/send-polybar-exwm-workspace ()
+  (efs/send-polybar-hook "exwm-workspace" 1))
+
+;; Update panel indicator when workspace changes
+(add-hook 'exwm-workspace-switch-hook #'efs/send-polybar-exwm-workspace)
+
+(defun efs/run-in-background (command)
+  (let ((command-parts (split-string command "[ ]+")))
+    (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
 
 (require 'exwm)
 
@@ -231,44 +245,6 @@ Usage: (package-require 'package)"
 	?\C-\ ))
 
 ;; (push ?\C-\\ exwm-input-prefix-keys)   ;; use Ctrl + \ to switch input method
-
-;; get workspace list in bar
-;; (defun feb/exwm-workspace-list ()
-;;   "Return a lemonbar string showing workspace list."
-;;   (let* ((num (exwm-workspace--count))
-;; 	 (sequence (number-sequence 0 (1- num)))
-;; 	 (curr (exwm-workspace--position exwm-workspace--current)))
-;;     (mapconcat (lambda (i)
-;; 		 (format (if (= i curr) "[%%{F#00ff00}%d%%{F-}] " "%d ") i))
-;; 	       sequence "")
-;;     ))
-
-;; (defun feb/exwm-report-workspaces-to-lemonbar ()
-;;   (with-temp-file "/tmp/panel-fifo"
-;;   (insert (format "WIN%s\n" (feb/exwm-workspace-list)))))
-
-;;  (add-hook 'exwm-workspace-switch-hook #'feb/exwm-report-workspaces-to-lemonbar)
-;;  (add-hook 'exwm-init-hook #'feb/exwm-report-workspaces-to-lemonbar)
-
-;; (defun efs/run-in-background (command)
-;;   (let ((command-parts (split-string command "[ ]+")))
-;;     (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
-
-(defun dw/exwm-init-hook ()
-  ;; Make workspace 1 be the
-  ;; one where we land at startup
-  (exwm-workspace-switch-create 1)
-
-  ;; Open eshell by default
-  ;;(eshell)
-
-  ;; Launch apps that will run in the background
-  (efs/run-in-background "nm-applet"))
-
-;; (add-hook 'exwm-init-hook #'efs/after-exwm-init)
-
-;; (efs/run-in-background "pavucontrol")	
-;; (efs/run-in-background "blueman-applet")
 
 ;; from https://config.daviwil.com/desktop
    ;; Hide the modeline on all X windows
@@ -414,6 +390,43 @@ Usage: (package-require 'package)"
 
 ;; (get-exwm-process-id)
 
+(defvar efs/polybar-process nil
+  "Holds the process of the running Polybar instance, if any")
+
+(defun efs/kill-panel ()
+  (interactive)
+  (when efs/polybar-process
+    (ignore-errors
+      (kill-process efs/polybar-process)))
+  (setq efs/polybar-process nil))
+
+(defun efs/start-panel ()
+  (interactive)
+  (efs/kill-panel)
+  (setq efs/polybar-process (start-process-shell-command "polybar" nil "polybar panel")))
+
+(defun efs/exwm-init-hook ()
+  ;; Make workspace 1 be the
+  ;; one where we land at startup
+  (exwm-workspace-switch-create 1)
+
+  ;; Open eshell by default
+  ;;(eshell)
+  ;; (efs/start-panel)
+  ;; (efs/kill-panel)
+  ;;(efs/run-in-background "dunst")
+
+
+
+  ;; Launch apps that will run in the background
+  ;;(efs/run-in-background "nm-applet"))
+)
+
+;; (add-hook 'efs/exwm-init-hook #'efs/after-exwm-init)
+
+;; (efs/run-in-background "pavucontrol")	
+;; (efs/run-in-background "blueman-applet")
+
 (global-visual-line-mode 1)
 
 (scroll-bar-mode 0)
@@ -450,7 +463,7 @@ Usage: (package-require 'package)"
 (defun copy-file-name-to-clipboard ()
   "Copy the current buffer file name to the clipboard."
   (interactive)
-  (let ((filename (if (equal major-mode 'dired-mode)
+  (let ((filename (if (equal majournalor-mode 'dired-mode)
                       default-directory
                     (buffer-file-name))))
     (when filename
@@ -1038,196 +1051,197 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 ;; (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 ; Activate org-mode
-(require 'org)
-;; (require 'org-install)
-;; (require 'org-habit)
-;; (setq org-habit-preceding-days 7
-      ;; org-habit-following-days 1
-      ;; org-habit-graph-column 80
-      ;; org-habit-show-habits-only-for-today t
-      ;; org-habit-show-all-today t)
-;;(require 'ess-site)
-					;; http://orgmode.org/guide/Activation.html#Activation
+     (require 'org)
+     ;; (require 'org-install)
+     ;; (require 'org-habit)
+     ;; (setq org-habit-preceding-days 7
+     ;; org-habit-following-days 1
+     ;; org-habit-graph-column 80
+     ;; org-habit-show-habits-only-for-today t
+     ;; org-habit-show-all-today t)
+     ;;(require 'ess-site)
+     ;; http://orgmode.org/guide/Activation.html#Activation
 
-					;; The following lines are always needed.  Choose your own keys.
-(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+     ;; The following lines are always needed.  Choose your own keys.
+     (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
-					;; And add babel inline code execution
-					;; babel, for executing code in org-mode.
-(org-babel-do-load-languages
- 'org-babel-load-languages
-					;; load all language marked with (lang . t).
- '((C . t)
-   (shell . t)))
+     ;; And add babel inline code execution
+     ;; babel, for executing code in org-mode.
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      ;; load all language marked with (lang . t).
+      '((C . t)
+;;	(org . t)
+	(shell . t)))
 
-;; turn off "evaluate code question" in org-mode code blocks
-(setq org-confirm-babel-evaluate nil)
+     ;; turn off "evaluate code question" in org-mode code blocks
+     (setq org-confirm-babel-evaluate nil)
 
-;;set org diretrory to owncloud sync
-;; (setq org-directory "~/ownCloud/org")
+     ;;set org diretrory to owncloud sync
+     ;; (setq org-directory "~/ownCloud/org")
 
-;; and some more org stuff
-(setq org-list-allow-alphabetical t)
+     ;; and some more org stuff
+     (setq org-list-allow-alphabetical t)
 
-(define-key global-map "\C-cl" 'org-store-link)
-(define-key global-map "\C-ca" 'org-agenda)
-;; add a timestamp when we close an item
-(setq org-log-done 'note)
-;; include a closing note when close an todo item
-;; (setq org-log-done 'note)
+     (define-key global-map "\C-cl" 'org-store-link)
+     (define-key global-map "\C-ca" 'org-agenda)
+     ;; add a timestamp when we close an item
+     (setq org-log-done 'note)
+     ;; include a closing note when close an todo item
+     ;; (setq org-log-done 'note)
 
-;;(global-set-key "\C-cl" 'org-store-link)
-;; (global-set-key "\C-cc" 'org-capture)
-;; (global-set-key "\C-ca" 'org-agenda)
-;; (global-set-key "\C-cb" 'org-iswitchb)
-;; (global-set-key (kbd "<S-i>") 'org-clock-in)
-;; (global-set-key (kbd "<S-o>") 'org-clock-out)
-;; (global-set-key (kbd "<S-g>") 'org-clock-goto)
-
-
-
-;; (eval-after-load "org"
-;;   '(progn
-;;      (define-prefix-command 'org-todo-state-map)
-
-;;      (define-key org-mode-map "\C-cx" 'org-todo-state-map)
-
-;;      (define-key org-todo-state-map "x"
-;;        #'(lambda nil (interactive) (org-todo "CANCELLED")))
-;;      (define-key org-todo-state-map "d"
-;;        #'(lambda nil (interactive) (org-todo "DONE")))
-;;      (define-key org-todo-state-map "f"
-;;        #'(lambda nil (interactive) (org-todo "DEFERRED")))
-;;      (define-key org-todo-state-map "l"
-;;        #'(lambda nil (interactive) (org-todo "DELEGATED")))
-;;      (define-key org-todo-state-map "s"
-;;        #'(lambda nil (interactive) (org-todo "STARTED")))
-;;      (define-key org-todo-state-map "w"
-;;        #'(lambda nil (interactive) (org-todo "WAITING")))
-
-;;      (define-key org-agenda-mode-map "\C-n" 'next-line)
-;;      (define-key org-agenda-keymap "\C-n" 'next-line)
-;;      (define-key org-agenda-mode-map "\C-p" 'previous-line)
-;;      (define-key org-agenda-keymap "\C-p" 'previous-line)))
-
-(custom-set-variables
- ;; '(org-agenda-files (quote ("~/todo.org")))
- ;; '(org-default-notes-file "~/notes.org")
- '(org-agenda-ndays 7)
- '(org-deadline-warning-days 14)
- '(org-agenda-show-all-dates t)
- '(org-agenda-skip-deadline-if-done t)
- '(org-agenda-skip-scheduled-if-done t)
- '(org-agenda-start-on-weekday nil)
- '(org-reverse-note-order t)
- '(org-fast-tag-selection-single-key (quote expert)))
-
-(global-set-key "\C-cr" 'org-capture)
-
-;; Org Capture
-;; (setq org-capture-templates
-      ;; '(("t" "Todo" entry (file+headline (concat org-directory "/gtd.org") "Tasks")
-	 ;; "* TODO %?\n %i\n")
-	;; ("l" "Link" plain (file (concat org-directory "/links.org"))
-	 ;; "- %?\n %x\n")))
+     ;;(global-set-key "\C-cl" 'org-store-link)
+     ;; (global-set-key "\C-cc" 'org-capture)
+     ;; (global-set-key "\C-ca" 'org-agenda)
+     ;; (global-set-key "\C-cb" 'org-iswitchb)
+     ;; (global-set-key (kbd "<S-i>") 'org-clock-in)
+     ;; (global-set-key (kbd "<S-o>") 'org-clock-out)
+     ;; (global-set-key (kbd "<S-g>") 'org-clock-goto)
 
 
-;; (custom-set-variables
-;;  '(org-agenda-files (quote ("~/todo.org")))
-;;  '(org-default-notes-file "~/notes.org")
-;;  '(org-agenda-ndays 7)
-;;  '(org-deadline-warning-days 14)
-;;  '(org-agenda-show-all-dates t)
-;;  '(org-agenda-skip-deadline-if-done t)
-;;  '(org-agenda-skip-scheduled-if-done t)
-;;  '(org-agenda-start-on-weekday nil)
-;;  '(org-reverse-note-order t)
-;;  '(org-fast-tag-selection-single-key (quote expert))
-;;  '(org-agenda-custom-commands
-;;    (quote (("d" todo "DELEGATED" nil)
-;;         ("c" todo "DONE|DEFERRED|CANCELLED" nil)
-;;         ("w" todo "WAITING" nil)
-;;         ("W" agenda "" ((org-agenda-ndays 21)))
-;;         ("A" agenda ""
-;;          ((org-agenda-skip-function
-;;            (lambda nil
-;;              (org-agenda-skip-entry-if (quote notregexp) "\\=.*\\[#A\\]")))
-;;           (org-agenda-ndays 1)
-;;           (org-agenda-overriding-header "Today's Priority #A tasks: ")))
-;;         ("u" alltodo ""
-;;          ((org-agenda-skip-function
-;;            (lambda nil
-;;              (org-agenda-skip-entry-if (quote scheduled) (quote deadline)
-;;                                        (quote regexp) "\n]+>")))
-;;           (org-agenda-overriding-header "Unscheduled TODO entries: "))))))
-;;  '(org-remember-store-without-prompt t)
-;;  '(org-remember-templates
-;;    (quote ((116 "* TODO %?\n  %u" "~/todo.org" "Tasks")
-;;         (110 "* %u %?" "~/notes.org" "Notes"))))
-;;  '(remember-annotation-functions (quote (org-remember-annotation)))
-;;  '(remember-handler-functions (quote (org-remember-handler))))
 
-;; (package-require 'org-ac)
-;; (package-require 'org-tempo)
+     ;; (eval-after-load "org"
+     ;;   '(progn
+     ;;      (define-prefix-command 'org-todo-state-map)
 
-;; To save the clock history across Emacs sessions:
-(setq org-clock-persist 'history)
-(org-clock-persistence-insinuate)
-(setq org-clock-continuously nil)
+     ;;      (define-key org-mode-map "\C-cx" 'org-todo-state-map)
 
-;; we want some non standard todo types
-(setq org-todo-keywords
-      '((sequence
-	 "TODO(t)" "BUG(b)" "WAIT_FOR_FEEDBACK(w)" "FIXED(f)" "TO_BE_MERGE(m)" "MERGED(M)" "WAIT(w)" "|" "CANCELED(c)" "DONE(d)" "|" "INFO(i)")))
+     ;;      (define-key org-todo-state-map "x"
+     ;;        #'(lambda nil (interactive) (org-todo "CANCELLED")))
+     ;;      (define-key org-todo-state-map "d"
+     ;;        #'(lambda nil (interactive) (org-todo "DONE")))
+     ;;      (define-key org-todo-state-map "f"
+     ;;        #'(lambda nil (interactive) (org-todo "DEFERRED")))
+     ;;      (define-key org-todo-state-map "l"
+     ;;        #'(lambda nil (interactive) (org-todo "DELEGATED")))
+     ;;      (define-key org-todo-state-map "s"
+     ;;        #'(lambda nil (interactive) (org-todo "STARTED")))
+     ;;      (define-key org-todo-state-map "w"
+     ;;        #'(lambda nil (interactive) (org-todo "WAITING")))
 
-(setq org-todo-keyword-faces
-      '(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-	("BUG" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-	("WAIT_FOR_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-	("DISCUSSION" :background "red2" :foreground "orange" :weight bold :box (:line-width 2 :style released-button))
-	("FIXED" :background "orange" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-	("TO_BE_MERGE" :background "gold" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-	("MERGED" :background "gold" :foreground "grey" :weight bold :box (:line-width 2 :style released-button))
-	("WAIT" :background "gray" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-	("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
-	("INFO" :background "green" :foreground "red1" :weight bold :box (:line-width 2 :style released-button))
-	("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
+     ;;      (define-key org-agenda-mode-map "\C-n" 'next-line)
+     ;;      (define-key org-agenda-keymap "\C-n" 'next-line)
+     ;;      (define-key org-agenda-mode-map "\C-p" 'previous-line)
+     ;;      (define-key org-agenda-keymap "\C-p" 'previous-line)))
 
-;; dont ask when executing code
-(setq org-confirm-babel-evaluate nil)
+     (custom-set-variables
+      ;; '(org-agenda-files (quote ("~/todo.org")))
+      ;; '(org-default-notes-file "~/notes.org")
+      '(org-agenda-ndays 7)
+      '(org-deadline-warning-days 14)
+      '(org-agenda-show-all-dates t)
+      '(org-agenda-skip-deadline-if-done t)
+      '(org-agenda-skip-scheduled-if-done t)
+      '(org-agenda-start-on-weekday nil)
+      '(org-reverse-note-order t)
+      '(org-fast-tag-selection-single-key (quote expert)))
 
-(defface org-block-begin-line
-  '((t (:underline "#A7A6AA" :foreground "#040404" :background "#9a9a9a")))
-  "Face used for the line delimiting the begin of source blocks.")
+     (global-set-key "\C-cr" 'org-capture)
 
-(defface org-block-background
-  '((t (:background "#4F4F4F")))
-  "Face used for the source block background.")
+     ;; Org Capture
+     ;; (setq org-capture-templates
+     ;; '(("t" "Todo" entry (file+headline (concat org-directory "/gtd.org") "Tasks")
+     ;; "* TODO %?\n %i\n")
+     ;; ("l" "Link" plain (file (concat org-directory "/links.org"))
+     ;; "- %?\n %x\n")))
 
-(defface org-block-end-line
-  '((t (:overline "#A7A6AA" :foreground "#000000" :background "#9a9a9a")))
-  "Face used for the line delimiting the end of source blocks.")
 
-(setq org-completion-use-ido t)
+     ;; (custom-set-variables
+     ;;  '(org-agenda-files (quote ("~/todo.org")))
+     ;;  '(org-default-notes-file "~/notes.org")
+     ;;  '(org-agenda-ndays 7)
+     ;;  '(org-deadline-warning-days 14)
+     ;;  '(org-agenda-show-all-dates t)
+     ;;  '(org-agenda-skip-deadline-if-done t)
+     ;;  '(org-agenda-skip-scheduled-if-done t)
+     ;;  '(org-agenda-start-on-weekday nil)
+     ;;  '(org-reverse-note-order t)
+     ;;  '(org-fast-tag-selection-single-key (quote expert))
+     ;;  '(org-agenda-custom-commands
+     ;;    (quote (("d" todo "DELEGATED" nil)
+     ;;         ("c" todo "DONE|DEFERRED|CANCELLED" nil)
+     ;;         ("w" todo "WAITING" nil)
+     ;;         ("W" agenda "" ((org-agenda-ndays 21)))
+     ;;         ("A" agenda ""
+     ;;          ((org-agenda-skip-function
+     ;;            (lambda nil
+     ;;              (org-agenda-skip-entry-if (quote notregexp) "\\=.*\\[#A\\]")))
+     ;;           (org-agenda-ndays 1)
+     ;;           (org-agenda-overriding-header "Today's Priority #A tasks: ")))
+     ;;         ("u" alltodo ""
+     ;;          ((org-agenda-skip-function
+     ;;            (lambda nil
+     ;;              (org-agenda-skip-entry-if (quote scheduled) (quote deadline)
+     ;;                                        (quote regexp) "\n]+>")))
+     ;;           (org-agenda-overriding-header "Unscheduled TODO entries: "))))))
+     ;;  '(org-remember-store-without-prompt t)
+     ;;  '(org-remember-templates
+     ;;    (quote ((116 "* TODO %?\n  %u" "~/todo.org" "Tasks")
+     ;;         (110 "* %u %?" "~/notes.org" "Notes"))))
+     ;;  '(remember-annotation-functions (quote (org-remember-annotation)))
+     ;;  '(remember-handler-functions (quote (org-remember-handler))))
 
-(setq exec-path (append exec-path '("/usr/bin/mscgen")))
+     ;; (package-require 'org-ac)
+     ;; (package-require 'org-tempo)
 
-(defun do-org-show-all-inline-images ()
-  (interactive)
-  (org-display-inline-images t t))
+     ;; To save the clock history across Emacs sessions:
+     (setq org-clock-persist 'history)
+     (org-clock-persistence-insinuate)
+     (setq org-clock-continuously nil)
 
-;; (add-hook 'org-ctrl-c-ctrl-c-hook (lambda () (org-display-inline-images)))
-;;(add-hook 'org-confirm-babel-evaluate-hook (lambda () (org-display-inline-images)))
+     ;; we want some non standard todo types
+     (setq org-todo-keywords
+	   '((sequence
+	      "TODO(t)" "BUG(b)" "WAIT_FOR_FEEDBACK(w)" "FIXED(f)" "TO_BE_MERGE(m)" "MERGED(M)" "WAIT(w)" "|" "CANCELED(c)" "DONE(d)" "|" "INFO(i)")))
 
-(add-hook 'org-babel-after-execute-hook
-	  (lambda ()
-	    (condition-case nil
-		(org-display-inline-images)
-	      (error nil)))
-	  'append)
+     (setq org-todo-keyword-faces
+	   '(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	     ("BUG" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	     ("WAIT_FOR_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	     ("DISCUSSION" :background "red2" :foreground "orange" :weight bold :box (:line-width 2 :style released-button))
+	     ("FIXED" :background "orange" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	     ("TO_BE_MERGE" :background "gold" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	     ("MERGED" :background "gold" :foreground "grey" :weight bold :box (:line-width 2 :style released-button))
+	     ("WAIT" :background "gray" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+	     ("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
+	     ("INFO" :background "green" :foreground "red1" :weight bold :box (:line-width 2 :style released-button))
+	     ("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
 
-;; set so that each line has correct indent
-(setq org-adapt-indentation t)
+     ;; dont ask when executing code
+     (setq org-confirm-babel-evaluate nil)
+
+     (defface org-block-begin-line
+       '((t (:underline "#A7A6AA" :foreground "#040404" :background "#9a9a9a")))
+       "Face used for the line delimiting the begin of source blocks.")
+
+     (defface org-block-background
+       '((t (:background "#4F4F4F")))
+       "Face used for the source block background.")
+
+     (defface org-block-end-line
+       '((t (:overline "#A7A6AA" :foreground "#000000" :background "#9a9a9a")))
+       "Face used for the line delimiting the end of source blocks.")
+
+     (setq org-completion-use-ido t)
+
+     (setq exec-path (append exec-path '("/usr/bin/mscgen")))
+
+     (defun do-org-show-all-inline-images ()
+       (interactive)
+       (org-display-inline-images t t))
+
+     ;; (add-hook 'org-ctrl-c-ctrl-c-hook (lambda () (org-display-inline-images)))
+     ;;(add-hook 'org-confirm-babel-evaluate-hook (lambda () (org-display-inline-images)))
+
+     (add-hook 'org-babel-after-execute-hook
+	       (lambda ()
+		 (condition-case nil
+		     (org-display-inline-images)
+		   (error nil)))
+	       'append)
+
+     ;; set so that each line has correct indent
+     (setq org-adapt-indentation t)
 
 (when (version<= "9.2" (org-version))
   (require 'org-tempo))
@@ -1363,12 +1377,15 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 
 (setq temporary-file-directory "/tmp/")
 
+(package-require 'org-roam-dailies)	
+
 (use-package org-roam
   :ensure t
   :init
   (setq org-roam-v2-ack t)
   :custom
   (org-roam-directory "~/sync/org/org-roam")
+  ;; (org-roam-dailies-directory "journal/")
   (org-roam-completion-everywhere t)
   (org-roam-capture-templates
    '(("d" "default" plain
@@ -1392,7 +1409,12 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 	 ("C-c n r"   . org-roam-dailies-find-tomorrow)
 	 ("C-c n g"   . org-roam-graph)
 	 :map org-mode-map
-	 ("C-M-i"     . completion-at-point))
+	 ("C-M-i"     . completion-at-point)
+	 :map org-roam-dailies-map
+	 ("Y" . org-roam-dailies-capture-yesterday)
+	 ("T" . org-roam-dailies-capture-tomorrow))
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
   :config
   (org-roam-setup))
 
