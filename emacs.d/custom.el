@@ -3,6 +3,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(enwc-wireless-device "wlp170s0")
  '(org-agenda-files (directory-files-recursively "~/sync/org/" "\\.org$"))
  '(org-agenda-ndays 7)
  '(org-agenda-show-all-dates t)
@@ -14,7 +15,7 @@
  '(org-fast-tag-selection-single-key 'expert)
  '(org-reverse-note-order t)
  '(package-selected-packages
-   '(zoom-window zenburn-theme yasnippet xml-rpc workgroups2 which-key wakatime-mode w3m vuiet use-ttf use-package transpose-frame sudo-edit stickyfunc-enhance spray spaceline smudge smex smartparens slime project-explorer pinentry persp-projectile org-wc org-super-agenda org-roam org-journal org-caldav multiple-cursors magit lsp-ui lsp-haskell langtool hydra helm-rhythmbox helm-ag exwm esup enwc counsel company-ghci auto-complete-pcmp auctex anki-editor ag ac-helm 2048-game)))
+   '(dashboard zoom-window zenburn-theme yasnippet xml-rpc workgroups2 which-key wakatime-mode w3m vuiet use-ttf use-package transpose-frame sudo-edit stickyfunc-enhance spray spaceline smudge smex smartparens slime project-explorer pinentry persp-projectile org-wc org-super-agenda org-roam org-journal org-caldav multiple-cursors magit lsp-ui lsp-haskell langtool hydra helm-rhythmbox helm-ag frog-jump-buffer exwm esup enwc counsel company-ghci auto-complete-pcmp auctex anki-editor ag ac-helm 2048-game)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

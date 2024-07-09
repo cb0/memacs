@@ -42,20 +42,31 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      (set-exec-path-from-shell-PATH)
    #+END_SRC
+
 ** OS X
    To be able to type characters like € or [ on my mac keyboard, this option needs to be set.
    It instructd emacs not to handle key combinations started by pressing the right alt key.
    #+BEGIN_SRC elisp
-     (setq ns-right-alternate-modifier (quote nil))
-     (setq ns-option-modifier      nil
-	   ns-right-option-modifer 'meta)
-     (setq mac-command-modifier 'meta)
-     (set-keyboard-coding-system nil)
+     (cond
+      ((string-equal system-type "darwin")
+       (progn
+	 (setq ns-right-alternate-modifier (quote nil))
+	 (setq ns-option-modifier      nil
+	       ns-right-option-modifer 'meta)
+	 (setq mac-command-modifier 'meta)
+	 (set-keyboard-coding-system nil))))
    #+END_SRC
-* Startup customization
-** Start server
+
+   #+RESULTS:X0
+
+* Emacs itself
+
+** Dashboard
+* Startup customizatio Start server
+** Starting the emacs server from here.
+   If this is not done, the hooks for polypanel to show the current dektop do not show up. Probably because they are then not attached to the current emacs session, but to the systemctl emacs instance.
    #+begin_src elisp
-     ;; (server-start)
+     (server-start)
    #+end_src
 ** Ask before qutting emacs
    Especially when running exwm, closing the current emacs would close the whole window manager.
@@ -241,6 +252,10 @@ This is my emacs init org configuration file. Written in org mode style for bett
 	 (4 "4-misc")
 	 (5 "5-misc")))
 
+     (defun cb0/toggle-polybar ()
+       (interactive)
+       (start-process-shell-command "polybar-msg" nil "polybar-msg cmd toggle"))
+     
      (defun efs/send-polybar-hook (module-name hook-index)
        (start-process-shell-command "polybar-msg" nil (format "polybar-msg hook %s %s" module-name hook-index)))
 
