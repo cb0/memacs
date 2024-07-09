@@ -4,13 +4,26 @@ This is my emacs init org configuration file. Written in org mode style for bett
   In here I define some personal informations. So if you need to contact me, here is my mail.
   #+BEGIN_SRC emacs-lisp
     (setq user-full-name "Marcus Puchalla"
-          user-mail-address "marcus.puchalla@gmail.com")
+          user-mail-address "cb0@0xcb0.com")
   #+END_SRC
+
+  #+RESULTS:
+  : cb0@0xcb0.com
+
 * OS specific customization
+** Rebind capslock to control
+   #+begin_src elisp
+     (start-process-shell-command "xmodmap" nil "setxkbmap -option ctrl:nocaps")
+   #+end_src
 ** Set EXEC Path
    #+BEGIN_SRC elisp
-     (setenv "PATH" (concat (getenv "PATH") ":/Users/tk/.ghcup/bin"))
-     (setq exec-path (append exec-path '("/Users/tk/.ghcup/bin")))
+
+     (cond
+      ((string-equal system-type "darwin")
+       (progn
+	 (setenv "PATH" (concat (getenv "PATH") ":/Users/tk/.ghcup/bin"))
+	 (setq exec-path (append exec-path '("/Users/tk/.ghcup/bin"))))))
+
      (getenv "PATH")
 
      (defun set-exec-path-from-shell-PATH ()
@@ -121,7 +134,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 *** Define package require
     `package_require` to make sure a package will get installed.
-       #+BEGIN_SRC emacs-lisp
+       #+BEGIN_SRC elisp
          ;; Make sure a package is installed
          (defun package-require (package)
            "Install a PACKAGE unless it is already installed
@@ -138,7 +151,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+END_SRC
 
 *** Initialize the package manager
-    #+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC elisp
       ;; Initialize installed packages
       ;;(package-initialize)
       ;; package init not needed, since it is done anyway in emacs 24 after reading the init
@@ -215,24 +228,25 @@ This is my emacs init org configuration file. Written in org mode style for bett
        (pcase exwm-class-name
 	 ("Chrome" (exwm-workspace-move-window 1))
 	 ("Firefox" (exwm-workspace-move-window 2))
-	 ("webstorm" (exwm-workspace-move-window 3))
-	 ("thunderbird" (exwm-workspace-move-window 3))
-	 ("TelegramDesktop" (exwm-workspace-move-window 0))))
+	 ("webstorm" (exwm-workspace-move-window 0))
+	 ("thunderbird" (exwm-workspace-move-window 4))
+	 ("TelegramDesktop" (exwm-workspace-move-window 3))))
 
      (defun efs/polybar-exwm-workspace ()
        (pcase exwm-workspace-current-index
-	 (0 "")
-	 (1 "")
-	 (2 "")
-	 (3 "")
-	 (4 "")))
-
+	 (0 "0--messages")
+	 (1 "1--eternl")
+	 (2 "2--work")
+	 (3 "3--browse")
+	 (4 "4-misc")
+	 (5 "5-misc")))
 
      (defun efs/send-polybar-hook (module-name hook-index)
        (start-process-shell-command "polybar-msg" nil (format "polybar-msg hook %s %s" module-name hook-index)))
 
-     (defun efs/send-polybar-exwm-workspace ()
-       (efs/send-polybar-hook "exwm-workspace" 1))
+     (defun efs/send-polybar-hook (module-name hook-index)
+       (let ((command (format "polybar-msg hook %s %s" module-name hook-index)))
+	 (start-process-shell-command "polybar-msg" nil command)))
 
      ;; Update panel indicator when workspace changes
      (add-hook 'exwm-workspace-switch-hook #'efs/send-polybar-exwm-workspace)
@@ -240,8 +254,6 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (defun efs/run-in-background (command)
        (let ((command-parts (split-string command "[ ]+")))
 	 (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
-
-
 
    #+end_src
 
@@ -260,8 +272,8 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      (setq exwm-systemtray-height 32)
 
-     ;; use char mode on startup
-     (setq exwm-manage-configurations '((t char-mode t)))
+     ;; use line mode on startup
+     (setq exwm-manage-configurations '((t line-mode t)))
 
      ;; All buffers created in EXWM mode are named "*EXWM*". You may want to
      ;; change it in `exwm-update-class-hook' and `exwm-update-title-hook', which
@@ -290,7 +302,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (add-hook 'exwm-update-title-hook #'efs/exwm-update-title)
      (add-hook 'exwm-manage-finish-hook #'efs/configure-window-by-class)
 
-     (exwm-config-example)
+     ;;(exwm-config-example)
      (exwm-enable)
 
      (setq exwm-input-simulation-keys
@@ -608,17 +620,17 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 ** Remove all interface distractions:
    I don't like the scrollbar, menu and toolbar.
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC elisp
      (scroll-bar-mode 0)
      (tool-bar-mode 0)
      (menu-bar-mode 0)
    #+END_SRC
 ** Fullscreen
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC elisp
      (global-set-key [f11] 'toggle-frame-fullscreen)
    #+END_SRC
 ** Zen Burn theme
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC elisp
      (package-require 'zenburn-theme)
      (load-theme 'zenburn t)
 
@@ -700,7 +712,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+RESULTS:
 
 ** Load secrets and epa
-   #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC elisp
      (package-require 'epa-file)
      (setq epg-debug t)
      (epa-file-enable)
