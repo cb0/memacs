@@ -20,11 +20,3 @@
 /emacs.d/image-dired/
 /emacs.d/mymacs/init.el~
 *.DS_Store
-/emacs.d/%backup%~
-/emacs.d/eln-cache/
-/emacs.d/emacs-init.org~
-*~
-/emacs.bak
-/emacs.d/transient/values.el
-/emacs.d/lib/smudge/
-/emacs.d/custom.el.bak
