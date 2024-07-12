@@ -1,0 +1,553 @@
+loading in ~/.profile 
+001
+002
+004
+004
+006
+Starting from script ldm_emacs_start.sh.
+
+(emacs:3080): Gdk-WARNING **: 09:24:52.204: GdkWindow 0x400390 unexpectedly destroyed
+
+(emacs:3080): Gdk-WARNING **: 09:24:52.204: GdkWindow 0x40038c unexpectedly destroyed
+
+(emacs:3080): GLib-GObject-CRITICAL **: 09:24:52.204: ../glib/gobject/gsignal.c:2685: instance '0x559879484bc0' has no handler with id '5336'
+
+(emacs:3080): GLib-WARNING **: 09:24:52.205: g_main_context_prepare() called recursively from within a source's check() or prepare() member.
+
+(emacs:3080): GLib-WARNING **: 09:24:52.205: g_main_context_check() called recursively from within a source's check() or prepare() member.
+Backtrace:
+emacs(+0x188db6)[0x559873b97db6]
+emacs(+0x23de6)[0x559873a32de6]
+emacs(+0x24d2a)[0x559873a33d2a]
+emacs(+0x1d54c)[0x559873a2c54c]
+emacs(+0x2da130)[0x559873ce9130]
+emacs(+0x25438d)[0x559873c6338d]
+emacs(+0x262a9d)[0x559873c71a9d]
+emacs(+0x16a573)[0x559873b79573]
+emacs(+0x13a919)[0x559873b49919]
+emacs(+0x13aa44)[0x559873b49a44]
+emacs(+0x13ac7b)[0x559873b49c7b]
+/usr/lib/libX11.so.6(_XError+0x11c)[0x7faa5ab5b74c]
+/usr/lib/libX11.so.6(+0x3f858)[0x7faa5ab5b858]
+/usr/lib/libX11.so.6(+0x3f915)[0x7faa5ab5b915]
+/usr/lib/libX11.so.6(_XEventsQueued+0x5a)[0x7faa5ab5b9aa]
+/usr/lib/libX11.so.6(XPending+0x58)[0x7faa5ab4e2c8]
+/usr/lib/libgdk-3.so.0(+0x7ee01)[0x7faa5b392e01]
+/usr/lib/libglib-2.0.so.0(+0x5cf7d)[0x7faa5ace1f7d]
+/usr/lib/libglib-2.0.so.0(+0xbe77e)[0x7faa5ad4377e]
+/usr/lib/libglib-2.0.so.0(g_main_context_pending+0x2e)[0x7faa5ace0f2e]
+/usr/lib/libgtk-3.so.0(gtk_events_pending+0x1b)[0x7faa5b5e39bb]
+emacs(+0x1296fd)[0x559873b386fd]
+emacs(+0x17a691)[0x559873b89691]
+emacs(+0x1fd215)[0x559873c0c215]
+emacs(+0x21a135)[0x559873c29135]
+emacs(+0x223c09)[0x559873c32c09]
+emacs(+0x10855a)[0x559873b1755a]
+emacs(+0x112aa6)[0x559873b21aa6]
+emacs(+0x5c1eb)[0x559873a6b1eb]
+emacs(+0x641e0)[0x559873a731e0]
+emacs(+0x87379)[0x559873a96379]
+emacs(+0x79948)[0x559873a88948]
+emacs(+0x817e2)[0x559873a907e2]
+emacs(+0x722b3)[0x559873a812b3]
+emacs(+0x1fcdcc)[0x559873c0bdcc]
+emacs(+0x72208)[0x559873a81208]
+emacs(+0x75f02)[0x559873a84f02]
+emacs(+0x2da130)[0x559873ce9130]
+emacs(+0x25438d)[0x559873c6338d]
+emacs(+0x250ab6)[0x559873c5fab6]
+emacs(+0x20da0e)[0x559873c1ca0e]
+...
+loading in ~/.profile 
+001
+002
+004
+004
+006
+Starting from script ldm_emacs_start.sh.
+
+(emacs:3418): Gdk-WARNING **: 09:27:29.408: GdkWindow 0x400556 unexpectedly destroyed
+
+(emacs:3418): Gdk-WARNING **: 09:27:29.408: GdkWindow 0x400552 unexpectedly destroyed
+
+(emacs:3418): GLib-GObject-CRITICAL **: 09:27:29.408: ../glib/gobject/gsignal.c:2685: instance '0x5571a1d865b0' has no handler with id '5284'
+
+(emacs:3418): GLib-WARNING **: 09:27:29.409: g_main_context_prepare() called recursively from within a source's check() or prepare() member.
+
+(emacs:3418): GLib-WARNING **: 09:27:29.409: g_main_context_check() called recursively from within a source's check() or prepare() member.
+Backtrace:
+emacs(+0x188db6)[0x55719c764db6]
+emacs(+0x23de6)[0x55719c5ffde6]
+emacs(+0x24d2a)[0x55719c600d2a]
+emacs(+0x1d54c)[0x55719c5f954c]
+emacs(+0x2da130)[0x55719c8b6130]
+emacs(+0x25438d)[0x55719c83038d]
+emacs(+0x262a9d)[0x55719c83ea9d]
+emacs(+0x16a573)[0x55719c746573]
+emacs(+0x13a919)[0x55719c716919]
+emacs(+0x13aa44)[0x55719c716a44]
+emacs(+0x13ac7b)[0x55719c716c7b]
+/usr/lib/libX11.so.6(_XError+0x11c)[0x7f89694a374c]
+/usr/lib/libX11.so.6(+0x3f858)[0x7f89694a3858]
+/usr/lib/libX11.so.6(+0x3f915)[0x7f89694a3915]
+/usr/lib/libX11.so.6(_XEventsQueued+0x5a)[0x7f89694a39aa]
+/usr/lib/libX11.so.6(XPending+0x58)[0x7f89694962c8]
+/usr/lib/libgdk-3.so.0(+0x7ee01)[0x7f8969cdae01]
+/usr/lib/libglib-2.0.so.0(+0x5cf7d)[0x7f8969629f7d]
+/usr/lib/libglib-2.0.so.0(+0xbe77e)[0x7f896968b77e]
+/usr/lib/libglib-2.0.so.0(g_main_context_pending+0x2e)[0x7f8969628f2e]
+/usr/lib/libgtk-3.so.0(gtk_events_pending+0x1b)[0x7f8969f2b9bb]
+emacs(+0x1296fd)[0x55719c7056fd]
+emacs(+0x17a691)[0x55719c756691]
+emacs(+0x17aae5)[0x55719c756ae5]
+emacs(+0x298d5b)[0x55719c874d5b]
+emacs(+0x98be5)[0x55719c674be5]
+emacs(+0x668c8)[0x55719c6428c8]
+emacs(+0x689fd)[0x55719c6449fd]
+emacs(+0x6999b)[0x55719c64599b]
+emacs(+0x79b83)[0x55719c655b83]
+emacs(+0x817e2)[0x55719c65d7e2]
+emacs(+0x722b3)[0x55719c64e2b3]
+emacs(+0x1fcdcc)[0x55719c7d8dcc]
+emacs(+0x72208)[0x55719c64e208]
+emacs(+0x75f02)[0x55719c651f02]
+emacs(+0x2da130)[0x55719c8b6130]
+emacs(+0x25438d)[0x55719c83038d]
+emacs(+0x250ab6)[0x55719c82cab6]
+emacs(+0x20da0e)[0x55719c7e9a0e]
+emacs(+0x20e448)[0x55719c7ea448]
+emacs(+0x250ab6)[0x55719c82cab6]
+...
+loading in ~/.profile 
+001
+002
+004
+004
+006
+Starting from script ldm_emacs_start.sh.
+loading in ~/.profile 
+001
+002
+004
+004
+006
+Starting from script ldm_emacs_start.sh.
+
+(emacs:4118): Gdk-WARNING **: 09:33:56.338: GdkWindow 0x400938 unexpectedly destroyed
+
+(emacs:4118): Gdk-WARNING **: 09:33:56.338: GdkWindow 0x400934 unexpectedly destroyed
+
+(emacs:4118): Gdk-WARNING **: 09:33:56.338: GdkWindow 0x400aa2 unexpectedly destroyed
+
+(emacs:4118): Gdk-WARNING **: 09:33:56.338: GdkWindow 0x400a9e unexpectedly destroyed
+
+(emacs:4118): Gtk-CRITICAL **: 09:33:56.340: gtk_widget_get_window: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(emacs:4118): Gtk-CRITICAL **: 09:33:56.340: gtk_widget_get_scale_factor: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(emacs:4118): Gtk-CRITICAL **: 09:33:56.343: gtk_widget_get_window: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(emacs:4118): Gtk-CRITICAL **: 09:33:56.343: gtk_widget_get_scale_factor: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(emacs:4118): GLib-GObject-CRITICAL **: 09:33:56.352: g_object_get_data: assertion 'G_IS_OBJECT (object)' failed
+
+(emacs:4118): Gtk-CRITICAL **: 09:33:56.352: gtk_widget_destroy: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(emacs:4118): GLib-GObject-CRITICAL **: 09:33:56.352: g_object_get_data: assertion 'G_IS_OBJECT (object)' failed
+
+(emacs:4118): Gtk-CRITICAL **: 09:33:56.352: gtk_widget_destroy: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(emacs:4118): GLib-WARNING **: 09:33:56.352: g_main_context_prepare() called recursively from within a source's check() or prepare() member.
+
+(emacs:4118): GLib-WARNING **: 09:33:56.352: g_main_context_check() called recursively from within a source's check() or prepare() member.
+Backtrace:
+emacs(+0x188db6)[0x55d9a5afddb6]
+emacs(+0x23de6)[0x55d9a5998de6]
+emacs(+0x24d2a)[0x55d9a5999d2a]
+emacs(+0x1d54c)[0x55d9a599254c]
+emacs(+0x2da130)[0x55d9a5c4f130]
+emacs(+0x25438d)[0x55d9a5bc938d]
+emacs(+0x262a9d)[0x55d9a5bd7a9d]
+emacs(+0x16a573)[0x55d9a5adf573]
+emacs(+0x13a919)[0x55d9a5aaf919]
+emacs(+0x13aa44)[0x55d9a5aafa44]
+emacs(+0x13ac7b)[0x55d9a5aafc7b]
+/usr/lib/libX11.so.6(_XError+0x11c)[0x7f5344b6974c]
+/usr/lib/libX11.so.6(+0x3f858)[0x7f5344b69858]
+/usr/lib/libX11.so.6(+0x3f915)[0x7f5344b69915]
+/usr/lib/libX11.so.6(_XEventsQueued+0x5a)[0x7f5344b699aa]
+/usr/lib/libX11.so.6(XPending+0x58)[0x7f5344b5c2c8]
+/usr/lib/libgdk-3.so.0(+0x7ee01)[0x7f53453a0e01]
+/usr/lib/libglib-2.0.so.0(+0x5cf7d)[0x7f5344ceff7d]
+/usr/lib/libglib-2.0.so.0(+0xbe77e)[0x7f5344d5177e]
+/usr/lib/libglib-2.0.so.0(g_main_context_pending+0x2e)[0x7f5344ceef2e]
+/usr/lib/libgtk-3.so.0(gtk_events_pending+0x1b)[0x7f53455f19bb]
+emacs(+0x1296fd)[0x55d9a5a9e6fd]
+emacs(+0x17a691)[0x55d9a5aef691]
+emacs(+0x1fd215)[0x55d9a5b72215]
+emacs(+0x2178eb)[0x55d9a5b8c8eb]
+emacs(+0x217eff)[0x55d9a5b8ceff]
+emacs(+0x250ab6)[0x55d9a5bc5ab6]
+emacs(+0x20da0e)[0x55d9a5b82a0e]
+emacs(+0x20dadd)[0x55d9a5b82add]
+emacs(+0x20b20c)[0x55d9a5b8020c]
+emacs(+0x20b40c)[0x55d9a5b8040c]
+emacs(+0x250ab6)[0x55d9a5bc5ab6]
+emacs(+0x20da0e)[0x55d9a5b82a0e]
+emacs(+0x20dadd)[0x55d9a5b82add]
+emacs(+0x20b20c)[0x55d9a5b8020c]
+emacs(+0x20b40c)[0x55d9a5b8040c]
+emacs(+0x250ab6)[0x55d9a5bc5ab6]
+emacs(+0x20da0e)[0x55d9a5b82a0e]
+emacs(+0x24ddbc)[0x55d9a5bc2dbc]
+emacs(+0x20beaf)[0x55d9a5b80eaf]
+emacs(+0x250926)[0x55d9a5bc5926]
+...
+loading in ~/.profile 
+001
+002
+004
+004
+006
+Starting from script ldm_emacs_start.sh.
+Connection lost to X server ':0'
+When compiled with GTK, Emacs cannot recover from X disconnects.
+This is a GTK bug: https://gitlab.gnome.org/GNOME/gtk/issues/221
+For details, see etc/PROBLEMS.
+Backtrace:
+emacs(+0x188db6)[0x555d6ce55db6]
+emacs(+0x23de6)[0x555d6ccf0de6]
+emacs(+0x24d2a)[0x555d6ccf1d2a]
+emacs(+0x13a956)[0x555d6ce07956]
+emacs(+0x13acec)[0x555d6ce07cec]
+/usr/lib/libX11.so.6(_XIOError+0x63)[0x7f26fefb2983]
+/usr/lib/libX11.so.6(_XEventsQueued+0x87)[0x7f26fefb59d7]
+/usr/lib/libX11.so.6(XPending+0x58)[0x7f26fefa82c8]
+/usr/lib/libgdk-3.so.0(+0x7ee01)[0x7f26ff7ece01]
+/usr/lib/libglib-2.0.so.0(+0x5cf7d)[0x7f26ff13bf7d]
+/usr/lib/libglib-2.0.so.0(+0xbe77e)[0x7f26ff19d77e]
+/usr/lib/libglib-2.0.so.0(g_main_context_pending+0x2e)[0x7f26ff13af2e]
+/usr/lib/libgtk-3.so.0(gtk_events_pending+0x1b)[0x7f26ffa3d9bb]
+emacs(+0x1296fd)[0x555d6cdf66fd]
+emacs(+0x17a691)[0x555d6ce47691]
+emacs(+0x16fd99)[0x555d6ce3cd99]
+emacs(+0x1700c5)[0x555d6ce3d0c5]
+emacs(+0x17a848)[0x555d6ce47848]
+emacs(+0x260274)[0x555d6cf2d274]
+emacs(+0x174113)[0x555d6ce41113]
+emacs(+0x176332)[0x555d6ce43332]
+emacs(+0x1821e1)[0x555d6ce4f1e1]
+emacs(+0x16c1af)[0x555d6ce391af]
+emacs(+0x1fcd37)[0x555d6cec9d37]
+emacs(+0x169c7e)[0x555d6ce36c7e]
+emacs(+0x1fcc7a)[0x555d6cec9c7a]
+emacs(+0x16bec8)[0x555d6ce38ec8]
+emacs(+0x2d67bb)[0x555d6cfa37bb]
+emacs(+0x16df81)[0x555d6ce3af81]
+emacs(+0x250ab6)[0x555d6cf1dab6]
+emacs(+0x20da0e)[0x555d6cedaa0e]
+emacs(+0x20e210)[0x555d6cedb210]
+emacs(+0x2024bc)[0x555d6cecf4bc]
+emacs(+0x2d6581)[0x555d6cfa3581]
+emacs(+0x29726)[0x555d6ccf6726]
+emacs(+0x29866)[0x555d6ccf6866]
+emacs(+0x2e39e)[0x555d6ccfb39e]
+emacs(+0x20e759)[0x555d6cedb759]
+emacs(+0x20346a)[0x555d6ced046a]
+emacs(+0x239dba)[0x555d6cf06dba]
+emacs(+0x23b073)[0x555d6cf08073]
+...
+loading in ~/.profile 
+001
+002
+004
+004
+006
+Starting from script ldm_emacs_start.sh.
+Connection lost to X server ':0'
+When compiled with GTK, Emacs cannot recover from X disconnects.
+This is a GTK bug: https://gitlab.gnome.org/GNOME/gtk/issues/221
+For details, see etc/PROBLEMS.
+Backtrace:
+emacs(+0x188db6)[0x55e8ce7e1db6]
+emacs(+0x23de6)[0x55e8ce67cde6]
+emacs(+0x24d2a)[0x55e8ce67dd2a]
+emacs(+0x13a956)[0x55e8ce793956]
+emacs(+0x13acec)[0x55e8ce793cec]
+/usr/lib/libX11.so.6(_XIOError+0x63)[0x7f76e4161983]
+/usr/lib/libX11.so.6(_XEventsQueued+0x87)[0x7f76e41649d7]
+/usr/lib/libX11.so.6(XPending+0x58)[0x7f76e41572c8]
+/usr/lib/libgdk-3.so.0(+0x7ee01)[0x7f76e499be01]
+/usr/lib/libglib-2.0.so.0(+0x5cf7d)[0x7f76e42eaf7d]
+/usr/lib/libglib-2.0.so.0(+0xbe77e)[0x7f76e434c77e]
+/usr/lib/libglib-2.0.so.0(g_main_context_pending+0x2e)[0x7f76e42e9f2e]
+/usr/lib/libgtk-3.so.0(gtk_events_pending+0x1b)[0x7f76e4bec9bb]
+emacs(+0x1296fd)[0x55e8ce7826fd]
+emacs(+0x17a691)[0x55e8ce7d3691]
+emacs(+0x16fd99)[0x55e8ce7c8d99]
+emacs(+0x1700c5)[0x55e8ce7c90c5]
+emacs(+0x17a848)[0x55e8ce7d3848]
+emacs(+0x260274)[0x55e8ce8b9274]
+emacs(+0x41092)[0x55e8ce69a092]
+emacs(+0x177da9)[0x55e8ce7d0da9]
+emacs(+0x1821e1)[0x55e8ce7db1e1]
+emacs(+0x16c1af)[0x55e8ce7c51af]
+emacs(+0x1fcd37)[0x55e8ce855d37]
+emacs(+0x169c7e)[0x55e8ce7c2c7e]
+emacs(+0x1fcc7a)[0x55e8ce855c7a]
+emacs(+0x16bec8)[0x55e8ce7c4ec8]
+emacs(+0x2d67bb)[0x55e8ce92f7bb]
+emacs(+0x16df81)[0x55e8ce7c6f81]
+emacs(+0x250ab6)[0x55e8ce8a9ab6]
+emacs(+0x20da0e)[0x55e8ce866a0e]
+emacs(+0x20e210)[0x55e8ce867210]
+emacs(+0x2024bc)[0x55e8ce85b4bc]
+emacs(+0x2d6581)[0x55e8ce92f581]
+emacs(+0x29726)[0x55e8ce682726]
+emacs(+0x29866)[0x55e8ce682866]
+emacs(+0x2e39e)[0x55e8ce68739e]
+emacs(+0x20e759)[0x55e8ce867759]
+emacs(+0x20346a)[0x55e8ce85c46a]
+emacs(+0x239dba)[0x55e8ce892dba]
+emacs(+0x23b073)[0x55e8ce894073]
+...
+loading in ~/.profile 
+001
+002
+004
+004
+006
+Starting from script ldm_emacs_start.sh.
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.118: GdkWindow 0x400e84 unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.118: GdkWindow 0x400544 unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.118: GdkWindow 0x400540 unexpectedly destroyed
+
+(emacs:5555): GLib-GObject-CRITICAL **: 10:20:37.118: ../glib/gobject/gsignal.c:2685: instance '0x560e4054edd0' has no handler with id '35984'
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.119: GdkWindow 0x400e63 unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.119: GdkWindow 0x4006ae unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.119: GdkWindow 0x4006aa unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.138: GdkWindow 0x400e0a unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.138: GdkWindow 0x400817 unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.138: GdkWindow 0x400813 unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.159: GdkWindow 0x400db1 unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.159: GdkWindow 0x400981 unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.159: GdkWindow 0x40097d unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.177: GdkWindow 0x400d52 unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.177: GdkWindow 0x400aeb unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.177: GdkWindow 0x400ae7 unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.197: GdkWindow 0x400d01 unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.197: GdkWindow 0x400c55 unexpectedly destroyed
+
+(emacs:5555): Gdk-WARNING **: 10:20:37.197: GdkWindow 0x400c51 unexpectedly destroyed
+
+(emacs:5555): GLib-GObject-CRITICAL **: 10:20:37.216: g_object_get_data: assertion 'G_IS_OBJECT (object)' failed
+
+(emacs:5555): Gtk-CRITICAL **: 10:20:37.216: gtk_widget_destroy: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(emacs:5555): GLib-GObject-CRITICAL **: 10:20:37.216: g_object_get_data: assertion 'G_IS_OBJECT (object)' failed
+
+(emacs:5555): Gtk-CRITICAL **: 10:20:37.216: gtk_widget_destroy: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(emacs:5555): GLib-GObject-CRITICAL **: 10:20:37.216: g_object_get_data: assertion 'G_IS_OBJECT (object)' failed
+
+(emacs:5555): Gtk-CRITICAL **: 10:20:37.216: gtk_widget_destroy: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(emacs:5555): GLib-GObject-CRITICAL **: 10:20:37.216: g_object_get_data: assertion 'G_IS_OBJECT (object)' failed
+
+(emacs:5555): Gtk-CRITICAL **: 10:20:37.216: gtk_widget_destroy: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(emacs:5555): GLib-GObject-CRITICAL **: 10:20:37.216: g_object_get_data: assertion 'G_IS_OBJECT (object)' failed
+
+(emacs:5555): Gtk-CRITICAL **: 10:20:37.216: gtk_widget_destroy: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(emacs:5555): GLib-GObject-CRITICAL **: 10:20:37.216: g_object_get_data: assertion 'G_IS_OBJECT (object)' failed
+
+(emacs:5555): Gtk-CRITICAL **: 10:20:37.216: gtk_widget_destroy: assertion 'GTK_IS_WIDGET (widget)' failed
+X protocol error: RenderBadPicture (invalid Picture parameter) on protocol request 139
+Serial no: 22666
+
+When compiled with GTK, Emacs cannot recover from X disconnects.
+This is a GTK bug: https://gitlab.gnome.org/GNOME/gtk/issues/221
+For details, see etc/PROBLEMS.
+
+(emacs:5555): GLib-WARNING **: 10:20:37.216: g_main_context_prepare() called recursively from within a source's check() or prepare() member.
+
+(emacs:5555): GLib-WARNING **: 10:20:37.216: g_main_context_check() called recursively from within a source's check() or prepare() member.
+Backtrace:
+emacs(+0x188db6)[0x560e3b27cdb6]
+emacs(+0x23de6)[0x560e3b117de6]
+emacs(+0x24d2a)[0x560e3b118d2a]
+emacs(+0x13a956)[0x560e3b22e956]
+emacs(+0x13aa44)[0x560e3b22ea44]
+emacs(+0x13ac7b)[0x560e3b22ec7b]
+/usr/lib/libX11.so.6(_XError+0x11c)[0x7fd7c571174c]
+/usr/lib/libX11.so.6(+0x3f858)[0x7fd7c5711858]
+/usr/lib/libX11.so.6(+0x3f915)[0x7fd7c5711915]
+/usr/lib/libX11.so.6(_XEventsQueued+0x5a)[0x7fd7c57119aa]
+/usr/lib/libX11.so.6(XPending+0x58)[0x7fd7c57042c8]
+/usr/lib/libgdk-3.so.0(+0x7ee01)[0x7fd7c5f48e01]
+/usr/lib/libglib-2.0.so.0(+0x5cf7d)[0x7fd7c5897f7d]
+/usr/lib/libglib-2.0.so.0(+0xbe77e)[0x7fd7c58f977e]
+/usr/lib/libglib-2.0.so.0(g_main_context_pending+0x2e)[0x7fd7c5896f2e]
+/usr/lib/libgtk-3.so.0(gtk_events_pending+0x1b)[0x7fd7c61999bb]
+emacs(+0x1296fd)[0x560e3b21d6fd]
+emacs(+0x17a691)[0x560e3b26e691]
+emacs(+0x17aae5)[0x560e3b26eae5]
+emacs(+0x28e892)[0x560e3b382892]
+emacs(+0x28f469)[0x560e3b383469]
+emacs(+0x223613)[0x560e3b317613]
+emacs(+0x22420f)[0x560e3b31820f]
+emacs(+0x224813)[0x560e3b318813]
+emacs(+0x10f5fc)[0x560e3b2035fc]
+emacs(+0x2d8c60)[0x560e3b3ccc60]
+emacs(+0x112ccf)[0x560e3b206ccf]
+emacs(+0x5bc57)[0x560e3b14fc57]
+emacs(+0x5c786)[0x560e3b150786]
+emacs(+0x5ca86)[0x560e3b150a86]
+emacs(+0x66478)[0x560e3b15a478]
+emacs(+0x63dce)[0x560e3b157dce]
+emacs(+0x87379)[0x560e3b17b379]
+emacs(+0x79948)[0x560e3b16d948]
+emacs(+0x70fa2)[0x560e3b164fa2]
+emacs(+0x6e9ec)[0x560e3b1629ec]
+emacs(+0x6eff7)[0x560e3b162ff7]
+emacs(+0x74cf7)[0x560e3b168cf7]
+emacs(+0x2da130)[0x560e3b3ce130]
+emacs(+0x25438d)[0x560e3b34838d]
+emacs(+0x250ab6)[0x560e3b344ab6]
+...
+loading in ~/.profile 
+001
+002
+004
+004
+006
+Starting from script ldm_emacs_start.sh.
+X protocol error: BadDrawable (invalid Pixmap or Window parameter) on protocol request 53
+Serial no: 23044
+
+When compiled with GTK, Emacs cannot recover from X disconnects.
+This is a GTK bug: https://gitlab.gnome.org/GNOME/gtk/issues/221
+For details, see etc/PROBLEMS.
+Backtrace:
+emacs(+0x188db6)[0x559855093db6]
+emacs(+0x23de6)[0x559854f2ede6]
+emacs(+0x24d2a)[0x559854f2fd2a]
+emacs(+0x13a956)[0x559855045956]
+emacs(+0x13aa44)[0x559855045a44]
+emacs(+0x13ac7b)[0x559855045c7b]
+/usr/lib/libX11.so.6(_XError+0x11c)[0x7fbc9fa6d74c]
+/usr/lib/libX11.so.6(+0x3f858)[0x7fbc9fa6d858]
+/usr/lib/libX11.so.6(+0x3f915)[0x7fbc9fa6d915]
+/usr/lib/libX11.so.6(_XReply+0x1dd)[0x7fbc9fa6f2fd]
+/usr/lib/libX11.so.6(XListFonts+0xb2)[0x7fbc9fa4e802]
+emacs(+0x28e82d)[0x55985519982d]
+emacs(+0x28f469)[0x55985519a469]
+emacs(+0x223613)[0x55985512e613]
+emacs(+0x22420f)[0x55985512f20f]
+emacs(+0x224813)[0x55985512f813]
+emacs(+0x10f5fc)[0x55985501a5fc]
+emacs(+0x2d8c60)[0x5598551e3c60]
+emacs(+0x112ccf)[0x55985501dccf]
+emacs(+0x5bc57)[0x559854f66c57]
+emacs(+0x5c786)[0x559854f67786]
+emacs(+0x5ca86)[0x559854f67a86]
+emacs(+0x66478)[0x559854f71478]
+emacs(+0x63dce)[0x559854f6edce]
+emacs(+0x87379)[0x559854f92379]
+emacs(+0x79948)[0x559854f84948]
+emacs(+0x70fa2)[0x559854f7bfa2]
+emacs(+0x6e9ec)[0x559854f799ec]
+emacs(+0x6eff7)[0x559854f79ff7]
+emacs(+0x74cf7)[0x559854f7fcf7]
+emacs(+0x2da130)[0x5598551e5130]
+emacs(+0x25438d)[0x55985515f38d]
+emacs(+0x250ab6)[0x55985515bab6]
+emacs(+0x20da0e)[0x559855118a0e]
+emacs(+0x20e448)[0x559855119448]
+emacs(+0x250ab6)[0x55985515bab6]
+emacs(+0x20da0e)[0x559855118a0e]
+emacs(+0x20e210)[0x559855119210]
+emacs(+0x258744)[0x559855163744]
+emacs(+0x1fcdcc)[0x559855107dcc]
+emacs(+0x259acf)[0x559855164acf]
+...
+loading in ~/.profile 
+001
+002
+004
+004
+006
+Starting from script ldm_emacs_start.sh.
+X protocol error: BadDrawable (invalid Pixmap or Window parameter) on protocol request 53
+Serial no: 21288
+
+When compiled with GTK, Emacs cannot recover from X disconnects.
+This is a GTK bug: https://gitlab.gnome.org/GNOME/gtk/issues/221
+For details, see etc/PROBLEMS.
+Backtrace:
+emacs(+0x188db6)[0x55dce68f2db6]
+emacs(+0x23de6)[0x55dce678dde6]
+emacs(+0x24d2a)[0x55dce678ed2a]
+emacs(+0x13a956)[0x55dce68a4956]
+emacs(+0x13aa44)[0x55dce68a4a44]
+emacs(+0x13ac7b)[0x55dce68a4c7b]
+/usr/lib/libX11.so.6(_XError+0x11c)[0x7f839490474c]
+/usr/lib/libX11.so.6(+0x3f858)[0x7f8394904858]
+/usr/lib/libX11.so.6(+0x3f915)[0x7f8394904915]
+/usr/lib/libX11.so.6(_XReply+0x1dd)[0x7f83949062fd]
+/usr/lib/libX11.so.6(XSync+0x51)[0x7f8394906691]
+emacs(+0x15aad9)[0x55dce68c4ad9]
+emacs(+0x123640)[0x55dce688d640]
+emacs(+0x7f96f)[0x55dce67e996f]
+emacs(+0x722b3)[0x55dce67dc2b3]
+emacs(+0x1fcdcc)[0x55dce6966dcc]
+emacs(+0x72208)[0x55dce67dc208]
+emacs(+0x75f02)[0x55dce67dff02]
+emacs(+0x2da130)[0x55dce6a44130]
+emacs(+0x25438d)[0x55dce69be38d]
+emacs(+0x250ab6)[0x55dce69baab6]
+emacs(+0x20da0e)[0x55dce6977a0e]
+emacs(+0x20e448)[0x55dce6978448]
+emacs(+0x250ab6)[0x55dce69baab6]
+emacs(+0x20da0e)[0x55dce6977a0e]
+emacs(+0x20e210)[0x55dce6978210]
+emacs(+0x258744)[0x55dce69c2744]
+emacs(+0x1fcdcc)[0x55dce6966dcc]
+emacs(+0x259acf)[0x55dce69c3acf]
+emacs(+0x25def7)[0x55dce69c7ef7]
+emacs(+0x254388)[0x55dce69be388]
+emacs(+0x250ab6)[0x55dce69baab6]
+emacs(+0x20da0e)[0x55dce6977a0e]
+emacs(+0x20e448)[0x55dce6978448]
+emacs(+0x250ab6)[0x55dce69baab6]
+emacs(+0x20da0e)[0x55dce6977a0e]
+emacs(+0x20dadd)[0x55dce6977add]
+emacs(+0x20b20c)[0x55dce697520c]
+emacs(+0x20b40c)[0x55dce697540c]
+emacs(+0x250ab6)[0x55dce69baab6]
+emacs(+0x20da0e)[0x55dce6977a0e]
+...
+loading in ~/.profile 
+001
+002
+004
+004
+006
