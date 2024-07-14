@@ -1,229 +1,71 @@
-This is my emacs init org configuration file. Written in org mode style for better maintainability.
-
+* What is this file about ?
+  This is my personal emacs configuration, which I started all over on <2024-07-12 Fr> because I was fed up with problems in the old config.
+** My Target
+   With this file I want to configure emacs instances on arch and os x. Also exwm on arch.
 * Personal Information
-  In here I define some personal informations. So if you need to contact me, here is my mail.
-  #+BEGIN_SRC emacs-lisp
-    (setq user-full-name "Marcus Puchalla"
-          user-mail-address "cb0@0xcb0.com")
-  #+END_SRC
+  If you need to contact me, here is my mail.
 
-  #+RESULTS:
-  : cb0@0xcb0.com
-
-* OS specific customization
-** Rebind capslock to control
-   #+begin_src elisp
-     (start-process-shell-command "xmodmap" nil "setxkbmap -option ctrl:nocaps")
-   #+end_src
-** Set EXEC Path
-   #+BEGIN_SRC elisp
-
-     (cond
-      ((string-equal system-type "darwin")
-       (progn
-	 (setenv "PATH" (concat (getenv "PATH") ":/Users/tk/.ghcup/bin"))
-	 (setq exec-path (append exec-path '("/Users/tk/.ghcup/bin"))))))
-
-     (getenv "PATH")
-
-     (defun set-exec-path-from-shell-PATH ()
-       "Set up Emacs' `exec-path' and PATH environment variable to match
-	  that used by the user's shell.
-
-	  This is particularly useful under Mac OS X and macOS, where GUI
-	  apps are not started from a shell."
-       (interactive)
-       (let ((path-from-shell (replace-regexp-in-string
-			       "[ \t\n]*$" "" (shell-command-to-string
-					       "$SHELL --login -c 'echo $PATH'"
-					       ))))
-	 (setenv "PATH" path-from-shell)
-	 (setq exec-path (split-string path-from-shell path-separator))))
-
-     (set-exec-path-from-shell-PATH)
-   #+END_SRC
-
-** OS X
-   To be able to type characters like € or [ on my mac keyboard, this option needs to be set.
-   It instructd emacs not to handle key combinations started by pressing the right alt key.
-   #+BEGIN_SRC elisp
-     (cond
-      ((string-equal system-type "darwin")
-       (progn
-	 (setq ns-right-alternate-modifier (quote nil))
-	 (setq ns-option-modifier      nil
-	       ns-right-option-modifer 'meta)
-	 (setq mac-command-modifier 'meta)
-	 (set-keyboard-coding-system nil))))
-   #+END_SRC
-
-   #+RESULTS:X0
-
-* Emacs itself
-
-** Dashboard
 * Startup customizatio Start server
 ** Starting the emacs server from here.
-   If this is not done, the hooks for polypanel to show the current dektop do not show up. Probably because they are then not attached to the current emacs session, but to the systemctl emacs instance.
-   #+begin_src elisp
-     (server-start)
-   #+end_src
-** Ask before qutting emacs
-   Especially when running exwm, closing the current emacs would close the whole window manager.
-   To cope with this, just ask before doing it.
-   #+begin_src elisp
-     (defun ask-before-closing ()
-       "Close only if y was pressed."
-       (interactive)
-       (if (y-or-n-p (format "Are you sure you want to close this frame? "))
-	   (save-buffers-kill-emacs)                                                                                            
-	 (message "Canceled frame close")))
+   Notes on server. I do not use the server call `(server-start)` anymore, because systemd and emacs server with exwm running in client works for me ONLY.
 
-     (when (daemonp)
-       (global-set-key (kbd "C-x C-c") 'ask-before-closing))
-   #+end_src
-** File for customizations) from within emacs
-   If we customize variables we wan't to save those changes to `custom.el` file.
-   #+BEGIN_SRC emacs-lisp
-     (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-   #+END_SRC
-** Make german umlaute work
-   #+BEGIN_SRC emacs-lisp
-     ;; Make german umlauts work.
-     (setq locale-coding-system 'utf-8)
-     (set-terminal-coding-system 'utf-8)
-     ;; (set-keyboard-coding-system 'utf-8)
-     (set-selection-coding-system 'utf-8)
-     (prefer-coding-system 'utf-8)
-   #+END_SRC
-
-** Setup package install
+* Setup package install
+  To be able to install packages inside of emacs, we need to make sure emacs knows where to get those packages from. Just like with any other package manager.
    #+BEGIN_SRC elisp
-     (require 'use-package)
-   #+END_SRC
-
-** Make cl deprecation warning go away
-   #+begin_src elisp
-		    (require 'cl-lib)
-
-		    (require 'loadhist)
-		    ;; (file-dependents (feature-file 'cl))
-
-;;		    (file-dependents (feature-file 'yaxception))
-;;     ("/home/cb0/.emacs.d/elpa/auto-complete-pcmp-20140227.651/auto-complete-pcmp.elc" "/home/cb0/.emacs.d/elpa/org-ac-20170401.1307/org-ac.elc" ;;"/home/cb0/projects/memacs/emacs.d/elpa/auto-complete-pcmp-20140303.255/auto-complete-pcmp.el")
-
-;;	  ("/home/cb0/.emacs.d/elpa/yaxception-20150105.1452/yaxception.elc" "/home/cb0/projects/memacs/emacs.d/elpa/yaxception-20150105.1540/yaxception.el" ;;"/home/cb0/projects/memacs/emacs.d/elpa/yaxception-20150105.1540/yaxception.elc" ;;"/home/cb0/projects/memacs/emacs.d/elpa/auto-complete-pcmp-20140303.255/auto-complete-
-   #+end_src
-* Package repos and installation
-** Package
-*** Load Repos
-    Add elpa and marmalade repos.
-   #+BEGIN_SRC emacs-lisp
      (require 'package)
 
-     ;; use packages from marmalade
-     ;;(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
-     ;;the orgmode elpa
-     (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-     ;; and the old elpa repo
-     ;;(add-to-list 'package-archives '("elpa-old" . "http://tromey.com/elpa/"))
+     (setq package-archives '(("melpa" . "http://melpa.org/packages/")
+			      ("org" . "http://orgmode.org/elpa/")
+			      ("elpa" . "http://elpa.gnu.org/packages/")))
 
-     ;; and automatically parsed versiontracking repositories.
-     ;;(add-to-list 'package-archives '("melpa" . "http://melpa.org"))
+	   ;;(package-initialize)
 
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-         '("melpa" . "http://melpa.org/packages/"))
- (add-to-list 'package-archives
-         '("gnu" . "http://elpa.gnu.org/packages/"))
+	   (unless package-archive-contents
+	(package-refresh-contents))
 
+     (require 'use-package)
+     (setq use-package-always-ensure t)
 
-   #+END_SRC
-
-   #+RESULTS:
-   : ((elpa-old . http://tromey.com/elpa/) (marmalade . http://marmalade-repo.org/packages/) (gnu . https://elpa.gnu.org/packages/) (org . http://orgmode.org/elpa/))
-
-*** Define package require
-    `package_require` to make sure a package will get installed.
-       #+BEGIN_SRC elisp
-         ;; Make sure a package is installed
-         (defun package-require (package)
-           "Install a PACKAGE unless it is already installed
-         or a feature with the same name is already active.
-
-         Usage: (package-require 'package)"
-           ; try to activate the package with at least version 0.
-           (package-activate package '(0))
-           ; try to just require the package. Maybe the user has it in his local config
-           (condition-case nil
-               (require package)
-             ; if we cannot require it, it does not exist, yet. So install it.
-             (error (package-install package))))
-   #+END_SRC
-
-*** Initialize the package manager
-    #+BEGIN_SRC elisp
-      ;; Initialize installed packages
-      ;;(package-initialize)
-      ;; package init not needed, since it is done anyway in emacs 24 after reading the init
-      ;; but we have to load the list of available packages
-      (unless package-archive-contents
-        (package-refresh-contents))
-
-      (setq package-load-list '(all))
-
-      (unless (package-installed-p 'org)  ;; Make sure the Org package is
-        (package-install 'org))           ;; installed, install it if not
-      ;;(package-initialize)
-    #+END_SRC
-
-*** Setup package install
-   #+BEGIN_SRC elisp
-     (package-require 'use-package)
    #+END_SRC
 
 ** Benchmarking startuo time
    #+BEGIN_SRC elisp
-     (package-require 'esup)
+     ;;(use-package esup)
    #+END_SRC
 
-* Buffer handling
-
-
-** Pin buffer to window
-   When working in slime mode I do not want ANY window to get into my sbcl repl.
-   I therefore want to pin the window. I found https://www.reddit.com/r/emacs/comments/1xfeuw/how_do_i_pin_windows_in_place/ which links to https://lists.gnu.org/archive/html/help-gnu-emacs/2007-05/msg00975.html which includes this nice function:
-   #+begin_src elisp
-     (global-set-key (kbd "C-c M-l") 'locked-buffer-mode)
-
-     (define-minor-mode locked-buffer-mode
-       "Make the current window always display this buffer."
-       nil " locked" nil
-       (set-window-dedicated-p (selected-window) locked-buffer-mode))
-   #+end_src
-* Which key
+** Which key
   Showing key bindings in a minor mode might seem like a good idea.
-  #+begin_src elisp
-    (package-require 'which-key)
-    ;; add minor mode to show help
-    (which-key-mode)
-    ;; slide in from right side if there is enough space there
-    (which-key-setup-side-window-right-bottom)
-  #+end_src
+  The window will be shown when I enter an incomplete command and wait for a second.
+  #+BEGIN_SRC elisp
+	(use-package which-key)
+    (require 'which-key)
+	;; add minor mode to show help
+	(which-key-mode)
+	;; slide in from right side if there is enough space there ;
+	(which-key-setup-side-window-right)
+
+    (which-key-setup-minibuffer)
+
+    (setq which-key-show-early-on-C-h t)
+    ;; but if possible, use the minibuffer
+  #+END_SRC
+
 * Hydra
   #+begin_src elisp
-    (package-require 'hydra)
+    (use-package hydra)
+  #+end_src   
+* EXWM
+  A very nice window manager for keyboard driven working.
+** Basic exwm setup
+*** Install dependencies
+    #+BEGIN_SRC elisp
+      (cond
+       ((not (string-equal system-type "darwin"))
+	(progn
+	  (require 'exwm))))
 
-  #+end_src
-* Window Manager EXWM
+    #+END_SRC
 
-** Install exwm
-   #+begin_src elisp
-     (cond
-      ((not (string-equal system-type "darwin"))
-       (progn
-	 (package-require 'exwm))))
-   #+end_src
 
 ** Helper function
    #+begin_src elisp
@@ -255,7 +97,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      (defun cb0/toggle-polybar ()
        (interactive)
        (start-process-shell-command "polybar-msg" nil "polybar-msg cmd toggle"))
-     
+
      (defun efs/send-polybar-hook (module-name hook-index)
        (start-process-shell-command "polybar-msg" nil (format "polybar-msg hook %s %s" module-name hook-index)))
 
@@ -271,21 +113,28 @@ This is my emacs init org configuration file. Written in org mode style for bett
 	 (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
 
    #+end_src
+   
+** Window looks and theme
+   #+begin_src elisp
+     ;; (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+     ;; (add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+     ;; (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+     ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+     (display-battery-mode 1)
+     
+     (setq display-time-day-and-date t)
+     (setq display-time-format "%H:%M")
+     (display-time-mode 1)
+
+     (exwm-input-set-key (kbd "s-SPC") 'counsel-linux-app)
+     (exwm-input-set-key (kbd "s-f") 'exwm-layout-toggle-fullscreen)
+
+   #+end_src
 
 ** Configure WM
    #+begin_src elisp
-     (require 'exwm)
-
      (setq exwm-workspace-number 5)
-
-     ;; example config to be revmoed soon
-     (require 'exwm-config)
-
-     ;; simple system tray
-     ;; (require 'exwm-systemtray)
-     ;; (exwm-systemtray-enable)
-
-     (setq exwm-systemtray-height 32)
 
      ;; use line mode on startup
      (setq exwm-manage-configurations '((t line-mode t)))
@@ -296,7 +145,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;; some advice on this topic:
      ;; + Always use `exwm-workspace-rename-buffer` to avoid naming conflict.
      ;; + For applications with multiple windows (e.g. GIMP), the class names of
-     ;    all windows are probably the same.  Using window titles for them makes
+					     ;    all windows are probably the same.  Using window titles for them makes
      ;;   more sense.
      ;; In the following example, we use class names for all windows except for
      ;; Java applications and GIMP.
@@ -320,24 +169,25 @@ This is my emacs init org configuration file. Written in org mode style for bett
      ;;(exwm-config-example)
      (exwm-enable)
 
+
      (setq exwm-input-simulation-keys
-      '(([?\C-b] . [left])
-	([?\C-f] . [right])
-	([?\C-p] . [up])
-	([?\C-n] . [down])
-	([?\C-a] . [home])
-	([?\C-e] . [end])
-	([?\M-v] . [prior])
-	([?\C-v] . [next])
-	([?\C-d] . [delete])
-	([?\C-k] . [S-end delete])))
+	   '(([?\C-b] . [left])
+	     ([?\C-f] . [right])
+	     ([?\C-p] . [up])
+	     ([?\C-n] . [down])
+	     ([?\C-a] . [home])
+	     ([?\C-e] . [end])
+	     ([?\M-v] . [prior])
+	     ([?\C-v] . [next])
+	     ([?\C-d] . [delete])
+	     ([?\C-k] . [S-end delete])))
 
 
-     ;using xim input
-     ;(require 'exwm-xim)
+     ;;using xim input
+     ;; ;(require 'exwm-xim)
 
-     ;(exwm-xim-enable)
-     ;;(exwm-xim--exit)
+     ;; ;(exwm-xim-enable)
+     ;; ;;(exwm-xim--exit)
 
      (setq exwm-input-prefix-keys
 	   '(?\C-x
@@ -351,41 +201,14 @@ This is my emacs init org configuration file. Written in org mode style for bett
 	     ?\C-\M-j
 	     ?\C-\ ))
 
-     ;; (push ?\C-\\ exwm-input-prefix-keys)   ;; use Ctrl + \ to switch input method
-
+     ;; use Ctrl + \ to switch input method
+     (push ?\C-\\ exwm-input-prefix-keys)
 
    #+end_src
-
-** Make xinitrc file
-   #+begin_src sh :tangle ~/.xinitrc.emacs
-     # Disable access control for the current user.
-     xhost +SI:localuser:$USER
-
-     # Make Java applications aware this is a non-reparenting window manager.
-     export _JAVA_AWT_WM_NONREPARENTING=1
-
-     # Set default cursor.
-     xsetroot -cursor_name left_ptr
-
-     # Set keyboard repeat rate.
-     xset r rate 200 60
-
-     # Uncomment the following block to use the exwm-xim module.
-     #export XMODIFIERS=@im=exwm-xim
-     #export GTK_IM_MODULE=xim
-     #export QT_IM_MODULE=xim
-     #export CLUTTER_IM_MODULE=xim
-
-     # Finally start Emacs
-     exec emacs
-   #+end_src
-
-   #+RESULTS:
-   : localuser:cb0 being added to access control li
 ** Modify exwm startup
    #+begin_src elisp
-	;; from https://config.daviwil.com/desktop
-	;; Hide the modeline on all X windows
+	;;from https://config.daviwil.com/desktop
+	;;Hide the modeline on all X windows
 	(add-hook 'exwm-floating-setup-hook
 		  (lambda ()
 		    (exwm-layout-hide-mode-line)))
@@ -395,34 +218,81 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
    #+end_src
 
-** Window looks and theme
+** Window handling
+   I want to be able to switch to a buffer even if it is not in the current workspace.
+   This will move a buffer to my current workspace when I select the buffer.
    #+begin_src elisp
-     ;; (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
-     ;; (add-to-list 'default-frame-alist '(alpha . (90 . 90)))
-     ;; (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
-     ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
-
-     (display-battery-mode 1)
-     
-     (setq display-time-day-and-date t)
-     (setq display-time-format "%H:%M")
-     (display-time-mode 1)
-
-     (exwm-input-set-key (kbd "s-SPC") 'counsel-linux-app)
-     (exwm-input-set-key (kbd "s-f") 'exwm-layout-toggle-fullscreen)
+     (cond
+      ((not (string-equal system-type "darwin"))
+       (progn
+	 (setq exwm-workspace-show-all-buffers t)
+	 (setq exwm-layout-show-all-buffers t))))
 
    #+end_src
-
-** Network manager
+** Hide minibuffer and echo area
+   Get more space by hiding the echo area and the mini buffer when not required.
    #+begin_src elisp
-     (package-require 'enwc)
-     (setq enwc-default-backend 'nm)
-     ;;(condition-case nil			
-     ;;    (enwc)
-     ;;  (error nil))
-   #+end_src
+     ;; (cond
+     ;;  ((not (string-equal system-type "darwin"))
+     ;;   (progn (setq exwm-workspace-minibuffer-position 'bottom)
+     ;; 	 (setq exwm-workspace-display-echo-area-timeout 5)
 
-** Desktop environment management
+     ;; 	 )))
+
+   #+end_src
+** Screen resolution
+
+   #+begin_src elisp
+     (require 'exwm-randr)
+     (exwm-randr-enable)
+
+     (start-process-shell-command "xrandr" nil "")
+   #+end_src
+** Polybar
+   #+begin_src elisp
+
+     (defvar efs/polybar-process nil
+       "Holds the process of the running Polybar instance, if any")
+
+     (defun efs/kill-panel ()
+       (interactive)
+       (when efs/polybar-process
+	 (ignore-errors
+	   (kill-process efs/polybar-process)))
+       (setq efs/polybar-process nil))
+
+     (defun efs/start-panel ()
+       (interactive)
+       (efs/kill-panel)
+       (setq efs/polybar-process (start-process-shell-command "polybar" nil "polybar panel")))
+
+   #+end_src
+*** Init Hook
+   #+begin_src elisp
+
+     (defun efs/exwm-init-hook ()
+       ;; Make workspace 1 be the
+       ;; one where we land at startup
+       (exwm-workspace-switch-create 1)
+
+       ;; Open eshell by default
+       ;;(eshell)
+       (efs/start-panel)
+       ;; (efs/kill-panel)
+       ;;(efs/run-in-background "dunst")
+
+
+
+       ;; Launch apps that will run in the background
+       ;;(efs/run-in-background "nm-applet")
+     )
+
+     (add-hook 'efs/exwm-init-hook #'efs/after-exwm-init)
+
+     ;; (efs/run-in-background "pavucontrol")	
+     ;; (efs/run-in-background "blueman-applet")
+   #+end_src
+*** Desktop environment management
    #+begin_src elisp
      (add-to-list 'load-path "~/.emacs.d/lib/desktop-environment/")
      (require 'desktop-environment)
@@ -439,26 +309,26 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 
 
-     ;; This needs a more elegant ASCII banner
-     (defhydra hydra-exwm-move-resize (:timeout 4)
-       "Move/Resize Window (Shift is bigger steps, Ctrl moves window)"
-       ("j" (lambda () (interactive) (exwm-layout-enlarge-window 10)) "V 10")
-       ("J" (lambda () (interactive) (exwm-layout-enlarge-window 30)) "V 30")
-       ("k" (lambda () (interactive) (exwm-layout-shrink-window 10)) "^ 10")
-       ("K" (lambda () (interactive) (exwm-layout-shrink-window 30)) "^ 30")
-       ("h" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 10)) "< 10")
-       ("H" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 30)) "< 30")
-       ("l" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 10)) "> 10")
-       ("L" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 30)) "> 30")
-       ("C-j" (lambda () (interactive) (exwm-floating-move 0 10)) "V 10")
-       ("C-S-j" (lambda () (interactive) (exwm-floating-move 0 30)) "V 30")
-       ("C-k" (lambda () (interactive) (exwm-floating-move 0 -10)) "^ 10")
-       ("C-S-k" (lambda () (interactive) (exwm-floating-move 0 -30)) "^ 30")
-       ("C-h" (lambda () (interactive) (exwm-floating-move -10 0)) "< 10")
-       ("C-S-h" (lambda () (interactive) (exwm-floating-move -30 0)) "< 30")
-       ("C-l" (lambda () (interactive) (exwm-floating-move 10 0)) "> 10")
-       ("C-S-l" (lambda () (interactive) (exwm-floating-move 30 0)) "> 30")
-       ("f" nil "finished" :exit t))
+     ;; ;; This needs a more elegant ASCII banner
+     ;; (defhydra hydra-exwm-move-resize (:timeout 4)
+     ;;   "Move/Resize Window (Shift is bigger steps, Ctrl moves window)"
+     ;;   ("j" (lambda () (interactive) (exwm-layout-enlarge-window 10)) "V 10")
+     ;;   ("J" (lambda () (interactive) (exwm-layout-enlarge-window 30)) "V 30")
+     ;;   ("k" (lambda () (interactive) (exwm-layout-shrink-window 10)) "^ 10")
+     ;;   ("K" (lambda () (interactive) (exwm-layout-shrink-window 30)) "^ 30")
+     ;;   ("h" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 10)) "< 10")
+     ;;   ("H" (lambda () (interactive) (exwm-layout-shrink-window-horizontally 30)) "< 30")
+     ;;   ("l" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 10)) "> 10")
+     ;;   ("L" (lambda () (interactive) (exwm-layout-enlarge-window-horizontally 30)) "> 30")
+     ;;   ("C-j" (lambda () (interactive) (exwm-floating-move 0 10)) "V 10")
+     ;;   ("C-S-j" (lambda () (interactive) (exwm-floating-move 0 30)) "V 30")
+     ;;   ("C-k" (lambda () (interactive) (exwm-floating-move 0 -10)) "^ 10")
+     ;;   ("C-S-k" (lambda () (interactive) (exwm-floating-move 0 -30)) "^ 30")
+     ;;   ("C-h" (lambda () (interactive) (exwm-floating-move -10 0)) "< 10")
+     ;;   ("C-S-h" (lambda () (interactive) (exwm-floating-move -30 0)) "< 30")
+     ;;   ("C-l" (lambda () (interactive) (exwm-floating-move 10 0)) "> 10")
+     ;;   ("C-S-l" (lambda () (interactive) (exwm-floating-move 30 0)) "> 30")
+     ;;   ("f" nil "finished" :exit t))
 
 
 
@@ -469,7 +339,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 	   ;; switch workspaces
 	   ([?\s-w] . exwm-workspace-switch)
 	   ;; hydro to rresize windows
-	   ([?\s-r] . hydra-exwm-move-resize/body)
+	   ;;([?\s-r] . hydra-exwm-move-resize/body)
 	   ;; quick jump to current directory
 	   ([?\s-e] . dired-jump)
 	   ;; quick jump to home directory
@@ -503,180 +373,80 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
      ;; (exwm-enable)
    #+end_src
-  
-*** Desktop notifications with dust
-    
-**** Create config
-     #+begin_src shell :tangle ~/.config/dunst/dunstrc
-            #+end_src
 
-     #+RESULTS:
-
-** Screen resolution
-
+*** Network manager
    #+begin_src elisp
-     (package-require 'exwm-randr)
-     (exwm-randr-enable)
-
-     (start-process-shell-command "xrandr" nil "")
+     (require 'enwc)
+     (setq enwc-default-backend 'nm)
+     ;;(condition-case nil			
+     ;;    (enwc)
+     ;;  (error nil))
    #+end_src
 
-** Process handling
-   When using exwm and you open a new async process using 'C-&', you will see the this prompt every time.
-   #+begin_quote
-   A command is running in the default buffer. Use a new buffer? (yes or no)
-   #+end_quote
 
-   As in exwm, you probably answer this question with yes all the time, it's best to disable this question.
-   You can do so with the following code:
 
-   #+begin_src elisp
-     (setq async-shell-command-buffer 'new-buffer)
-     ;;(setq async-shell-command-display-buffer nil) ;; this would keep the new buffer in background. Might be attached to C-s-&
-   #+end_src
+*** Enable exwm
+    Then finally enable exwm
+    #+BEGIN_SRC elisp
+      (exwm-enable)
+    #+END_SRC    
 
-** Window handling
-   I want to be able to switch to a buffer even if it is not in the current workspace.
-   This will move a buffer to my current workspace when I select the buffer.
-   #+begin_src elisp
-     (cond
-      ((not (string-equal system-type "darwin"))
-       (progn
-	 (setq exwm-workspace-show-all-buffers t)
-	 (setq exwm-layout-show-all-buffers t))))
-
-   #+end_src
-
-** Hide minibuffer and echo area
-   Get more space by hiding the echo area and the mini buffer when not required.
-   #+begin_src elisp
-     (cond
-      ((not (string-equal system-type "darwin"))
-       (progn (setq exwm-workspace-minibuffer-position 'bottom)
-	      (setq exwm-workspace-display-echo-area-timeout 5)
-	      ;; (exwm-workspace-attach-minibuffer)
-	      ;; (exwm-workspace-detach-minibuffer)
-	      )))
-
-   #+end_src
-** Process helper functions
-   #+begin_src elisp
-     ;; (defun get-exwm-process-id (&optional buffer-or-name)
-     ;;   (interactive)
-     ;;   (let* ((buf (or buffer-or-name (current-buffer)))
-     ;;        (id (exwm--buffer->id (get-buffer buf)))) ; ID of X window being displayed
-     ;;      (if id
-     ;; 	  (slot-value (xcb:+request-unchecked+reply
-     ;; 			   exwm--connection
-     ;; 			   (make-instance 'xcb:ewmh:get-_NET_WM_PID :window id))
-     ;; 		       'value)
-     ;; 	(user-error "Target buffer %S is not an X window managed by EXWM!"
-     ;; 		    buf))))
-
-     ;; (get-exwm-process-id)
-   #+end_src
-** Polybar
-   #+begin_src elisp
-
-     (defvar efs/polybar-process nil
-       "Holds the process of the running Polybar instance, if any")
-
-     (defun efs/kill-panel ()
+* Keyboard changes
+** Rebind capslock to control
+   #+BEGIN_SRC elisp
+     (start-process-shell-command "xmodmap" nil "setxkbmap -option ctrl:nocaps")
+   #+END_SRC
+*** Ask before qutting emacs
+   Especially when running exwm, closing the current emacs would close the whole window manager.
+   To cope with this, just ask before doing it.
+   #+BEGIN_SRC elisp
+     (defun ask-before-closing ()
+       "Close only if y was pressed."
        (interactive)
-       (when efs/polybar-process
-	 (ignore-errors
-	   (kill-process efs/polybar-process)))
-       (setq efs/polybar-process nil))
+       (if (y-or-n-p (format "Are you sure you want to close this frame? "))
+	   (save-buffers-kill-emacs)                                                                                            
+	 (message "Canceled frame close")))
 
-     (defun efs/start-panel ()
-       (interactive)
-       (efs/kill-panel)
-       (setq efs/polybar-process (start-process-shell-command "polybar" nil "polybar panel")))
-
-
-
-   #+end_src
-** Init Hook
-   #+begin_src elisp
-
-     (defun efs/exwm-init-hook ()
-       ;; Make workspace 1 be the
-       ;; one where we land at startup
-       (exwm-workspace-switch-create 1)
-
-       ;; Open eshell by default
-       ;;(eshell)
-       ;; (efs/start-panel)
-       ;; (efs/kill-panel)
-       ;;(efs/run-in-background "dunst")
-
-
-
-       ;; Launch apps that will run in the background
-       ;;(efs/run-in-background "nm-applet"))
-     )
-
-     ;; (add-hook 'efs/exwm-init-hook #'efs/after-exwm-init)
-
-     ;; (efs/run-in-background "pavucontrol")	
-     ;; (efs/run-in-background "blueman-applet")
-   #+end_src
-   
-* Customize my theme:
-** Line Wrapping
-   I really like when long lines are wrapped so I don't have to scroll to the right.
-   The [[https://www.emacswiki.org/emacs/LineWrap][emacs wiki]] has different options for that. I for now will use `[[https://www.emacswiki.org/emacs/VisualLineMode][visual-line-mode]]`.
-   #+BEGIN_SRC elisp
-     (global-visual-line-mode 1)
+     (when (daemonp)
+       (global-set-key (kbd "C-x C-c") 'ask-before-closing))
    #+END_SRC
 
-   #+RESULTS:
-   : t
+*** File for customizations) from within emacs
+    If we customize variables we want to save those changes to `custom.el` file.
+    #+BEGIN_SRC emacs-lisp
+      (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+    #+END_SRC
 
-** Remove all interface distractions:
-   I don't like the scrollbar, menu and toolbar.
-   #+BEGIN_SRC elisp
-     (scroll-bar-mode 0)
-     (tool-bar-mode 0)
-     (menu-bar-mode 0)
-   #+END_SRC
-** Fullscreen
-   #+BEGIN_SRC elisp
-     (global-set-key [f11] 'toggle-frame-fullscreen)
-   #+END_SRC
-** Zen Burn theme
-   #+BEGIN_SRC elisp
-     (package-require 'zenburn-theme)
-     (load-theme 'zenburn t)
-
-   #+END_SRC
-** Spaceline
-   Spaceline theme
-   #+BEGIN_SRC elisp
-     (package-require 'spaceline)
-     ;;(package-require 'spaceline-config)
-     ;;(spaceline-spacemacs-theme)
-   #+END_SRC
-* General Functions
+* Helper Functions
+  Here I define functions that should help me in every mode.
+  Small tools to make the life more easy.
 ** Increase Number at point
    #+BEGIN_SRC elisp
      (defun my-increment-number-decimal (&optional arg)
        "Increment the number forward from point by 'arg'."
        (interactive "p*")
        (save-excursion
-         (save-match-data
-   	(let (inc-by field-width answer)
-             (setq inc-by (if arg arg 1))
-             (skip-chars-backward "0123456789")
-             (when (re-search-forward "[0-9]+" nil t)
-               (setq field-width (- (match-end 0) (match-beginning 0)))
-               (setq answer (+ (string-to-number (match-string 0) 10) inc-by))
-               (when (< answer 0)
-                 (setq answer (+ (expt 10 field-width) answer)))
-               (replace-match (format (concat "%0" (int-to-string field-width) "d")
-                                      answer)))))))
+	 (save-match-data
+	   (let (inc-by field-width answer)
+	     (setq inc-by (if arg arg 1))
+	     (skip-chars-backward "0123456789")
+	     (when (re-search-forward "[0-9]+" nil t)
+	       (setq field-width (- (match-end 0) (match-beginning 0)))
+	       (setq answer (+ (string-to-number (match-string 0) 10) inc-by))
+	       (when (< answer 0)
+		 (setq answer (+ (expt 10 field-width) answer)))
+	       (replace-match (format (concat "%0" (int-to-string field-width) "d")
+				      answer)))))))
 
-     (global-set-key (kbd "C-c +") 'my-increment-number-decimal)
+     (defun my-decrement-number-decimal (&optional arg)
+       (interactive "p*")
+       (let (inc-by)
+	 (setq inc-by (if arg arg 1))
+	 (my-increment-number-decimal (* -1 inc-by))
+	 ))
+
+     (global-set-key (kbd "M-+") 'my-increment-number-decimal)
+     (global-set-key (kbd "M-_") 'my-decrement-number-decimal)
    #+END_SRC
 ** Copy filename of current buffer to clipboard
    #+BEGIN_SRC elisp
@@ -690,206 +460,39 @@ This is my emacs init org configuration file. Written in org mode style for bett
            (kill-new filename)
            (message "Copied buffer file name '%s' to the clipboard." filename))))
 
-   #+END_SRC
-* Reading
-  Stuff to improve the reading experience inside emacs.
-** speed up reading
-   There are many great tools out there, but for emacs I use spray.
+   #+END_SRC    
+* Customize my theme:
+** Line Wrapping
+   I really like when long lines are wrapped so I don't have to scroll to the right.
+   The [[https://www.emacswiki.org/emacs/LineWrap][emacs wiki]] has different options for that. I for now will use `[[https://www.emacswiki.org/emacs/VisualLineMode][visual-line-mode]]`.
    #+BEGIN_SRC elisp
-     (package-require 'spray)
-     (global-set-key (kbd "<f6>") 'spray-mode)
+     (global-visual-line-mode 1)
    #+END_SRC
-* Secrets
-** EXWM Adjustments
-   #+begin_src elisp
-     ;; let's get encryption established
-     (setenv "GPG_AGENdaT_INFO" nil)  ;; use emacs pinentry
-     (setq auth-source-debug t)
 
-     (setq epg-gpg-program "gpg2")  ;; not necessary
-     (package-require 'epa-file)
-     (epa-file-enable)
-     (setq epa-pinentry-mode 'loopback)
-     (setq epg-pinentry-mode 'loopback)
-     ;;(pinentry-start)
-
-     (require 'org-crypt)
-     (org-crypt-use-before-save-magic)
-
-     (setq epa-file-select-keys nil)
-   #+end_src
-** Create gpg agent file
-   #+begin_src sh :tangle ~/.gnupg/gpg-agent.conf
-     allow-emacs-pinentry
-     allow-loopback-pinentry
-   #+end_src
-
-   #+RESULTS:
-
-** Load secrets and epa
+** Remove all interface distractions:
+   I don't like the scrollbar, menu and toolbar.
    #+BEGIN_SRC elisp
-     (package-require 'epa-file)
-     (setq epg-debug t)
-     (epa-file-enable)
-     (setq epa-file-select-keys nil)
-
-      ;;check OS type and load additional gpg path
-      (cond
-       ((string-equal system-type "darwin")
-        (progn
-          (message "loading Mac OS X specific path settings")
-          (add-to-list 'exec-path "/usr/local/MacGPG2/bin")
-          (load-library "secrets")
-          (require 'secrets)
-          )))
-     (setf epa-pinentry-mode 'loopback)
-
+     (fringe-mode 1)
+     (menu-bar-mode -1)
+     (scroll-bar-mode -1)
+     (tool-bar-mode -1)
    #+END_SRC
-
-** load my secrets file
-  inspired by http://emacs-fu.blogspot.de/2011/02/keeping-your-secrets-secret.html
-  #+BEGIN_SRC emacs-lisp
-    ;; (load-library "~/.secrets.el.gpg")
-    (require 'secrets)
-  #+END_SRC
-
-** org-passwords
-   #+BEGIN_SRC emacs-lisp
-     ;; (package-require 'org-passwords)
-     ;; (setq org-passwords-file "/home/mpuchalla/ownCloud/org/secrets.org.gpg")
-     ;; (setq org-passwords-random-words-dictionary "/etc/dictionaries-common/words")
+** Fullscreen
+   #+BEGIN_SRC elisp
+     (global-set-key [f11] 'toggle-frame-fullscreen)
    #+END_SRC
-** Use pinentry
-   #+begin_src elisp
-     (use-package pinentry
-       :ensure t
-       :config
-       (pinentry-start))
-   #+end_src
-* Smudge - Spotify
-  Smudge is a package for controlling your spotify instance. It requires to set up an spotify app and requires premium subscription afaiu.
-  See [[https://github.com/danielfm/smudge][here]] for more into.
-** Install package
-   I could not find the package in my local MELPA. So I download and use the version from githin.
-   #+begin_src elisp
-     ;;(add-to-list 'load-path "~/.emacs.d/lib/smudge/")
-     (package-require 'smudge)
-   #+end_src
-** Install requirements
-   It seems we need simple-httpd and oauth2 packages to use it.
-   #+begin_src elisp
-     (package-require 'simple-httpd)
-     (package-require 'oauth2)
-   #+end_src
-** Load smudge
-   #+begin_src elisp
-     (require 'smudge)
-   #+end_src
-** Configure
-   #+begin_src elisp
-     ;; Settings
-     ;;(setq smudge-oauth2-client-secret PASS_spotify-app-client-secret)
-     ;;(setq smudge-oauth2-client-id PASS_spotify-app-client-id)
-     ;;(define-key smudge-mode-map (kbd "C-c .") 'smudge-command-map)
-
-     ;;(setq smudge-transport 'connect)
-   #+end_src
-** Smudge Hydra config
-   #+begin_src elisp
-     ;; A hydra for controlling spotify.
-     (defhydra hydra-spotify (:hint nil)
-       "
-     ^Search^                  ^Control^               ^Manage^
-     ^^^^^^^^-----------------------------------------------------------------
-     _t_: Track               _SPC_: Play/Pause        _+_: Volume up
-     _m_: My Playlists        _n_  : Next Track        _-_: Volume down
-     _f_: Featured Playlists  _p_  : Previous Track    _x_: Mute
-     _u_: User Playlists      _r_  : Repeat            _d_: Device
-     ^^                       _s_  : Shuffle           _q_: Quit
-     "
-       ("t" smudge-track-search :exit t)
-       ("m" smudge-my-playlists :exit t)
-       ("f" smudge-featured-playlists :exit t)
-       ("u" smudge-user-playlists :exit t)
-       ("SPC" smudge-controller-toggle-play :exit nil)
-       ("n" smudge-controller-next-track :exit nil)
-       ("p" smudge-controller-previous-track :exit nil)
-       ("r" smudge-controller-toggle-repeat :exit nil)
-       ("s" smudge-controller-toggle-shuffle :exit nil)
-       ("+" smudge-controller-volume-up :exit nil)
-       ("-" smudge-controller-volume-down :exit nil)
-       ("x" smudge-controller-volume-mute-unmute :exit nil)
-       ("d" smudge-select-device :exit nil)
-       ("q" quit-window "quit" :color blue))
-
-     (bind-key "s-s" #'hydra-spotify/body)
-   #+end_src
-* EMail
-** Load mu4e
-   So I want to use mu4e within emacs. Tutorial states that I need to include this to check it works.
-   #+BEGIN_SRC emacs-lisp
-;;     (add-to-list 'load-path "/usr/local/Cellar/mu/1.2.0_1/share/emacs/site-lisp/mu/mu4e")
-  ;;   (package-require 'mu4e)
-    ;; (setq mu4e-maildir "~/.mail")
-     ;;(setq mu4e-drafts-folder "/my.drafts")
-     ;;(setq mu4e-sent-folder   "/my.sent_mail")
-     ;; (setq mu4e-sent-messages-behavior 'delete)
-     ;; allow for updating mail using 'U' in the main view:
-     ;; (setq mu4e-get-mail-command "offlineimap")
-
-     ;; ;; shortcuts
-     ;; (setq mu4e-maildir-shor;; tcuts
-     ;; ;;
-        ;; '( ("/INBOX"               . ?i)))
-
-     ;; ;; something about ourselves
-     ;; (setq
-     ;;    user-mail-address "cb0@0xcb0.com"
-     ;;    user-full-name  "Marcus Puchalla"
-     ;;    mu4e-compose-signature
-     ;;     (concat
-     ;;    "MfG,\n"
-     ;;    "Marcus Puchalla\n"))
-
+** Zen Burn theme
+   #+BEGIN_SRC elisp
+     (use-package zenburn-theme)
+     (load-theme 'zenburn t)
    #+END_SRC
-   Which however does not seem to work.
-   ----
-   Ok, I forgot to use 'package-require to acutally install mu4e after adding it to the path.
-
-** NotMuch
-   notmuch
-   #+begin_src emacs-lisp
-     (package-require 'notmuch)
-   #+end_src
-
-* Chrome Handling
-  #+begin_src emacs-lisp
-    ;; (package-require 'osa-chrome)
-  #+end_src
-
-* Blogging
-** Config
-   (setq org-publish-project-alist
-      '(("cb0-blog"
-         :base-directory "~/projects/blog/content/"
-         :recursive t
-         :base-extension "org"
-         :publishing-function org-html-publish-to-html
-         :publishing-directory "~/projects/blog/public/"
-         :makeindex t
-         :section-numbers nil
-         :with-toc nil
-         :auto-sitemap t
-         :html-head "<link rel=\"stylesheet\"
-                    href=\"../other/mystyle.css\"
-                    type=\"text/css\"/>")
-
-   ("images"
-         :base-directory "~/images/"
-         :base-extension "jpg\\|gif\\|png"
-         :publishing-directory "~/projects/blog/public/images/"
-         :publishing-function org-publish-attachment)
-   ))
+** Spaceline
+   Spaceline theme
+   #+BEGIN_SRC elisp
+     (use-package spaceline)
+     ;;(package-require 'spaceline-config)
+     (spaceline-spacemacs-theme)
+   #+END_SRC
 
 * Code Handling
 ** Commenting of code
@@ -910,136 +513,31 @@ This is my emacs init org configuration file. Written in org mode style for bett
     #+END_SRC
 *** Regions
     #+BEGIN_SRC emacs-lisp
-      (global-set-key (kbd "C-x C-;") 'comment-region)
-      (global-set-key (kbd "C-x C-:") 'uncomment-region)
+      ;; (global-set-key (kbd "C-x C-;") 'comment-region)
+      ;; (global-set-key (kbd "C-x C-:") 'uncomment-region)
     #+END_SRC
-* Helm
-  #+BEGIN_SRC emacs-lisp
-    ;;(package-require 'helm)
-    ;; (package-require 'ac-helm)
-
-    ;; (global-set-key (kbd "C-c m") 'helm-mini)
-
-    ;; (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-    ;; (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-    ;; (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-
-    ;; (when (executable-find "curl")
-    ;;   (setq helm-google-suggest-use-curl-p t))
-
-    ;; (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-    ;;       helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
-    ;;       helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-    ;;       helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-    ;;       helm-ff-file-name-history-use-recentf t)
-
-    ;; ;; Control Spotify
-    ;; (package-require 'helm-spotify)
-    ;; (global-set-key (kbd "<f9>") 'helm-spotify)
-
-    ;; ;; Helm as Backup ([[https://github.com/antham/helm-backup][Helm-Backup]])
-    ;; (add-to-list 'load-path "~/.helm-backups/")
-    ;; (package-require 'helm-backup)
-
-    ;; (add-hook 'after-save-hook 'helm-backup-versioning)
-
-    ;; (global-set-key (kbd "C-c b")   'helm-backup)
-
-    ;; ;; theme select
-    ;; (package-require 'helm-themes)
-    ;; (package-require 'helm-projectile)
-
-    ;; ;;enable fuzzy matching
-    ;; (setq helm-recentf t)
-    ;; (setq helm-mini t)
-    ;; (setq helm-buffers-list t)
-    ;; (setq helm-find-files t)
-    ;; (setq helm-locate t)
-    ;; (setq helm-M-x t)
-    ;; (setq helm-semantic t)
-    ;; (setq helm-imenu t)
-    ;; (setq helm-apropos t)
-    ;; (setq helm-lisp-completion-at-point t)
-
-    ;; (setq helm-candidate-number-limit 100)
-
-    ;; ;;(image-dired-display-image-mode)
-
-    ;; (helm-autoresize-mode 1)
-    ;; ;; activate helm mode
-    ;; (helm-mode 1)
-
-
-  #+END_SRC
 
 * Session Management
 ** Desktop mode
    #+BEGIN_SRC emacs-lisp
-    ;;(desktop-save-mode 1)
-    ;;(setq history-length 250)
-    ;(add-to-list 'desktop-globals-to-save 'file-name-history)
+     (use-package desktop)
+     (desktop-save-mode 1)
+     (setq history-length 250)
+     ;(add-to-list 'desktop-globals-to-save 'file-name-history)
 
-    (defun my-desktop-save ()
-      (interactive)
-      ;; Don't call desktop-save-in-desktop-dir, as it prints a message.
-      (if (eq (desktop-owner) (emacs-pid))
-          (desktop-save desktop-dirname)))
-    ;;(add-hook 'auto-save-hook 'my-desktop-save)
+     (defun my-desktop-save ()
+       (interactive)
+       ;; Don't call desktop-save-in-desktop-dir, as it prints a message.
+       (if (eq (desktop-owner) (emacs-pid))
+	   (desktop-save desktop-dirname)))
+     (add-hook 'auto-save-hook 'my-desktop-save)
 
-    ;;(desktop-read)
+     ;;(desktop-read)
 
   #+END_SRC
-** Workgroups2 Mode
-   #+BEGIN_SRC emacs-lisp
-     ;;(package-require 'workgroups2)
-
-     ;;(setq wg-prefix-key (kbd "C-z"))
-     ;;(setq wg-session-file "~/.emacs.d/.emacs_workgroups")
-     ;; (global-set-key (kbd "C-c C-c")         'wg-create-workgroup)
-     ;; (global-set-key [?\s-c] 'wg-create-workgroup)
-     ;; (global-set-key (kbd "C-c w")         'wg-switch-to-workgroup)
-     ;; (global-set-key [?\s-w] 'wg-switch-to-workgroup)
-     ;; (global-set-key (kbd "C-c C-r")         'wg-rename-workgroup)
-     ;; (global-set-key (kbd "C-c C-k")         'wg-kill-workgroup)
-     ;; (global-set-key (kbd "C-c C-<left>")         'wg-switch-to-previous-workgroup)
-     ;; ;; What to do on Emacs exit / workgroups-mode exit?
-     ;; (setq wg-emacs-exit-save-behavior           'save)      ; Options: 'save 'ask nil
-     ;; (setq wg-workgroups-mode-exit-save-behavior 'save)      ; Options: 'save 'ask nil
-
-     ;; ;; Mode Line changes
-     ;; ;; Display workgroups in Mode Line?
-     ;; (setq wg-mode-line-display-on t)          ; Default: (not (featurep 'powerline))
-     ;; (setq wg-flag-modified t)                 ; Display modified flags as well
-     ;; (setq wg-mode-line-decor-left-brace "["
-     ;;       wg-mode-line-decor-right-brace "]"  ; how to surround it
-     ;;       wg-mode-line-decor-divider ":")
-
-
-
-     ;; (setq debug-on-error t)
-
-     ;; (workgroups-mode 1)
-
-   #+END_SRC
-
-   #+RESULTS:
-   : t
-
-** Workgroup
-   #+BEGIN_SRC emacs-lisp
-     ;; (package-require 'workgroups)
-
-     ;; (workgroups-mode 1)
-
-     ;; (setq wg-prefix-key (kbd "C-z"))
-
-     ;; (global-set-key [?\s-c] 'wg-create-workgroup)
-     ;; (global-set-key [?\s-s] 'wg-switch-to-workgroup)
-
-   #+END_SRC
 * Autocomplete
   #+BEGIN_SRC emacs-lisp
-    (package-require 'company)
+    (use-package company)
     (add-hook 'after-init-hook 'global-company-mode)
   #+END_SRC
 * Key Management
@@ -1053,6 +551,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+BEGIN_SRC emacs-lisp
      (define-key global-map (kbd "C-+") 'text-scale-increase)
      (define-key global-map (kbd "C--") 'text-scale-decrease)
+     (define-key global-map (kbd "C-=") 'text-scale-decrease)
    #+END_SRC
 ** Window Handling
 *** Resize Windows
@@ -1067,274 +566,25 @@ This is my emacs init org configuration file. Written in org mode style for bett
     #+BEGIN_SRC emacs-lisp
       ;; Jump backwards between windows
       (defun other-window-backward (n)
-        "Select Nth previous window."
-        (interactive "p")
-        (other-window (- n)))
+	"Select Nth previous window."
+	(interactive "p")
+	(other-window (- n)))
 
       ;;bind switching between windows to SHIFT-UP/DOWN (super usefull!!!!)
+      ;;does not work in org files, therefore use win-[UP/DOWN]
       (global-set-key [(shift down)] 'other-window)
       (global-set-key [(shift up)] 'other-window-backward)
     #+END_SRC
 
 *** Zoom windows
     #+BEGIN_SRC emacs-lisp
-      ;; (package-require 'zoom-window)
+      (use-package zoom-window)
       ;; ;;(setq zoom-window-use-elscreen t)
-      ;; (zoom-window-setup)
+      (zoom-window-setup)
 
-      ;; (global-set-key (kbd "C-x C-z") 'zoom-window-zoom)
+      (global-set-key (kbd "C-x C-z") 'zoom-window-zoom)
     #+END_SRC
-* IDE
 
-** TreeSitter
-
-
-*** Installation
-    #+begin_src elisp
-      ;; (package-require 'tree-sitter)
-      ;; (package-require 'tree-sitter-langs)
-
-      ;; (global-tree-sitter-mode)
-
-      ;; (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-    #+end_src
-
-*** Hooks for languages
-
-    #+begin_src elisp
-;;      (add-hook 'typescript-mode-hook #'tree-sitter-mode)
-
-    #+end_src
-** CEDET
-   #+BEGIN_SRC emacs-lisp
-     ;; (add-to-list 'load-path "./submodules/")
-     ;;   ; Semantic
-     ;;   (global-semantic-idle-completions-mode t)
-     ;;   (global-semantic-decoration-mode t)
-     ;;   (global-semantic-highlight-func-mode t)
-     ;;   (global-semantic-show-unmatched-syntax-mode t)
-
-     ;;   ;; CC-mode
-     ;;   (add-hook 'c-mode-hook '(lambda ()
-     ;; 	  (setq ac-sources (append '(ac-source-semantic) ac-sources))
-     ;; 	  (local-set-key (kbd "RET") 'newline-and-indent)
-     ;; 	  (linum-mode t)
-     ;; 	  (semantic-mode t)))
-
-   #+END_SRC
-** General
-*** Speedbar
-    #+begin_src emacs-lisp
-      ;; (package-require 'speedbar)
-      ;; (package-require 'sr-speedbar)
-      ;; (setq speedbar-show-unknown-files t)
-
-    #+end_src
-** C/C++
-   For C/C++ development I use the tutorial provided [[https://tuhdo.github.io/c-ide.html][here]].
-*** Modify Company mode to include auto complete
-    #+BEGIN_SRC emacs-lisp
-      ;; (setq company-backends (delete 'company-semantic company-backends))
-      ;; (define-key c-mode-map  [(tab)] 'company-complete)
-      ;; (define-key c++-mode-map  [(tab)] 'company-complete)
-
-      ;; (package-require 'company-c-headers)
-      ;; (add-to-list 'company-backends 'company-c-headers)
-
-    #+END_SRC
-*** Semantic Package
-    To enable code completion using Semantic
-    #+BEGIN_SRC emacs-lisp
-      ;; (package-require 'cc-mode)
-      ;; (package-require 'semantic)
-
-      ;; (global-semanticdb-minor-mode 1)
-      ;; (global-semantic-idle-scheduler-mode 1)
-
-      ;; (global-semantic-idle-summary-mode 1)
-      ;; ;; (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
-      ;; ;; (package-require 'stickyfunc-enhance)
-
-      ;; ;; (semantic-mode 1)
-    #+END_SRC
-*** Smartparent
-    #+BEGIN_SRC emacs-lisp
-	;; Package: smartparens
-      ;; (package-require 'smartparens)
-      ;; (show-smartparens-global-mode +1)
-      ;; (smartparens-global-mode 1)
-
-      ;; ;; when you press RET, the curly braces automatically
-      ;; ;; add another newline
-      ;; (sp-with-modes '(c-mode c++-mode)
-      ;;   (sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET")))
-      ;;   (sp-local-pair "/*" "*/" :post-handlers '((" | " "SPC")
-      ;; 					    ("* ||\n[i]" "RET"))))
-    #+END_SRC
-*** Compile Helper
-    Dont as for make programm every time.
-    #+BEGIN_SRC emacs-lisp
-    (global-set-key (kbd "<f4>") (lambda ()
-                               (interactive)
-                               (setq-local compilation-read-command nil)
-                               (call-interactively 'compile)))
-    #+END_SRC
-*** GDB
-    Allow gdb layout
-    #+BEGIN_SRC emacs-lisp
-      (setq
-       ;; use gdb-many-windows by default
-       gdb-many-windows t
-
-       ;; Non-nil means display source file containing the main routine at startup
-       gdb-show-main t
-       )
-    #+END_SRC
-*** GGTags
-    Emacs frontend to GNU Global source code tagging system. http://elpa.gnu.org
-    [[https://github.com/leoliu/ggtags][Source]]
-    #+begin_src emacs-lisp
-      ;; (package-require 'ggtags)
-      ;; (add-hook 'c-mode-common-hook
-      ;; 	  (lambda ()
-      ;; 	    (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
-      ;; 	      (ggtags-mode 1))))
-
-      ;; (define-key ggtags-mode-map (kbd "C-c g s") 'ggtags-find-other-symbol)
-      ;; (define-key ggtags-mode-map (kbd "C-c g h") 'ggtags-view-tag-history)
-      ;; (define-key ggtags-mode-map (kbd "C-c g r") 'ggtags-find-reference)
-      ;; (define-key ggtags-mode-map (kbd "C-c g f") 'ggtags-find-file)
-      ;; (define-key ggtags-mode-map (kbd "C-c g c") 'ggtags-create-tags)
-      ;; (define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags)
-
-      ;; (define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
-    #+end_src
-*** Install and configuartion
-
-** php
-   #+BEGIN_SRC emacs-lisp
-     ;; (package-require 'ac-php)
-     ;; (add-hook 'php-mode-hook
-     ;;           '(lambda ()
-     ;;              (company-mode t)
-     ;;              (add-to-list 'company-backends 'company-ac-php-backend )))
-
-     ;; (package-require 'php-mode)
-     ;; ;; (package-require 'php-extras)
-
-     ;; (add-hook 'php-mode-hook
-     ;;           '(lambda ()
-     ;;              (auto-complete-mode t)
-     ;;              (require 'ac-php)
-     ;;              (setq ac-sources  '(ac-source-php ) )
-     ;;              (yas-global-mode 1)
-     ;;              (define-key php-mode-map  (kbd "C-]") 'ac-php-find-symbol-at-point)   ;goto define
-     ;;              (define-key php-mode-map  (kbd "C-t") 'ac-php-location-stack-back   ) ;go back
-     ;;              ;; (php-extras-company)
-     ;;              ))
-
-     ;; (eval-after-load 'company
-     ;;   '(progn
-     ;;      (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
-     ;;      (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)))
-
-
-   #+END_SRC
-** Haskell
-   #+BEGIN_SRC emacs-lisp
-     (package-require 'haskell-mode)
-     (package-require 'lsp-mode)
-     (package-require 'lsp-ui)
-     (package-require 'lsp-haskell)
-     ;; (package-require 'company-ghc)
-
-     (add-hook 'haskell-mode-hook #'lsp)
-     (add-hook 'haskell-literate-mode-hook #'lsp)
-
-     (eval-after-load "haskell-mode"
-       '(define-key haskell-mode-map (kbd "C-c C-c") 'haskell-compile))
-
-     (eval-after-load "haskell-cabal"
-	 '(define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-compile))
-     #+END_SRC
-
-** Lisp
-   #+begin_src elisp
-     (package-require 'slime)
-     (setq inferior-lisp-program "sbcl")
-     (add-hook 'lisp-mode-hook (lambda () (slime-mode t)))
-     (add-hook 'inferior-lisp-mode-hook (lambda () (inferior-slime-mode t)))
-     ;; (load "~/quicklisp/setup.lisp")
-     ;; (ql:add-to-init-file)
-   #+end_src
-
-** Typescript
-   Taken from https://sagot.dev/en/articles/emacs-typescript/
-*** Installation dpa mode
-    #+begin_src elisp
-      ;; (package-require 'dap-mode)
-      ;; (package-require 'typescript-mode)
-
-
-      ;; (setq package-list '(dap-mode typescript-mode tree-sitter tree-sitter-langs lsp-mode lsp-ui))
-
-      ;; (package-require 'lsp-mode)
-
-      ;; (add-hook 'typescript-mode-hook 'lsp-deferred)
-      ;; (add-hook 'javascript-mode-hook 'lsp-deferred)
-
-    #+end_src
-* Sudo Edit Files
-** local ssh
-   #+BEGIN_SRC emacs-lisp
-     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     ;; TRAMP for president (switch to edit file as root on remote machines)
-     ;; - you need to connect to a remote server and start view a file
-     ;;   C-x C-f /ssh/remote_user@remote-host:/file/location/info.log
-     ;; - if file is only writable by root and your remote_user has sudo priviledges then do
-     ;;   M-x sudo-edit-current-file
-     ;;   to reopen the file remotly as root user.
-     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-     (defun sudo-edit-current-file ()
-       (interactive)
-       (let ((my-file-name) ; fill this with the file to open
-             (position))    ; if the file is already open save position
-         (if (equal major-mode 'dired-mode) ; test if we are in dired-mode
-             (progn
-               (setq my-file-name (dired-get-file-for-visit))
-               (find-alternate-file (prepare-tramp-sudo-string my-file-name)))
-           (setq my-file-name (buffer-file-name); hopefully anything else is an already opened file
-                 position (point))
-           (find-alternate-file (prepare-tramp-sudo-string my-file-name))
-           (goto-char position))))
-
-   #+END_SRC
-** tramp config
-   #+BEGIN_SRC emacs-lisp
-     (defun prepare-tramp-sudo-string (tempfile)
-       (if (file-remote-p tempfile)
-           (let ((vec (tramp-dissect-file-name tempfile)))
-
-             (tramp-make-tramp-file-name
-              "sudo"
-              (tramp-file-name-user nil)
-              (tramp-file-name-host vec)
-              (tramp-file-name-localname vec)
-              (format "ssh:%s@%s|"
-                      (tramp-file-name-user vec)
-                      (tramp-file-name-host vec))))
-         (concat "/sudo:root@localhost:" tempfile)))
-
-     ;;(define-key dired-mode-map [s-return] 'sudo-edit-current-file)
-
-     ;;(setq tramp-default-method "ssh")
-
-   #+END_SRC
-** sudo-edit.el
-   #+BEGIN_SRC emacs-lisp
-     ;;(package-require 'sudo-edit)
-   #+END_SRC
 * Tramp
 ** Clean up tramp connections
    When opening directories over tramp and not closing them manually, the minibuffer sometimes ask for a ssh pass while doing something completly different.
@@ -1356,85 +606,19 @@ This is my emacs init org configuration file. Written in org mode style for bett
        (ido-remove-tramp-from-cache)
        (ido-save-history))
    #+END_SRC
-* YaSnippet
-  #+BEGIN_SRC emacs-lisp
-    ;; yasnippets
-    (package-require 'yasnippet)
-    (require 'yasnippet)
-    (setq yas-snippet-dirs
-          '("~/.emacs.d/snippets"               ;; personal snippets
-            "~/projects/yasnippet-snippets"     ;; the default collection
-            ))
-    (yas-reload-all)
-    (yas-global-mode 1)
 
-    ;; yasnippets
-    ;; Completing point by some yasnippet key
-    (defun yas-ido-expand ()
-      "Lets you select (and expand) a yasnippet key"
-      (interactive)
-        (let ((original-point (point)))
-          (while (and
-                  (not (= (point) (point-min) ))
-                  (not
-                   (string-match "[[:space:]\n]" (char-to-string (char-before)))))
-            (backward-word 1))
-        (let* ((init-word (point))
-               (word (buffer-substring init-word original-point))
-               (list (yas-active-keys)))
-          (goto-char original-point)
-          (let ((key (remove-if-not
-                      (lambda (s) (string-match (concat "^" word) s)) list)))
-            (if (= (length key) 1)
-                (setq key (pop key))
-              (setq key (ido-completing-read "key: " list nil nil word)))
-            (delete-char (- init-word original-point))
-            (insert key)
-            (yas-expand)))))
-
-    (define-key yas-minor-mode-map (kbd "<C-tab>")     'yas-ido-expand)
-
-  #+END_SRC
 * Counsel
   #+BEGIN_SRC emacs-lisp
-    (package-require 'counsel)
+    (use-package counsel)
     (global-set-key (kbd "C-x C-f") 'counsel-find-file)
     (use-package counsel
       :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only))
   #+END_SRC
-* Projectile
-** Install
-   #+BEGIN_SRC emacs-lisp
-     ;; ;;projectile
-     ;; (package-require 'projectile)
-     ;; (projectile-global-mode)
-     ;; (setq projectile-indexing-method 'alien)
-     ;; (setq projectile-switch-project-action 'projectile-dired)
-     ;; (setq projectile-enable-caching t)
-     ;; (package-require 'ag)
 
-     ;; (define-key projectile-mode-map [?\s-d] 'projectile-find-dir)
-     ;; (define-key projectile-mode-map [?\s-p] 'projectile-switch-project)
-     ;; (define-key projectile-mode-map [?\s-f] 'projectile-find-file)
-     ;; (define-key projectile-mode-map [?\s-g] 'projectile-grep)
-     ;; (define-key projectile-mode-map (kbd "s-.") 'projectile-recentf)
-     ;; (define-key projectile-mode-map (kbd "s-a") 'projectile-ag)
-     ;; (define-key projectile-mode-map (kbd "s-q") 'helm-projectile-ag)
-
-     ;; (package-require 'perspective)
-     ;; (package-require 'helm-ag)
-     ;; (persp-mode)
-     ;; (package-require 'persp-projectile)
-     ;; (define-key projectile-mode-map (kbd "s-s") 'projectile-persp-switch-project)
-
-     ;; (package-require 'project-explorer)
-
-   #+END_SRC
-** Config
 * Swiper
   Generic completion frontend
   #+BEGIN_SRC emacs-lisp
-    (package-require 'swiper)
+    (use-package swiper)
 
     (setq magit-completing-read-function 'ivy-completing-read)
     (setq projectile-completion-system 'ivy)
@@ -1472,9 +656,10 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 
   #+END_SRC
+
 * Smex
   #+BEGIN_SRC emacs-lisp
-    (package-require 'smex)
+    (use-package smex)
 
     (require 'smex)
     (smex-initialize) ; Can be omitted. This might cause a (minimal) delay
@@ -1487,201 +672,175 @@ This is my emacs init org configuration file. Written in org mode style for bett
     ;; (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
   #+END_SRC
+
 * Org Mode
 ** Install and set custom things for org-mode
    #+BEGIN_SRC emacs-lisp
-					     ; Activate org-mode
-     (require 'org)
+						  ; Activate org-mode
+	  (use-package org)
+
      ;; (require 'org-install)
-     ;; (require 'org-habit)
-     ;; (setq org-habit-preceding-days 7
-     ;; org-habit-following-days 1
-     ;; org-habit-graph-column 80
-     ;; org-habit-show-habits-only-for-today t
-     ;; org-habit-show-all-today t)
-     ;;(require 'ess-site)
-     ;; http://orgmode.org/guide/Activation.html#Activation
+	  ;; (use-package org-habit)
+	  ;; (setq org-habit-preceding-days 7
+	  ;; org-habit-following-days 1
+	  ;; org-habit-graph-column 80
+	  ;; org-habit-show-habits-only-for-today t
+	  ;; org-habit-show-all-today t)
+	  ;;(require 'ess-site)
+	  ;; http://orgmode.org/guide/Activation.html#Activation
 
-     ;; The following lines are always needed.  Choose your own keys.
-     (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+	  ;; The following lines are always needed.  Choose your own keys.
+	  (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
-     ;; And add babel inline code execution
-     ;; babel, for executing code in org-mode.
-     (org-babel-do-load-languages
-      'org-babel-load-languages
-      ;; load all language marked with (lang . t).
-      '((C . t)
-;;	(org . t)
-	(shell . t)))
+	  ;; And add babel inline code execution
+	  ;; babel, for executing code in org-mode.
+	  (org-babel-do-load-languages
+	   'org-babel-load-languages
+	   ;; load all language marked with (lang . t).
+	   '((C . t)
+     ;;	(org . t)
+	     (shell . t)))
 
-     ;; turn off "evaluate code question" in org-mode code blocks
-     (setq org-confirm-babel-evaluate nil)
+	  ;; turn off "evaluate code question" in org-mode code blocks
+	  (setq org-confirm-babel-evaluate nil)
 
-     ;;set org diretrory to owncloud sync
-     ;; (setq org-directory "~/ownCloud/org")
+	  ;; and some more org stuff
+	  (setq org-list-allow-alphabetical t)
 
-     ;; and some more org stuff
-     (setq org-list-allow-alphabetical t)
+	  (define-key global-map "\C-cl" 'org-store-link)
+	  (define-key global-map "\C-ca" 'org-agenda)
+	  ;; add a timestamp when we close an item
+	  (setq org-log-done 'note)
+	  ;; include a closing note when close an todo item
+	  ;; (setq org-log-done 'note)
 
-     (define-key global-map "\C-cl" 'org-store-link)
-     (define-key global-map "\C-ca" 'org-agenda)
-     ;; add a timestamp when we close an item
-     (setq org-log-done 'note)
-     ;; include a closing note when close an todo item
-     ;; (setq org-log-done 'note)
-
-     ;;(global-set-key "\C-cl" 'org-store-link)
-     ;; (global-set-key "\C-cc" 'org-capture)
-     ;; (global-set-key "\C-ca" 'org-agenda)
-     ;; (global-set-key "\C-cb" 'org-iswitchb)
-     ;; (global-set-key (kbd "<S-i>") 'org-clock-in)
-     ;; (global-set-key (kbd "<S-o>") 'org-clock-out)
-     ;; (global-set-key (kbd "<S-g>") 'org-clock-goto)
+	  ;;(global-set-key "\C-cl" 'org-store-link)
+	  ;; (global-set-key "\C-cc" 'org-capture)
+	  ;; (global-set-key "\C-ca" 'org-agenda)
+	  ;; (global-set-key "\C-cb" 'org-iswitchb)
+	  ;; (global-set-key (kbd "<S-i>") 'org-clock-in)
+	  ;; (global-set-key (kbd "<S-o>") 'org-clock-out)
+	  ;; (global-set-key (kbd "<S-g>") 'org-clock-goto)
 
 
 
-     ;; (eval-after-load "org"
-     ;;   '(progn
-     ;;      (define-prefix-command 'org-todo-state-map)
+	  (custom-set-variables
 
-     ;;      (define-key org-mode-map "\C-cx" 'org-todo-state-map)
+	   '(org-agenda-ndays 7)
+	   '(org-deadline-warning-days 14)
+	   '(org-agenda-show-all-dates t)
+	   '(org-agenda-skip-deadline-if-done t)
+	   '(org-agenda-skip-scheduled-if-done t)
+	   '(org-agenda-start-on-weekday nil)
+	   '(org-reverse-note-order t)
+	   '(org-fast-tag-selection-single-key (quote expert)))
 
-     ;;      (define-key org-todo-state-map "x"
-     ;;        #'(lambda nil (interactive) (org-todo "CANCELLED")))
-     ;;      (define-key org-todo-state-map "d"
-     ;;        #'(lambda nil (interactive) (org-todo "DONE")))
-     ;;      (define-key org-todo-state-map "f"
-     ;;        #'(lambda nil (interactive) (org-todo "DEFERRED")))
-     ;;      (define-key org-todo-state-map "l"
-     ;;        #'(lambda nil (interactive) (org-todo "DELEGATED")))
-     ;;      (define-key org-todo-state-map "s"
-     ;;        #'(lambda nil (interactive) (org-todo "STARTED")))
-     ;;      (define-key org-todo-state-map "w"
-     ;;        #'(lambda nil (interactive) (org-todo "WAITING")))
+	  (global-set-key "\C-cr" 'org-capture)
 
-     ;;      (define-key org-agenda-mode-map "\C-n" 'next-line)
-     ;;      (define-key org-agenda-keymap "\C-n" 'next-line)
-     ;;      (define-key org-agenda-mode-map "\C-p" 'previous-line)
-     ;;      (define-key org-agenda-keymap "\C-p" 'previous-line)))
-
-     (custom-set-variables
-      ;; '(org-agenda-files (quote ("~/todo.org")))
-      ;; '(org-default-notes-file "~/notes.org")
-      '(org-agenda-ndays 7)
-      '(org-deadline-warning-days 14)
-      '(org-agenda-show-all-dates t)
-      '(org-agenda-skip-deadline-if-done t)
-      '(org-agenda-skip-scheduled-if-done t)
-      '(org-agenda-start-on-weekday nil)
-      '(org-reverse-note-order t)
-      '(org-fast-tag-selection-single-key (quote expert)))
-
-     (global-set-key "\C-cr" 'org-capture)
-
-     ;; Org Capture
-     ;; (setq org-capture-templates
-     ;; '(("t" "Todo" entry (file+headline (concat org-directory "/gtd.org") "Tasks")
-     ;; "* TODO %?\n %i\n")
-     ;; ("l" "Link" plain (file (concat org-directory "/links.org"))
-     ;; "- %?\n %x\n")))
+	  ;; Org Capture
+	  ;; (setq org-capture-templates
+	  ;; '(("t" "Todo" entry (file+headline (concat org-directory "/gtd.org") "Tasks")
+	  ;; "* TODO %?\n %i\n")
+	  ;; ("l" "Link" plain (file (concat org-directory "/links.org"))
+	  ;; "- %?\n %x\n")))
 
 
-     ;; (custom-set-variables
-     ;;  '(org-agenda-files (quote ("~/todo.org")))
-     ;;  '(org-default-notes-file "~/notes.org")
-     ;;  '(org-agenda-ndays 7)
-     ;;  '(org-deadline-warning-days 14)
-     ;;  '(org-agenda-show-all-dates t)
-     ;;  '(org-agenda-skip-deadline-if-done t)
-     ;;  '(org-agenda-skip-scheduled-if-done t)
-     ;;  '(org-agenda-start-on-weekday nil)
-     ;;  '(org-reverse-note-order t)
-     ;;  '(org-fast-tag-selection-single-key (quote expert))
-     ;;  '(org-agenda-custom-commands
-     ;;    (quote (("d" todo "DELEGATED" nil)
-     ;;         ("c" todo "DONE|DEFERRED|CANCELLED" nil)
-     ;;         ("w" todo "WAITING" nil)
-     ;;         ("W" agenda "" ((org-agenda-ndays 21)))
-     ;;         ("A" agenda ""
-     ;;          ((org-agenda-skip-function
-     ;;            (lambda nil
-     ;;              (org-agenda-skip-entry-if (quote notregexp) "\\=.*\\[#A\\]")))
-     ;;           (org-agenda-ndays 1)
-     ;;           (org-agenda-overriding-header "Today's Priority #A tasks: ")))
-     ;;         ("u" alltodo ""
-     ;;          ((org-agenda-skip-function
-     ;;            (lambda nil
-     ;;              (org-agenda-skip-entry-if (quote scheduled) (quote deadline)
-     ;;                                        (quote regexp) "\n]+>")))
-     ;;           (org-agenda-overriding-header "Unscheduled TODO entries: "))))))
-     ;;  '(org-remember-store-without-prompt t)
-     ;;  '(org-remember-templates
-     ;;    (quote ((116 "* TODO %?\n  %u" "~/todo.org" "Tasks")
-     ;;         (110 "* %u %?" "~/notes.org" "Notes"))))
-     ;;  '(remember-annotation-functions (quote (org-remember-annotation)))
-     ;;  '(remember-handler-functions (quote (org-remember-handler))))
+	  ;; (custom-set-variables
+	  ;;  '(org-agenda-files (quote ("~/todo.org")))
+	  ;;  '(org-default-notes-file "~/notes.org")
+	  ;;  '(org-agenda-ndays 7)
+	  ;;  '(org-deadline-warning-days 14)
+	  ;;  '(org-agenda-show-all-dates t)
+	  ;;  '(org-agenda-skip-deadline-if-done t)
+	  ;;  '(org-agenda-skip-scheduled-if-done t)
+	  ;;  '(org-agenda-start-on-weekday nil)
+	  ;;  '(org-reverse-note-order t)
+	  ;;  '(org-fast-tag-selection-single-key (quote expert))
+	  ;;  '(org-agenda-custom-commands
+	  ;;    (quote (("d" todo "DELEGATED" nil)
+	  ;;         ("c" todo "DONE|DEFERRED|CANCELLED" nil)
+	  ;;         ("w" todo "WAITING" nil)
+	  ;;         ("W" agenda "" ((org-agenda-ndays 21)))
+	  ;;         ("A" agenda ""
+	  ;;          ((org-agenda-skip-function
+	  ;;            (lambda nil
+	  ;;              (org-agenda-skip-entry-if (quote notregexp) "\\=.*\\[#A\\]")))
+	  ;;           (org-agenda-ndays 1)
+	  ;;           (org-agenda-overriding-header "Today's Priority #A tasks: ")))
+	  ;;         ("u" alltodo ""
+	  ;;          ((org-agenda-skip-function
+	  ;;            (lambda nil
+	  ;;              (org-agenda-skip-entry-if (quote scheduled) (quote deadline)
+	  ;;                                        (quote regexp) "\n]+>")))
+	  ;;           (org-agenda-overriding-header "Unscheduled TODO entries: "))))))
+	  ;;  '(org-remember-store-without-prompt t)
+	  ;;  '(org-remember-templates
+	  ;;    (quote ((116 "* TODO %?\n  %u" "~/todo.org" "Tasks")
+	  ;;         (110 "* %u %?" "~/notes.org" "Notes"))))
+	  ;;  '(remember-annotation-functions (quote (org-remember-annotation)))
+	  ;;  '(remember-handler-functions (quote (org-remember-handler))))
 
-     ;; (package-require 'org-ac)
-     ;; (package-require 'org-tempo)
+	  ;; (package-require 'org-ac)
+	  ;; (package-require 'org-tempo)
 
-     ;; To save the clock history across Emacs sessions:
-     (setq org-clock-persist 'history)
-     (org-clock-persistence-insinuate)
-     (setq org-clock-continuously nil)
+	  ;; To save the clock history across Emacs sessions:
+	  (setq org-clock-persist 'history)
+	  (org-clock-persistence-insinuate)
+	  (setq org-clock-continuously nil)
 
-     ;; we want some non standard todo types
-     (setq org-todo-keywords
-	   '((sequence
-	      "TODO(t)" "BUG(b)" "WAIT_FOR_FEEDBACK(w)" "FIXED(f)" "TO_BE_MERGE(m)" "MERGED(M)" "WAIT(w)" "|" "CANCELED(c)" "DONE(d)" "|" "INFO(i)")))
+	  ;; we want some non standard todo types
+	  (setq org-todo-keywords
+		'((sequence
+		   "TODO(t)" "BUG(b)" "WAIT_FOR_FEEDBACK(w)" "FIXED(f)" "TO_BE_MERGE(m)" "MERGED(M)" "WAIT(w)" "|" "CANCELED(c)" "DONE(d)" "|" "INFO(i)")))
 
-     (setq org-todo-keyword-faces
-	   '(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-	     ("BUG" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-	     ("WAIT_FOR_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-	     ("DISCUSSION" :background "red2" :foreground "orange" :weight bold :box (:line-width 2 :style released-button))
-	     ("FIXED" :background "orange" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-	     ("TO_BE_MERGE" :background "gold" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-	     ("MERGED" :background "gold" :foreground "grey" :weight bold :box (:line-width 2 :style released-button))
-	     ("WAIT" :background "gray" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-	     ("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
-	     ("INFO" :background "green" :foreground "red1" :weight bold :box (:line-width 2 :style released-button))
-	     ("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
+	  (setq org-todo-keyword-faces
+		'(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+		  ("BUG" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+		  ("WAIT_FOR_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+		  ("DISCUSSION" :background "red2" :foreground "orange" :weight bold :box (:line-width 2 :style released-button))
+		  ("FIXED" :background "orange" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+		  ("TO_BE_MERGE" :background "gold" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+		  ("MERGED" :background "gold" :foreground "grey" :weight bold :box (:line-width 2 :style released-button))
+		  ("WAIT" :background "gray" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+		  ("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
+		  ("INFO" :background "green" :foreground "red1" :weight bold :box (:line-width 2 :style released-button))
+		  ("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
 
-     ;; dont ask when executing code
-     (setq org-confirm-babel-evaluate nil)
+	  ;; dont ask when executing code
+	  (setq org-confirm-babel-evaluate nil)
 
-     (defface org-block-begin-line
-       '((t (:underline "#A7A6AA" :foreground "#040404" :background "#9a9a9a")))
-       "Face used for the line delimiting the begin of source blocks.")
+	  (defface org-block-begin-line
+	    '((t (:underline "#A7A6AA" :foreground "#040404" :background "#9a9a9a")))
+	    "Face used for the line delimiting the begin of source blocks.")
 
-     (defface org-block-background
-       '((t (:background "#4F4F4F")))
-       "Face used for the source block background.")
+	  (defface org-block-background
+	    '((t (:background "#4F4F4F")))
+	    "Face used for the source block background.")
 
-     (defface org-block-end-line
-       '((t (:overline "#A7A6AA" :foreground "#000000" :background "#9a9a9a")))
-       "Face used for the line delimiting the end of source blocks.")
+	  (defface org-block-end-line
+	    '((t (:overline "#A7A6AA" :foreground "#000000" :background "#9a9a9a")))
+	    "Face used for the line delimiting the end of source blocks.")
 
-     (setq org-completion-use-ido t)
+	  (setq org-completion-use-ido t)
 
-     (setq exec-path (append exec-path '("/usr/bin/mscgen")))
+	  (setq exec-path (append exec-path '("/usr/bin/mscgen")))
 
-     (defun do-org-show-all-inline-images ()
-       (interactive)
-       (org-display-inline-images t t))
+	  (defun do-org-show-all-inline-images ()
+	    (interactive)
+	    (org-display-inline-images t t))
 
-     ;; (add-hook 'org-ctrl-c-ctrl-c-hook (lambda () (org-display-inline-images)))
-     ;;(add-hook 'org-confirm-babel-evaluate-hook (lambda () (org-display-inline-images)))
+	  ;; (add-hook 'org-ctrl-c-ctrl-c-hook (lambda () (org-display-inline-images)))
+	  ;;(add-hook 'org-confirm-babel-evaluate-hook (lambda () (org-display-inline-images)))
 
-     (add-hook 'org-babel-after-execute-hook
-	       (lambda ()
-		 (condition-case nil
-		     (org-display-inline-images)
-		   (error nil)))
-	       'append)
+	  (add-hook 'org-babel-after-execute-hook
+		    (lambda ()
+		      (condition-case nil
+			  (org-display-inline-images)
+			(error nil)))
+		    'append)
 
-     ;; set so that each line has correct indent
-     (setq org-adapt-indentation t)
+	  ;; set so that each line has correct indent
+	  (setq org-adapt-indentation t)
 
    #+END_SRC
 *** Fixing the insertion of source blocks in emacs org > 9.2
@@ -1697,51 +856,51 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** Journaling
    Taken from the site of [[http://www.howardism.org/Technical/Emacs/journaling-org.html][howardism]] I will include a similar strategy.
    #+BEGIN_SRC emacs-lisp
-     (package-require 'org-journal)
+     ;; (package-require 'org-journal)
 
-     (setq org-journal-dir "~/sync/org/journal/")
+     ;; (setq org-journal-dir "~/sync/org/journal/")
 
-     (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
-     (add-to-list 'org-agenda-files org-journal-dir)
-     (add-to-list 'org-agenda-files "~/org/calendar.org")
+     ;; (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
+     ;; (add-to-list 'org-agenda-files org-journal-dir)
+     ;; (add-to-list 'org-agenda-files "~/org/calendar.org")
 
-     (custom-set-variables
-      '(org-directory "~/sync/org/")
-      '(org-agenda-files (directory-files-recursively "~/sync/org/" "\\.org$")))
+     ;; (custom-set-variables
+     ;;  '(org-directory "~/sync/org/")
+     ;;  '(org-agenda-files (directory-files-recursively "~/sync/org/" "\\.org$")))
 
-     (add-to-list 'auto-mode-alist '("\\`[^.].*\\.org|[0-9]+" . org-mode))
+     ;; (add-to-list 'auto-mode-alist '("\\`[^.].*\\.org|[0-9]+" . org-mode))
 
-     (setq org-capture-templates
-	   '(("j" "Journal Entry"
-	      entry (file+datetree "~/sync/org/journal/journal.org")
-	      "* Event: %?\n\n  %i\n\n  From: %a"
-	      :empty-lines 1)))
+     ;; (setq org-capture-templates
+     ;;       '(("j" "Journal Entry"
+     ;; 	 entry (file+datetree "~/sync/org/journal/journal.org")
+     ;; 	 "* Event: %?\n\n  %i\n\n  From: %a"
+     ;; 	 :empty-lines 1)))
 
-     (defun get-journal-file-today ()
-       "Return filename for today's journal entry."
-       (let ((daily-name (format-time-string "%Y%m%d")))
-	 (expand-file-name (concat org-journal-dir daily-name ".org"))))
+     ;; (defun get-journal-file-today ()
+     ;;   "Return filename for today's journal entry."
+     ;;   (let ((daily-name (format-time-string "%Y%m%d")))
+     ;;     (expand-file-name (concat org-journal-dir daily-name ".org"))))
 
-     (defun journal-file-today ()
-       "Create and load a journal file based on today's date."
-       (interactive)
-       (find-file (get-journal-file-today)))
+     ;; (defun journal-file-today ()
+     ;;   "Create and load a journal file based on today's date."
+     ;;   (interactive)
+     ;;   (find-file (get-journal-file-today)))
 
-     (global-set-key (kbd "C-c f j") 'org-journal-new-entry)
-     ;; journal-file-today)
+     ;; (global-set-key (kbd "C-c f j") 'org-journal-new-entry)
+     ;; ;; journal-file-today)
 
-     ;; Turn off auto-save-mode, needed for saving encrypted journals without leaking data
-     (add-hook 'org-journal-mode-hook (lambda () (auto-save-mode -1)))
+     ;; ;; Turn off auto-save-mode, needed for saving encrypted journals without leaking data
+     ;; (add-hook 'org-journal-mode-hook (lambda () (auto-save-mode -1)))
 
-     ;; Enable encryption
-     (setq org-journal-enable-encryption t)
+     ;; ;; Enable encryption
+     ;; (setq org-journal-enable-encryption t)
 
 
    #+END_SRC
-** Calendar
+
 ** Super Agenda
    #+begin_src elisp
-     (package-require 'org-super-agenda)
+     (use-package org-super-agenda)
      (org-super-agenda-mode)
      (let ((org-super-agenda-groups
 	    '(;; Each group has an implicit boolean OR operator between its selectors.
@@ -1756,7 +915,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
    #+end_src
 *** Integrate radicale online calendar
     #+begin_src elisp
-     (package-require 'org-caldav)
+     (use-package org-caldav)
      (setq org-caldav-url "https://cal.0xcb0.com/")
      (setq org-caldav-calendar-id "cb0/53ba00fd-502f-8b48-c01d-bd339a3ef42a")
      (setq org-caldav-inbox "~/org/calendar.org")
@@ -1792,7 +951,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 ** WC
    [[https://github.com/bnbeckwith/wc-mode][org-wd]] is a minor mode for counting words.
    #+BEGIN_SRC emacs-lisp
-     (package-require 'org-wc)
+     (use-package org-wc)
 
      ;; and run org-wc-display on a timer every time I go idle for 5 seconds
      (defun pc/display-org-wc-in-buffer ()
@@ -1840,25 +999,7 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
 
    #+END_SRC
-** [#B] Capturing Templates
-   At the moment I'm using only 3 templates.
-   - Todo: for general things that need to be done.
-   - Book: for capturing books to read.
-   - Jounrnal: For a personal daily based journal. Note this is nearly obsolete as I use org-jounral now.
-   #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "C-c c") 'org-capture)
 
-     (setq org-capture-templates
-       '(("t" "Todo" entry (file+headline "~/sync/org/old/homenotes.org" "Todos")
-             "* TODO %?\n  %i\n %a")
-	 ("b" "Book" entry (file+headline "~/sync/org/old/homenotes.org" "Books")
-             "* TODO Description: %?
-	             %^{Author}p \n Created: %T")
-	("j" "Journal Entry" entry (file+datetree "~/sync/org/journalEntry.org")
-              "* Event: %?\n\n  %i\n\n  From: %a"
-              :empty-lines 1)
-         ))
-   #+END_SRC
 ** Babel
 *** Remote dir fix!
     When evaluation source blocks inside org mode I get the same error as [[https://lists.gnu.org/archive/html/emacs-orgmode/2016-01/msg00281.html][here]].
@@ -1869,8 +1010,6 @@ This is my emacs init org configuration file. Written in org mode style for bett
 * Org Roam
 ** Installation
    #+begin_src elisp
-     (package-require 'org-roam-dailies)
-
      (use-package org-roam
        :ensure t
        :init
@@ -1893,52 +1032,63 @@ This is my emacs init org configuration file. Written in org mode style for bett
 	      ("C-c n i"   . org-roam-node-insert)
 	      ("C-c n _"   . org-id-get-create)
 	      ("C-c n a"   . org-roam-alias-add)
-	      ("C-c n d"   . org-roam-dailies-find-date)
+	      ("C-c n d"   . org-roam-dailies-goto-date)
 	      ("C-c n c"   . org-roam-dailies-capture-today)
 	      ("C-c n C r" . org-roam-dailies-capture-tomorrow)
-	      ("C-c n t"   . org-roam-dailies-find-today)
-	      ("C-c n y"   . org-roam-dailies-find-yesterday)
-	      ("C-c n r"   . org-roam-dailies-find-tomorrow)
+	      ("C-c n I"   . org-roam-node-insert-immediate)
+	      ("C-c n t"   . org-roam-dailies-goto-today)
+	      ("C-c n y"   . org-roam-dailies-goto-yesterday)
+	      ("C-c n r"   . org-roam-dailies-goto-tomorrow)
+	      ("C-c n R"   . my/org-roam-refresh-agenda-list)	     
 	      ("C-c n g"   . org-roam-graph)
 	      :map org-mode-map
-	      ("C-M-i"     . completion-at-point)
-	      :map org-roam-dailies-map
-	      ("Y" . org-roam-dailies-capture-yesterday)
-	      ("T" . org-roam-dailies-capture-tomorrow))
-       :bind-keymap
-       ("C-c n d" . org-roam-dailies-map)
+	      ("C-M-i"     . completion-at-point))
        :config
-       (org-roam-setup))
+
+       (defun org-roam-node-insert-immediate (arg &rest args)
+	 "Insert a ref to a new roam note at buffer position, without jumping to that buffer."
+	 (interactive "P")
+	 (let ((args (cons arg args))
+	       (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+							 '(:immediate-finish t)))))
+	   (apply #'org-roam-node-insert args)))
+
+       (defun my/org-roam-filter-by-tag (tag-name)
+	 "Check if a tag is part of a node tags"
+	 (lambda (node)
+	   (member tag-name (org-roam-node-tags node))))
+
+       (defun my/org-roam-list-notes-by-tag (tag-name)
+	 "Filter my roam node files by a tag name"
+	 (mapcar #'org-roam-node-file
+		 (seq-filter
+		  (my/org-roam-filter-by-tag tag-name)
+		  (org-roam-node-list))))
+
+       (defun my/org-roam-refresh-agenda-list ()
+	 "Refresh the org-agenda-files with all my tags that I want to include."
+	 (interactive)
+	 (setq org-agenda-files (my/org-roam-list-notes-by-tag "work")))
+       (org-roam-setup)
+       (org-roam-db-autosync-mode))
    #+end_src
 
-   #+RESULTS:
-   : org-roam-insert-immediate
-
-** Configuration
-   #+begin_src elisp
-     ;; (make-directory "~/sync/org/org-roam")
-     ;; here is the home directory
-     ;; (setq org-roam-directory (file-truename "~/sync/org/org-roam")) ;
-
-     (org-roam-db-autosync-mode)
-
-   #+end_src
 * Anki
   #+begin_src elisp
-    (package-require 'anki-editor)
     (use-package anki-editor
       :after org
       :config
       ; I like making decks
       (setq anki-editor-create-decks 't))
   #+end_src
+
 * Magit
   The best git client available
 ** init magit
    #+BEGIN_SRC emacs-lisp
      ;; git and magit (Magit rules!!!!)
      ;; (require 'git)
-     (package-require 'magit)
+     (use-package magit)
      (global-set-key (kbd "<f5>") 'magit-status)
 
      ;;taken from http://tullo.ch/articles/modern-emacs-setup/
@@ -1976,42 +1126,16 @@ This is my emacs init org configuration file. Written in org mode style for bett
 		      (list ref)))
      (message "To prevent from dropping all stashes again, this was disabled!"))
    #+END_SRC
-* Merging
-  #+BEGIN_SRC emacs-lisp
-    (setq smerge-command-prefix "\C-cv")
-  #+END_SRC
+
 * secretaria
   #+BEGIN_SRC emacs-lisp
-    ;; (package-require 'secretaria)
     ;; (use-package secretaria
-                 ;; :config
-                 ;; use this for getting a reminder every 30 minutes of those tasks scheduled
-                 ;; for today and which have no time of day defined.
-                 ;; (add-hook 'after-init-hook #'secretaria-today-unknown-time-appt-always-remind-me))
+		 ;; :config
+		 ;; use this for getting a reminder every 30 minutes of those tasks scheduled
+		 ;; for today and which have no time of day defined.
+		 ;; (add-hook 'after-init-hook #'secretaria-today-unknown-time-appt-always-remind-me))
   #+END_SRC
-* WakaWaka
-  #+BEGIN_SRC emacs-lisp
-    ;; (package-require 'wakatime-mode)
-    ;; (require 'secrets)
-    ;; (global-wakatime-mode)
-    ;; (setq wakatime-api-key PASS_wakatime-api-key)
-    ;; (setq wakatime-cli-path "/home/cb0/.wakatime/wakatime-cli")
-  #+END_SRC
-* Paradox integration
-  :URL: [[https://github.com/Malabarba/paradox][Github]]
-  Project for modernizing Emacs' Package Menu. With package ratings, usage statistics, customizability, and more.
-  #+BEGIN_SRC emacs-lisp
-  ;;  (setq paradox-github-token TOKEN_paradox-github-token)
-  #+END_SRC
-* Jira
-  #+BEGIN_SRC emacs-lisp
-    ;;needed by jira
-    (package-require 'xml-rpc)
-    ;;acutal package
-    ;; (package-require 'org-jira)
-    ;; (require 'org-jira)
-    ;; (setq jiralib-url "http://")
-  #+END_SRC
+
 * XML Processing
 ** reformat/pretty print xml
    As always in emacs, there are [[http://stackoverflow.com/questions/12492/pretty-printing-xml-files-on-emacs][multiple options]] for the task of reformating a xml.
@@ -2028,56 +1152,10 @@ This is my emacs init org configuration file. Written in org mode style for bett
         (shell-command-on-region b e "xmllint --format -" t))
       ;;(global-set-key (kbd "C-M-l") 'xmlling-region)
     #+END_SRC
-*
-* Web Browsing
-  This is very new to me as I used eww and w3m not very often. Conkeror was my first choice since some time.
-  But I want to give it a try using emacs.
-** w3m
-*** Installation
-    #+BEGIN_SRC emacs-lisp
-      (package-require 'w3m)
-    #+END_SRC
-*** Configuartion
-**** Toggle between work and web
-     I found this at sachachua blog [[http://sachachua.com/blog/2008/08/emacs-and-w3m-toggling-between-work-and-the-web/][here]].
-     #+BEGIN_SRC emacs-lisp
-       (defun wicked/toggle-w3m ()
-         "Switch to a w3m buffer or return to the previous buffer."
-         (interactive)
-         (if (derived-mode-p 'w3m-mode)
-             ;; Currently in a w3m buffer
-             ;; Bury buffers until you reach a non-w3m one
-             (while (derived-mode-p 'w3m-mode)
-               (bury-buffer))
-           ;; Not in w3m
-           ;; Find the first w3m buffer
-           (let ((list (buffer-list)))
-             (while list
-               (if (with-current-buffer (car list)
-                     (derived-mode-p 'w3m-mode))
-                   (progn
-                     (switch-to-buffer (car list))
-                     (setq list nil))
-                 (setq list (cdr list))))
-             (unless (derived-mode-p 'w3m-mode)
-               (call-interactively 'w3m)))))
-
-       (global-set-key (kbd "<f7>") 'wicked/toggle-w3m)
-
-     #+END_SRC
-* Writing
-** Spellchecking
-*** Languagetool
-    I used to use grammarly but now want to give languagetools a try.
-    #+BEGIN_SRC emacs-lisp
-      (package-require 'langtool)
-      (setq langtool-language-tool-jar "/home/mpuchalla/projects/languagetools/LanguageTool-3.6/languagetool.jar")
-      (setq langtool-mother-tongue "de")
-    #+END_SRC
 * Multiple Coursors
 ** Key Configuration:
    #+BEGIN_SRC emacs-lisp
-     (package-require 'multiple-cursors)
+     (use-package multiple-cursors)
      (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
      (global-set-key (kbd "C->") 'mc/mark-next-like-this)
      (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
@@ -2086,49 +1164,3 @@ This is my emacs init org configuration file. Written in org mode style for bett
 
    #+END_SRC
 
-   #+RESULTS:
-   : mc/mark-all-like-this
-
-* Octave
-** Open al .m files
-   Octave file prefix seems to be .m according to [[https://www.gnu.org/software/octave/doc/v4.0.1/Using-Octave-Mode.html#Using-Octave-Mode][this]].
-   #+BEGIN_SRC emacs-lisp
-     (autoload 'octave-mode "octave-mod" nil t)
-     (setq auto-mode-alist
-        (cons '("\\.m$" . octave-mode) auto-mode-alist))
-
-     (add-hook 'octave-mode-hook
-   	 (lambda ()
-      	   (abbrev-mode 1)
-      	   (auto-fill-mode 1)
-      	   (if (eq window-system 'x)
-      	       (font-lock-mode 1))))
-     (autoload 'run-octave "octave-inf" nil t)
-
-     (setq exec-path (append exec-path '("/usr/local/octave/3.8.0/bin/")))
-
-     ;; Seems not to work in emacs 25
-     ;; (autoload 'octave-help "octave-hlp" nil t)
-     ;; (package-require 'gnuserv)
-     ;; (gnuserv-start)
-   #+END_SRC
-** Keysettings
-   #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "C-c i l") 'octave-send-line)
-     (global-set-key (kbd "C-c i b") 'octave-send-block)
-     (global-set-key (kbd "C-c i r") 'octave-send-region)
-     (global-set-key (kbd "C-c i s") 'octave-show-process-buffer)
-
-   #+END_SRC
-* Ansible
-  #+BEGIN_SRC emacs-lisp
-    ;; (package-require 'ansible)
-    ;; (package-require 'company-ansible)
-  #+END_SRC
-* Music
-** Vuiet
-   music player and explorer for Emacs
-   #+BEGIN_SRC emacs-lisp
-     (package-require 'lastfm)
-     (package-require 'vuiet)
-   #+END_SRC
