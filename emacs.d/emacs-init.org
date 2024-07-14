@@ -70,7 +70,7 @@
 ** Helper function
    #+begin_src elisp
      (defun efs/exwm-update-class ()
-       (exwm-workspace-rename-buffer exwm-class-name))
+     (exwm-workspace-rename-buffer exwm-class-name))
 
      (defun efs/exwm-update-title ()
        (pcase exwm-class-name
@@ -104,6 +104,9 @@
      (defun efs/send-polybar-hook (module-name hook-index)
        (let ((command (format "polybar-msg hook %s %s" module-name hook-index)))
 	 (start-process-shell-command "polybar-msg" nil command)))
+
+     (defun efs/send-polybar-exwm-workspace ()
+       (efs/send-polybar-hook "exwm-workspace" 1))
 
      ;; Update panel indicator when workspace changes
      (add-hook 'exwm-workspace-switch-hook #'efs/send-polybar-exwm-workspace)
@@ -168,7 +171,6 @@
 
      ;;(exwm-config-example)
      (exwm-enable)
-
 
      (setq exwm-input-simulation-keys
 	   '(([?\C-b] . [left])
@@ -271,6 +273,8 @@
    #+begin_src elisp
 
      (defun efs/exwm-init-hook ()
+
+       (message "Calling exwm-init-hook")
        ;; Make workspace 1 be the
        ;; one where we land at startup
        (exwm-workspace-switch-create 1)
@@ -281,10 +285,8 @@
        ;; (efs/kill-panel)
        ;;(efs/run-in-background "dunst")
 
-
-
        ;; Launch apps that will run in the background
-       ;;(efs/run-in-background "nm-applet")
+       (efs/run-in-background "nm-applet")
      )
 
      (add-hook 'efs/exwm-init-hook #'efs/after-exwm-init)
