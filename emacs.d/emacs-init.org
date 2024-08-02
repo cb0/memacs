@@ -37,19 +37,43 @@
   Showing key bindings in a minor mode might seem like a good idea.
   The window will be shown when I enter an incomplete command and wait for a second.
   #+BEGIN_SRC elisp
-	(use-package which-key)
-    (require 'which-key)
-	;; add minor mode to show help
-	(which-key-mode)
-	;; slide in from right side if there is enough space there ;
-	(which-key-setup-side-window-right)
+	    (use-package which-key
+	      :ensure t)
+	(require 'which-key)
+	    ;; add minor mode to show help
+	    (which-key-mode)
+	    ;; slide in from right side if there is enough space there ;
+	    (which-key-setup-side-window-right)
 
-    (which-key-setup-minibuffer)
+	(which-key-setup-minibuffer)
 
-    (setq which-key-show-early-on-C-h t)
-    ;; but if possible, use the minibuffer
+	(setq which-key-show-early-on-C-h t)
+	;; but if possible, use the minibuffer
   #+END_SRC
 
+* Startup
+  
+** Dashboard
+   #+begin_src elisp
+     (use-package nerd-icons)
+
+     (use-package dashboard
+       :ensure t
+       :config
+       ;;(dashboard-setup-startup-hook)
+       (setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name)))
+       (setq dashboard-item-shortcuts '((recents   . "r")
+				      (bookmarks . "m")
+				      (projects  . "p")
+				      (agenda    . "a")
+				      (registers . "e")))
+       (setq dashboard-item-names '(("Recent Files:"               . "Recently opened files:")
+				  ("Agenda for today:"           . "Today's agenda:")
+				  ("Agenda for the coming week:" . "Agenda:")))
+       (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
+     (setq dashboard-icon-type 'nerd-icons)) ; use `nerd-icons' package
+
+   #+end_src
 * Hydra
   #+begin_src elisp
     (use-package hydra)
@@ -59,10 +83,12 @@
 ** Basic exwm setup
 *** Install dependencies
     #+BEGIN_SRC elisp
-      (cond
-       ((not (string-equal system-type "darwin"))
-	(progn
-	  (require 'exwm))))
+	    (cond
+	     ((not (string-equal system-type "darwin"))
+	      (progn
+		(use-package exwm)
+		;;(require 'exwm)
+		)))
 
     #+END_SRC
 
@@ -246,7 +272,7 @@
 
    #+begin_src elisp
      (require 'exwm-randr)
-     (exwm-randr-enable)
+     ;;(exwm-randr-enable)
 
      (start-process-shell-command "xrandr" nil "")
    #+end_src
@@ -290,6 +316,7 @@
      )
 
      (add-hook 'efs/exwm-init-hook #'efs/after-exwm-init)
+     (efs/start-panel)
 
      ;; (efs/run-in-background "pavucontrol")	
      ;; (efs/run-in-background "blueman-applet")
@@ -378,7 +405,8 @@
 
 *** Network manager
    #+begin_src elisp
-     (require 'enwc)
+     (use-package enwc)
+     ;;(require 'enwc)
      (setq enwc-default-backend 'nm)
      ;;(condition-case nil			
      ;;    (enwc)
@@ -390,7 +418,7 @@
 *** Enable exwm
     Then finally enable exwm
     #+BEGIN_SRC elisp
-      (exwm-enable)
+      ;;(exwm-enable)
     #+END_SRC    
 
 * Keyboard changes
@@ -398,6 +426,7 @@
    #+BEGIN_SRC elisp
      (start-process-shell-command "xmodmap" nil "setxkbmap -option ctrl:nocaps")
    #+END_SRC
+
 *** Ask before qutting emacs
    Especially when running exwm, closing the current emacs would close the whole window manager.
    To cope with this, just ask before doing it.
@@ -617,29 +646,135 @@
       :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only))
   #+END_SRC
 
+* Vertico
+  I used to use ivy, but have seen [[https://youtu.be/d3aaxOqwHhI?si=-qnBNB9gz3gwo40K][vertico]] presentation here and liked it and want to try it aswell.
+
+  #+begin_src elisp
+    (use-package vertico
+      :bind (:map vertico-map
+	     ("C-j" . vertico-next)
+	     ("C-k" . vertico-previous)
+	     ("C-f" . vertico-exit)
+	     :map minibuffer-local-map
+	     ("M-h" . backward-kill-word))
+      :custom
+      (vertico-cycle t)
+      :init
+      (vertico-mode))
+
+    ;; Persist history over Emacs restarts. Vertico sorts by history position.
+    (use-package savehist
+      :ensure t
+      :init
+      (savehist-mode))
+
+    ;; A few more useful configurations...
+    (use-package emacs
+      :custom
+      ;; Support opening new minibuffers from inside existing minibuffers.
+      (enable-recursive-minibuffers t)
+      ;; Emacs 28 and newer: Hide commands in M-x which do not work in the current
+      ;; mode.  Vertico commands are hidden in normal buffers. This setting is
+      ;; useful beyond Vertico.
+      (read-extended-command-predicate #'command-completion-default-include-p)
+      :init
+      ;; Add prompt indicator to `completing-read-multiple'.
+      ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+      (defun crm-indicator (args)
+	(cons (format "[CRM%s] %s"
+		      (replace-regexp-in-string
+		       "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+		       crm-separator)
+		      (car args))
+	      (cdr args)))
+      (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+      ;; Do not allow the cursor in the minibuffer prompt
+      (setq minibuffer-prompt-properties
+	    '(read-only t cursor-intangible t face minibuffer-prompt))
+      (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
+
+    (use-package marginalia
+      :after vertico
+      :ensure t
+      :custom
+      (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+      :init
+      (marginalia-mode))
+
+    ;; (use-package marginalia
+    ;;   :ensure t
+    ;;   :config
+    ;;   (marginalia-mode))
+
+    (use-package embark
+      :ensure t
+
+      :bind
+      (("C-." . embark-act)         ;; pick some comfortable binding
+       ("C-;" . embark-dwim)        ;; good alternative: M-.
+       ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+      :init
+
+      ;; Optionally replace the key help with a completing-read interface
+      (setq prefix-help-command #'embark-prefix-help-command)
+
+      ;; Show the Embark target at point via Eldoc. You may adjust the
+      ;; Eldoc strategy, if you want to see the documentation from
+      ;; multiple providers. Beware that using this can be a little
+      ;; jarring since the message shown in the minibuffer can be more
+      ;; than one line, causing the modeline to move up and down:
+
+      ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+      ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+      :config
+
+      ;; Hide the mode line of the Embark live/completions buffers
+      (add-to-list 'display-buffer-alist
+		   '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+		     nil
+		     (window-parameters (mode-line-format . none)))))
+    
+  #+end_src
+
+* consult
+  #+begin_src elisp
+    ;; ;; Consult users will also want the embark-consult package.
+    (use-package embark-consult
+      :ensure t ; only need to install it, embark loads it after consult if found
+      :hook
+      (embark-collect-mode . consult-preview-at-point-mode))
+
+
+    (use-package embark-org-roam)
+  #+end_src
 * Swiper
   Generic completion frontend
   #+BEGIN_SRC emacs-lisp
-    (use-package swiper)
+    ;;(use-package swiper)
 
-    (setq magit-completing-read-function 'ivy-completing-read)
-    (setq projectile-completion-system 'ivy)
+    ;;(setq magit-completing-read-function 'ivy-completing-read)
+    ;;(setq projectile-completion-system 'ivy)
 
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (global-set-key "\C-s" 'swiper)
-    (global-set-key (kbd "C-c C-r") 'ivy-resume)
-    (global-set-key (kbd "M-x") 'counsel-M-x)
-    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-    (global-set-key (kbd "<f1> l") 'counsel-load-library)
-    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-    (global-set-key (kbd "C-c g") 'counsel-git)
-    (global-set-key (kbd "C-c j") 'counsel-git-grep)
-    (global-set-key (kbd "C-c k") 'counsel-ag)
-    (global-set-key (kbd "C-x l") 'counsel-locate)
+    ;;(ivy-mode 1)
+    ;;(ivy-mode -1)
+
+    ;; (setq ivy-use-virtual-buffers t)
+    ;; (global-set-key "\C-s" 'swiper)
+    ;; (global-set-key (kbd "C-c C-r") 'ivy-resume)
+    ;; (global-set-key (kbd "M-x") 'counsel-M-x)
+    ;; (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+    ;; (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+    ;; (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+    ;; (global-set-key (kbd "<f1> l") 'counsel-load-library)
+    ;; (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+    ;; (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+    ;; (global-set-key (kbd "C-c g") 'counsel-git)
+    ;; (global-set-key (kbd "C-c j") 'counsel-git-grep)
+    ;; (global-set-key (kbd "C-c k") 'counsel-ag)
+    ;; (global-set-key (kbd "C-x l") 'counsel-locate)
     ;; (package-require 'helm-rhythmbox)
     ;;(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
 
@@ -661,22 +796,25 @@
 
 * Smex
   #+BEGIN_SRC emacs-lisp
-    (use-package smex)
+    ;; (use-package smex)
 
-    (require 'smex)
-    (smex-initialize) ; Can be omitted. This might cause a (minimal) delay
-                                            ; when Smex is auto-initialized on its first run.
+    ;; (require 'smex)
+    ;; (smex-initialize) ; Can be omitted. This might cause a (minimal) delay
+    ;;                                         ; when Smex is auto-initialized on its first run.
 
-    (global-set-key (kbd "M-x") 'smex)
-    (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+    ;; (global-set-key (kbd "M-x") 'smex)
+    ;; (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 
-    ;; This is the old M-x.
-    ;; (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+    ;; ;; This is the old M-x.
+    ;; ;; (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
   #+END_SRC
 
 * Org Mode
 ** Install and set custom things for org-mode
+   :LOGBOOK:
+   CLOCK: [2024-07-25 Do 22:33]
+   :END:
    #+BEGIN_SRC emacs-lisp
 						  ; Activate org-mode
 	  (use-package org)
@@ -713,6 +851,8 @@
 	  (define-key global-map "\C-ca" 'org-agenda)
 	  ;; add a timestamp when we close an item
 	  (setq org-log-done 'note)
+     (setq org-treat-insert-todo-heading-as-state-change t)
+     (setq org-log-into-drawer t)
 	  ;; include a closing note when close an todo item
 	  ;; (setq org-log-done 'note)
 
@@ -727,7 +867,7 @@
 
 
 	  (custom-set-variables
-
+	   '(org-agenda-files (directory-files-recursively "~/sync/org/" "\\.org$")))
 	   '(org-agenda-ndays 7)
 	   '(org-deadline-warning-days 14)
 	   '(org-agenda-show-all-dates t)
@@ -735,7 +875,8 @@
 	   '(org-agenda-skip-scheduled-if-done t)
 	   '(org-agenda-start-on-weekday nil)
 	   '(org-reverse-note-order t)
-	   '(org-fast-tag-selection-single-key (quote expert)))
+	   '(org-fast-tag-selection-single-key (quote expert))
+
 
 	  (global-set-key "\C-cr" 'org-capture)
 
@@ -747,39 +888,10 @@
 	  ;; "- %?\n %x\n")))
 
 
-	  ;; (custom-set-variables
-	  ;;  '(org-agenda-files (quote ("~/todo.org")))
-	  ;;  '(org-default-notes-file "~/notes.org")
-	  ;;  '(org-agenda-ndays 7)
-	  ;;  '(org-deadline-warning-days 14)
-	  ;;  '(org-agenda-show-all-dates t)
-	  ;;  '(org-agenda-skip-deadline-if-done t)
-	  ;;  '(org-agenda-skip-scheduled-if-done t)
-	  ;;  '(org-agenda-start-on-weekday nil)
-	  ;;  '(org-reverse-note-order t)
-	  ;;  '(org-fast-tag-selection-single-key (quote expert))
-	  ;;  '(org-agenda-custom-commands
-	  ;;    (quote (("d" todo "DELEGATED" nil)
-	  ;;         ("c" todo "DONE|DEFERRED|CANCELLED" nil)
-	  ;;         ("w" todo "WAITING" nil)
-	  ;;         ("W" agenda "" ((org-agenda-ndays 21)))
-	  ;;         ("A" agenda ""
-	  ;;          ((org-agenda-skip-function
-	  ;;            (lambda nil
-	  ;;              (org-agenda-skip-entry-if (quote notregexp) "\\=.*\\[#A\\]")))
-	  ;;           (org-agenda-ndays 1)
-	  ;;           (org-agenda-overriding-header "Today's Priority #A tasks: ")))
-	  ;;         ("u" alltodo ""
-	  ;;          ((org-agenda-skip-function
-	  ;;            (lambda nil
-	  ;;              (org-agenda-skip-entry-if (quote scheduled) (quote deadline)
-	  ;;                                        (quote regexp) "\n]+>")))
-	  ;;           (org-agenda-overriding-header "Unscheduled TODO entries: "))))))
-	  ;;  '(org-remember-store-without-prompt t)
-	  ;;  '(org-remember-templates
-	  ;;    (quote ((116 "* TODO %?\n  %u" "~/todo.org" "Tasks")
-	  ;;         (110 "* %u %?" "~/notes.org" "Notes"))))
-	  ;;  '(remember-annotation-functions (quote (org-remember-annotation)))
+	   ;; '(org-remember-templates
+	     ;; (quote ((116 "* TODO %?\n  %u" "~/todo.org" "Tasks")
+		  ;; (110 "* %u %?" "~/notes.org" "Notes"))))
+	   ;; '(remember-annotation-functions (quote (org-remember-annotation)))
 	  ;;  '(remember-handler-functions (quote (org-remember-handler))))
 
 	  ;; (package-require 'org-ac)
@@ -793,19 +905,13 @@
 	  ;; we want some non standard todo types
 	  (setq org-todo-keywords
 		'((sequence
-		   "TODO(t)" "BUG(b)" "WAIT_FOR_FEEDBACK(w)" "FIXED(f)" "TO_BE_MERGE(m)" "MERGED(M)" "WAIT(w)" "|" "CANCELED(c)" "DONE(d)" "|" "INFO(i)")))
+		   "TODO(t)" "WAIT_FOR_FEEDBACK(w)" "NEED_INFO(n)" "|" "CANCELED(c)" "DONE(d)")))
 
 	  (setq org-todo-keyword-faces
 		'(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-		  ("BUG" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
 		  ("WAIT_FOR_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-		  ("DISCUSSION" :background "red2" :foreground "orange" :weight bold :box (:line-width 2 :style released-button))
-		  ("FIXED" :background "orange" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-		  ("TO_BE_MERGE" :background "gold" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-		  ("MERGED" :background "gold" :foreground "grey" :weight bold :box (:line-width 2 :style released-button))
-		  ("WAIT" :background "gray" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+		  ("NEED_INFO" :background "blue" :weight bold :box (:line-width 2 :style released-button))
 		  ("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
-		  ("INFO" :background "green" :foreground "red1" :weight bold :box (:line-width 2 :style released-button))
 		  ("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
 
 	  ;; dont ask when executing code
@@ -902,18 +1008,18 @@
 
 ** Super Agenda
    #+begin_src elisp
-     (use-package org-super-agenda)
-     (org-super-agenda-mode)
-     (let ((org-super-agenda-groups
-	    '(;; Each group has an implicit boolean OR operator between its selectors.
-	      (:name "Today"  ; Optionally specify section name
-		     :time-grid t  ; Items that appear on the time grid
-		     :todo "TODAY")  ; Items that have this TODO keyword
-	      (:name "Important"
-		     ;; Single arguments given alone
-		     :tag "work"
-		     :priority "A"))))
-       (org-agenda nil "a"))
+     ;; (use-package org-super-agenda)
+     ;; (org-super-agenda-mode)
+     ;; (let ((org-super-agenda-groups
+     ;;        '(;; Each group has an implicit boolean OR operator between its selectors.
+     ;; 	 (:name "Today"  ; Optionally specify section name
+     ;; 		:time-grid t  ; Items that appear on the time grid
+     ;; 		:todo "TODAY")  ; Items that have this TODO keyword
+     ;; 	 (:name "Important"
+     ;; 		;; Single arguments given alone
+     ;; 		:tag "work"
+     ;; 		:priority "A"))))
+     ;;   (org-agenda nil "a"))
    #+end_src
 *** Integrate radicale online calendar
     #+begin_src elisp
@@ -1021,14 +1127,25 @@
        (org-roam-dailies-directory "journal/")
        (org-roam-completion-everywhere t)
        (org-roam-capture-templates
-	'(("d" "default" plain
+	 '(("d" "default" plain
 	   "%?"
 	   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-	   :unnarrowed t))
-	("l" "programming language" plain
-	 "* Characteristics\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
-	 :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-	 :unnarrowed t))
+	   :unnarrowed t)
+	("r" "reference" plain "%?"
+	 :if-new
+	 (file+head "reference/${title}.org" "#+title: ${title}\n")
+	 :immediate-finish t
+	 :unnarrowed t)
+	("p" "project" plain "%?"
+	 :if-new
+	 (file+head "project-ideas/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :projectIdea:\ncreated: <%<%Y-%m-%d %a %H:%M>>\n")
+	 :immediate-finish t
+	 :unnarrowed t)
+	("a" "article" plain "%?"
+	 :if-new
+	 (file+head "articles/${title}.org" "#+title: ${title}\n#+filetags: :article:\n")
+	 :immediate-finish t
+	 :unnarrowed t)))
        :bind (("C-c n l"   . org-roam-buffer-toggle)
 	      ("C-c n f"   . org-roam-node-find)
 	      ("C-c n i"   . org-roam-node-insert)
@@ -1070,10 +1187,18 @@
        (defun my/org-roam-refresh-agenda-list ()
 	 "Refresh the org-agenda-files with all my tags that I want to include."
 	 (interactive)
-	 (setq org-agenda-files (my/org-roam-list-notes-by-tag "work")))
+	 (setq org-agenda-files (directory-files-recursively "~/sync/org/" "\\.org$")))
+	 ;; (setq org-agenda-files (my/org-roam-list-notes-by-tag "work")))
+
        (org-roam-setup)
        (org-roam-db-autosync-mode))
    #+end_src
+
+* Org Habits
+  #+begin_src elisp
+    (add-to-list 'org-modules 'org-habit t)
+    (setq org-habit-show-all-today t)
+  #+end_src
 
 * Anki
   #+begin_src elisp
