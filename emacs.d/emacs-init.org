@@ -1082,25 +1082,29 @@
        (org-roam-dailies-directory "journal/")
        (org-roam-completion-everywhere t)
        (org-roam-capture-templates
-	 '(("d" "default" plain
+	'(("d" "default" plain
 	   "%?"
 	   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
 	   :unnarrowed t)
-	("r" "reference" plain "%?"
-	 :if-new
-	 (file+head "reference/${title}.org" "#+title: ${title}\n")
-	 :immediate-finish t
-	 :unnarrowed t)
-	("p" "project" plain "%?"
-	 :if-new
-	 (file+head "project-ideas/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :projectIdea:\ncreated: <%<%Y-%m-%d %a %H:%M>>\n")
-	 :immediate-finish t
-	 :unnarrowed t)
-	("a" "article" plain "%?"
-	 :if-new
-	 (file+head "articles/${title}.org" "#+title: ${title}\n#+filetags: :article:\n")
-	 :immediate-finish t
-	 :unnarrowed t)))
+	  ("p" "project" plain "%?"
+	   :if-new
+	   (file+head "project-ideas/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :projectIdea:\ncreated: <%<%Y-%m-%d %a %H:%M>>\n")
+	   :immediate-finish t
+	   :unnarrowed t)))
+
+       (setq org-roam-dailies-capture-templates
+	   '(("j" "journal" entry
+	      "** %<%H:%M> %?"
+	      :if-new (file+head "%<%Y-%m-%d>.org"
+				 "#+title: %<%Y-%m-%d>\n\n* Journal\n")
+	      :unnarrowed t)
+	     ("w" "work" entry
+	      "** %<%H:%M>"
+	      :if-new (file+head "work-%<%Y-%m-%d>.org"
+				 "#+title: %<%Y-%m-%d>\n\n* Work journal\n")
+	      :unnarrowed t)
+	     ))
+
        :bind (("C-c n l"   . org-roam-buffer-toggle)
 	      ("C-c n f"   . org-roam-node-find)
 	      ("C-c n i"   . org-roam-node-insert)
@@ -1143,7 +1147,7 @@
 	 "Refresh the org-agenda-files with all my tags that I want to include."
 	 (interactive)
 	 (setq org-agenda-files (directory-files-recursively "~/sync/org/" "\\.org$")))
-	 ;; (setq org-agenda-files (my/org-roam-list-notes-by-tag "work")))
+       ;; (setq org-agenda-files (my/org-roam-list-notes-by-tag "work")))
 
        (org-roam-setup)
        (org-roam-db-autosync-mode))
