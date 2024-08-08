@@ -804,8 +804,12 @@
     (use-package embark-consult
       :ensure t ; only need to install it, embark loads it after consult if found
       :hook
-      (embark-collect-mode . consult-preview-at-point-mode))
-
+      (embark-collect-mode . consult-preview-at-point-mode)
+      :config
+      (global-set-key (kbd "C-x b") 'consult-buffer)
+      (global-set-key (kbd "C-x g") 'consult-git-grep)
+      (global-set-key (kbd "C-x k") 'consult-ag)
+      (global-set-key (kbd "C-x l") 'consult-locate))
 
     (use-package embark-org-roam)
   #+end_src
