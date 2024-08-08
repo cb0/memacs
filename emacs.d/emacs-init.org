@@ -656,6 +656,15 @@
        (ido-save-history))
    #+END_SRC
 
+* All the icons
+  #+begin_src elisp
+    (use-package all-the-icons
+      :if (display-graphic-p))
+
+    ;;(all-the-icons-completion-mode)
+    ;;(add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup)
+  #+end_src
+
 * Counsel
   #+BEGIN_SRC emacs-lisp
     (use-package counsel)
@@ -809,22 +818,6 @@
     ;;       (delete-region (car bnd) (cdr bnd))
     ;;       (insert res))))
 
-
-  #+END_SRC
-
-* Smex
-  #+BEGIN_SRC emacs-lisp
-    ;; (use-package smex)
-
-    ;; (require 'smex)
-    ;; (smex-initialize) ; Can be omitted. This might cause a (minimal) delay
-    ;;                                         ; when Smex is auto-initialized on its first run.
-
-    ;; (global-set-key (kbd "M-x") 'smex)
-    ;; (global-set-key (kbd "M-X") 'smex-major-mode-commands)
-
-    ;; ;; This is the old M-x.
-    ;; ;; (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
   #+END_SRC
 
