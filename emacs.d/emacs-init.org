@@ -556,6 +556,16 @@
       ;; (global-set-key (kbd "C-x C-:") 'uncomment-region)
     #+END_SRC
 
+* File Handling
+  
+** Recentf
+   To enable me to quickly navigate to my recent files, this mode is recommended.
+   #+begin_src elisp
+     (recentf-mode 1)
+     (setq recentf-max-menu-items 25)
+     (setq recentf-max-saved-items 25)
+     (global-set-key  (kbd "C-x C-r") 'recentf-open-files)
+   #+end_src
 * Session Management
 ** Desktop mode
    #+BEGIN_SRC emacs-lisp
