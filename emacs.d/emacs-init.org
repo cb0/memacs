@@ -534,6 +534,14 @@
    #+END_SRC
 
 * Code Handling
+** Region expanding
+   #+begin_src elisp
+     (use-package expand-region
+       :config
+
+     (global-set-key (kbd "C-]") 'er/expand-region))
+     
+   #+end_src
 ** Commenting of code
    When commenting code I use `M-,` to do this
 *** Single line
