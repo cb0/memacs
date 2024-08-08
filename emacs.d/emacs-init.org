@@ -916,12 +916,11 @@
 	  ;; we want some non standard todo types
 	  (setq org-todo-keywords
 		'((sequence
-		   "TODO(t)" "WAIT_FOR_FEEDBACK(w)" "NEED_INFO(n)" "|" "CANCELED(c)" "DONE(d)")))
+		   "TODO(t)" "NEED_FEEDBACK(f)" "|" "CANCELED(c)" "DONE(d)")))
 
 	  (setq org-todo-keyword-faces
 		'(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-		  ("WAIT_FOR_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-		  ("NEED_INFO" :background "blue" :weight bold :box (:line-width 2 :style released-button))
+		  ("NEED_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
 		  ("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
 		  ("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
 
