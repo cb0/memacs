@@ -1066,11 +1066,6 @@
    #+BEGIN_SRC emacs-lisp
      (global-set-key (kbd "C-c a") 'org-agenda)
      (global-set-key (kbd "C-c c") 'org-capture)
-
-;;     (setq org-agenda-files
-;;       '("~/ownCloud/org/homenotes.org" "~/ownCloud/org/journal/"))
-
-
    #+END_SRC
 
 ** Babel
