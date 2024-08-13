@@ -442,11 +442,21 @@
 
 
 
+** Fix Focus Problem
+   Switching workspaces, the x window on the new workspace sometimes does not get the focus back.
+   This seems to help solve this issue.
+   From: https://github.com/emacs-exwm/exwm/issues/18#issuecomment-2019410008
+   #+begin_src elisp
+     (advice-add #'exwm-layout--hide
+		 :after (lambda (id)
+			  (with-current-buffer (exwm--id->buffer id)
+			    (setq exwm--ewmh-state
+				  (delq xcb:Atom:_NET_WM_STATE_HIDDEN exwm--ewmh-state))
+			    (exwm-layout--set-ewmh-state id)
+			    (xcb:flush exwm--connection))))
+   #+end_src
 ** Enable exwm
-   Then finally enable exwm
-   #+BEGIN_SRC elisp
-     ;;(exwm-enable)
-   #+END_SRC    
+   This is done in my profile file
 
 ** Logout
    #+begin_src elisp
