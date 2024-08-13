@@ -572,7 +572,7 @@ Version: 2024-05-29"
               (text-scale-mode 1))))
 
 (toggle-minibuffer-font-size) ; Initial setup
-```
+
      
    #+end_src
 
