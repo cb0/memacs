@@ -12,19 +12,18 @@
 * Setup package install
   To be able to install packages inside of emacs, we need to make sure emacs knows where to get those packages from. Just like with any other package manager.
    #+BEGIN_SRC elisp
-     (require 'package)
+	  (require 'package)
 
-     (setq package-archives '(("melpa" . "http://melpa.org/packages/")
-			      ("org" . "http://orgmode.org/elpa/")
-			      ("elpa" . "http://elpa.gnu.org/packages/")))
+	  (setq package-archives '(("melpa" . "http://melpa.org/packages/")
+				   ("org" . "http://orgmode.org/elpa/")
+				   ("elpa" . "http://elpa.gnu.org/packages/")
+				   ( "jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/")))
 
-	   ;;(package-initialize)
+		(unless package-archive-contents
+	     (package-refresh-contents))
 
-	   (unless package-archive-contents
-	(package-refresh-contents))
-
-     (require 'use-package)
-     (setq use-package-always-ensure t)
+	  (require 'use-package)
+	  (setq use-package-always-ensure t)
 
    #+END_SRC
 
