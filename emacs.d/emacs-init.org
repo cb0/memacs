@@ -52,6 +52,10 @@
 
 * Startup
   
+** Disable bell
+   #+begin_src elisp
+     (setq ring-bell-function 'ignore)
+   #+end_src
 ** Dashboard
    #+begin_src elisp
      (use-package nerd-icons)
@@ -72,6 +76,30 @@
        (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
      (setq dashboard-icon-type 'nerd-icons)) ; use `nerd-icons' package
 
+   #+end_src
+** Save history
+   #+begin_src elisp
+(savehist-mode 1)
+   #+end_src
+** Auto revert
+   #+begin_src elisp
+(global-auto-revert-mode)
+   #+end_src
+** Add highlight for current line
+   #+begin_src elisp
+     (add-hook 'prog-mode-hook #'hl-line-mode)
+     (add-hook 'text-mode-hook #'hl-line-mode)
+     (add-hook 'org-mode-hook #'hl-line-mode)
+   #+end_src
+** Line Numbers
+   #+begin_src elisp
+     (defun renz/display-relative-lines ()
+       (setq display-line-numbers-width 3)
+       (setq display-line-numbers 'relative))
+
+     (add-hook 'prog-mode-hook #'renz/display-relative-lines)
+     (add-hook 'yaml-mode-hook #'renz/display-relative-lines)
+     (add-hook 'text-mode-hook #'renz/display-relative-lines)
    #+end_src
 * Hydra
   #+begin_src elisp
