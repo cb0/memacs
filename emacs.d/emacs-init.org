@@ -106,18 +106,18 @@
        (pcase exwm-class-name
 	 ("Chrome" (exwm-workspace-move-window 1))
 	 ("Firefox" (exwm-workspace-move-window 2))
-	 ("webstorm" (exwm-workspace-move-window 0))
+	 ("webstorm" (exwm-workspace-move-window 3))
 	 ("thunderbird" (exwm-workspace-move-window 4))
 	 ("TelegramDesktop" (exwm-workspace-move-window 3))))
 
      (defun efs/polybar-exwm-workspace ()
        (pcase exwm-workspace-current-index
-	 (0 "0--messages")
-	 (1 "1--eternl")
-	 (2 "2--work")
-	 (3 "3--browse")
-	 (4 "4-misc")
-	 (5 "5-misc")))
+	 (0 "0-")
+	 (1 "1-")
+	 (2 "2-")
+	 (3 "3-")
+	 (4 "4-")
+	 (5 "5")))
 
      (defun cb0/toggle-polybar ()
        (interactive)
