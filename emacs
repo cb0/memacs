@@ -6,6 +6,7 @@
 (package-initialize)
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(setenv "LSP_USE_PLISTS" "true")
 (org-babel-load-file
  (expand-file-name "emacs-init.org"
                    user-emacs-directory))
