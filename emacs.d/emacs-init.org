@@ -649,38 +649,38 @@
    #+end_src
 ** Default minibuffer size
    #+begin_src elisp
-	  (defun xah-setup-minibuffer ()
-	    "make minibuffer use larger font size.
-	  And possibly other settings.
-	  Created: 2024-05-29
-	  Version: 2024-05-29"
-	    (text-scale-set 4))
+     ;;      (defun xah-setup-minibuffer ()
+     ;;        "make minibuffer use larger font size.
+     ;;      And possibly other settings.
+     ;;      Created: 2024-05-29
+     ;;      Version: 2024-05-29"
+     ;;        (text-scale-set 4))
 
-	  (add-hook 'minibuffer-mode-hook 'xah-setup-minibuffer )
+     ;;      (add-hook 'minibuffer-mode-hook 'xah-setup-minibuffer )
 
-     (add-hook 'temp-buffer-window-setup-hook 'xah-setup-minibuffer )
+     ;; (add-hook 'temp-buffer-window-setup-hook 'xah-setup-minibuffer )
 
-	  (defvar original-minibuffer-font-size (face-attribute 'minibuffer-prompt :height))
-	  (defvar custom-minibuffer-font-size 120)
-	  (defvar use-custom-minibuffer-font-size nil)
+     ;;      (defvar original-minibuffer-font-size (face-attribute 'minibuffer-prompt :height))
+     ;;      (defvar custom-minibuffer-font-size 120)
+     ;;      (defvar use-custom-minibuffer-font-size nil)
 
-	  (defun toggle-minibuffer-font-size ()
-	    (interactive)
-	    (setq use-custom-minibuffer-font-size (not use-custom-minibuffer-font-size))
-	    (set-minibuffer-font-size (if use-custom-minibuffer-font-size
-					  custom-minibuffer-font-size
-					(if  original-minibuffer-font-size
-					    original-minibuffer-font-size
-					  120))))
+     ;;      (defun toggle-minibuffer-font-size ()
+     ;;        (interactive)
+     ;;        (setq use-custom-minibuffer-font-size (not use-custom-minibuffer-font-size))
+     ;;        (set-minibuffer-font-size (if use-custom-minibuffer-font-size
+     ;; 				     custom-minibuffer-font-size
+     ;; 				   (if  original-minibuffer-font-size
+     ;; 				       original-minibuffer-font-size
+     ;; 				     120))))
 
-	  (defun set-minibuffer-font-size (size)
-	    (set-face-attribute 'minibuffer-prompt nil :height size)
-	    (setq-default text-scale-mode-amount (log (/ size 100.0) 2))
-	    (add-hook 'minibuffer-setup-hook
-		      (lambda ()
-			(text-scale-mode 1))))
+     ;;      (defun set-minibuffer-font-size (size)
+     ;;        (set-face-attribute 'minibuffer-prompt nil :height size)
+     ;;        (setq-default text-scale-mode-amount (log (/ size 100.0) 2))
+     ;;        (add-hook 'minibuffer-setup-hook
+     ;; 		 (lambda ()
+     ;; 		   (text-scale-mode 1))))
 
-	  (toggle-minibuffer-font-size) ; Initial setup
+     ;;      (toggle-minibuffer-font-size) ; Initial setup
 
 
    #+end_src
