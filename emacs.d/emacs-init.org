@@ -468,7 +468,6 @@
   #+end_src
 
 
-
 ** Fix Focus Problem
    Switching workspaces, the x window on the new workspace sometimes does not get the focus back.
    This seems to help solve this issue.
@@ -520,7 +519,7 @@
       (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
     #+END_SRC
 
-* Helper Functions
+* Helper mode
   Here I define functions that should help me in every mode.
   Small tools to make the life more easy.
 ** Increase Number at point
@@ -564,6 +563,17 @@
            (message "Copied buffer file name '%s' to the clipboard." filename))))
 
    #+END_SRC    
+** Winner mode
+   #+begin_src elisp
+     (winner-mode 1)
+   #+end_src
+** Quickly jump to a window
+   I would like to use ace-window but this does nort work with windows under exwm, so I stick to good old winum.
+   #+begin_src elisp
+     (use-package winum
+       :config
+       (winum-mode))
+   #+end_src
 * Customize my theme:
 ** Line Wrapping
    I really like when long lines are wrapped so I don't have to scroll to the right.
