@@ -652,7 +652,7 @@
 	  And possibly other settings.
 	  Created: 2024-05-29
 	  Version: 2024-05-29"
-	    (text-scale-increase 3))
+	    (text-scale-set 4))
 
 	  (add-hook 'minibuffer-mode-hook 'xah-setup-minibuffer )
 
