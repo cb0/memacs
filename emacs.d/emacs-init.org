@@ -596,9 +596,38 @@
    #+END_SRC
 ** Zen Burn theme
    #+BEGIN_SRC elisp
-     (use-package zenburn-theme)
-     (load-theme 'zenburn t)
+     ;; (use-package zenburn-theme)
+     ;; (load-theme 'zenburn t)
+
+     (use-package modus-themes
+       :init
+       (load-theme 'modus-operandi)
+       :custom
+       (define-key global-map (kbd "<f6>") #'modus-themes-toggle))
+
    #+END_SRC
+** Background image with transparency
+   First install `feh` as system package and set bg image
+
+   Then add the transparency
+   #+begin_src elisp
+     (defun efs/set-wallpaper ()
+       (interactive)
+       (start-process-shell-command
+	"feh" nil  "feh --bg-scale ~/.config/background/DSCF6257.JPG"))
+
+     (efs/set-wallpaper)
+
+     (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+     (add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+     (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+     (add-to-list 'default-frame-alist '(fullscreen . maximized))
+   #+end_src
+   
+** Increase mode line height
+   #+begin_src elisp
+     (setq exwm-systemtray-height 32)
+   #+end_src
 ** Spaceline
    Spaceline theme
    #+BEGIN_SRC elisp
