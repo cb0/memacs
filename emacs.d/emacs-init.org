@@ -362,7 +362,7 @@
        ;; Open eshell by default
        ;;(eshell)
 
-       ;; (efs/start-panel)
+       (efs/start-panel)
 
        ;; (efs/kill-panel)
        ;;(efs/run-in-background "dunst")
