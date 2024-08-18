@@ -8,24 +8,23 @@
 * Startup customizatio Start server
 ** Starting the emacs server from here.
    Notes on server. I do not use the server call `(server-start)` anymore, because systemd and emacs server with exwm running in client works for me ONLY.
-
 * Setup package install
   
 ** Default package source
    To be able to install packages inside of emacs, we need to make sure emacs knows where to get those packages from. Just like with any other package manager.
     #+BEGIN_SRC elisp
-	   (require 'package)
+      (require 'package)
 
-	   (setq package-archives '(("melpa" . "http://melpa.org/packages/")
-				    ("org" . "http://orgmode.org/elpa/")
-				    ("elpa" . "http://elpa.gnu.org/packages/")
-				    ( "jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/")))
+      (setq package-archives '(("melpa" . "http://melpa.org/packages/")
+			       ("org" . "http://orgmode.org/elpa/")
+			       ("elpa" . "http://elpa.gnu.org/packages/")
+			       ( "jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/")))
 
-		 (unless package-archive-contents
+	    (unless package-archive-contents
 	      (package-refresh-contents))
 
-	   (require 'use-package)
-	   (setq use-package-always-ensure t)
+      (require 'use-package)
+      (setq use-package-always-ensure t)
 
     #+END_SRC
 
@@ -63,18 +62,19 @@
   Showing key bindings in a minor mode might seem like a good idea.
   The window will be shown when I enter an incomplete command and wait for a second.
   #+BEGIN_SRC elisp
-	    (use-package which-key
-	      :ensure t)
-	(require 'which-key)
-	    ;; add minor mode to show help
-	    (which-key-mode)
-	    ;; slide in from right side if there is enough space there ;
-	    (which-key-setup-side-window-right)
+    (use-package which-key
+      :ensure t)
 
-	(which-key-setup-minibuffer)
+    (require 'which-key)
+    ;; add minor mode to show help
+    (which-key-mode)
+    ;; slide in from right side if there is enough space there ;
+    (which-key-setup-side-window-right)
 
-	(setq which-key-show-early-on-C-h t)
-	;; but if possible, use the minibuffer
+    (which-key-setup-minibuffer)
+
+    (setq which-key-show-early-on-C-h t)
+    ;; but if possible, use the minibuffer
   #+END_SRC
 
 * Startup
@@ -137,12 +137,12 @@
 ** Basic exwm setup
 *** Install dependencies
     #+BEGIN_SRC elisp
-	    (cond
-	     ((not (string-equal system-type "darwin"))
-	      (progn
-		(use-package exwm)
-		;;(require 'exwm)
-		)))
+      (cond
+       ((not (string-equal system-type "darwin"))
+	(progn
+	  (use-package exwm)
+	  ;;(require 'exwm)
+	  )))
 
     #+END_SRC
 
@@ -205,7 +205,7 @@
      ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
      (display-battery-mode 1)
-     
+
      (setq display-time-day-and-date t)
      (setq display-time-format "%H:%M")
      (display-time-mode 1)
@@ -486,10 +486,10 @@
 
 ** Logout
    #+begin_src elisp
-(defun exwm-logout ()
-  (interactive)
-  (recentf-save-list)
-  (save-some-buffers))
+     (defun exwm-logout ()
+       (interactive)
+       (recentf-save-list)
+       (save-some-buffers))
    #+end_src
 
 * Keyboard changes
@@ -556,11 +556,11 @@
        "Copy the current buffer file name to the clipboard."
        (interactive)
        (let ((filename (if (equal majournalor-mode 'dired-mode)
-                           default-directory
-                         (buffer-file-name))))
-         (when filename
-           (kill-new filename)
-           (message "Copied buffer file name '%s' to the clipboard." filename))))
+			   default-directory
+			 (buffer-file-name))))
+	 (when filename
+	   (kill-new filename)
+	   (message "Copied buffer file name '%s' to the clipboard." filename))))
 
    #+END_SRC    
 ** Winner mode
