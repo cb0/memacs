@@ -21,3 +21,4 @@
 /emacs.d/mymacs/init.el~
 *.DS_Store
 /emacs.d/claude/
+/emacs.d/epa.el

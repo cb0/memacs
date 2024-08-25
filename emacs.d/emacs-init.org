@@ -77,8 +77,7 @@
     ;; but if possible, use the minibuffer
   #+END_SRC
 
-* Startup
-  
+* Startup  
 ** Disable bell
    #+begin_src elisp
      (setq ring-bell-function 'ignore)
@@ -128,10 +127,20 @@
      (add-hook 'yaml-mode-hook #'renz/display-relative-lines)
      (add-hook 'text-mode-hook #'renz/display-relative-lines)
    #+end_src
+* EPA
+  Use the internal password prompt and no external tool
+  #+begin_src elisp
+    (setenv "GPG_AGENT_INFO" nil)
+  #+end_src
 * Hydra
   #+begin_src elisp
     (use-package hydra)
   #+end_src   
+* Customize emacs itself
+** Always follow a symlink without asking me
+   #+begin_src elisp
+     (setq vc-follow-symlinks t)
+   #+end_src
 * EXWM
   A very nice window manager for keyboard driven working.
 ** Basic exwm setup
@@ -266,9 +275,9 @@
 
 
      ;;using xim input
-     ;; ;(require 'exwm-xim)
+     (require 'exwm-xim)
 
-     ;; ;(exwm-xim-enable)
+     (exwm-xim-enable)
      ;; ;;(exwm-xim--exit)
 
      (setq exwm-input-prefix-keys
@@ -374,8 +383,8 @@
      (add-hook 'efs/exwm-init-hook #'efs/after-exwm-init)
      (efs/start-panel)
 
-     ;; (efs/run-in-background "pavucontrol")	
-     ;; (efs/run-in-background "blueman-applet")
+     ;; (efs/run-in-background "pavucontrol")
+     (efs/run-in-background "blueman-applet")
    #+end_src
 ** Desktop environment management
   #+begin_src elisp
@@ -497,7 +506,7 @@
 * Keyboard changes
 ** Rebind capslock to control
    #+BEGIN_SRC elisp
-     (start-process-shell-command "xmodmap" nil "setxkbmap -option ctrl:nocaps")
+   ;; (start-process-shell-command "xmodmap" nil "setxkbmap -option ctrl:nocaps")
    #+END_SRC
 
 *** Ask before qutting emacs
@@ -601,11 +610,9 @@
      ;; (use-package zenburn-theme)
      ;; (load-theme 'zenburn t)
 
-     (use-package modus-themes
-       :init
-       (load-theme 'modus-operandi)
-       :custom
-       (define-key global-map (kbd "<f6>") #'modus-themes-toggle))
+       (use-package modus-themes
+        :init
+        (load-theme 'modus-operandi t))
 
    #+END_SRC
 ** Background image with transparency
@@ -620,8 +627,8 @@
 
      (efs/set-wallpaper)
 
-     (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
-     (add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+     (set-frame-parameter (selected-frame) 'alpha '(85 . 85))
+     (add-to-list 'default-frame-alist '(alpha . (85 . 85)))
      (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
      (add-to-list 'default-frame-alist '(fullscreen . maximized))
    #+end_src
@@ -649,16 +656,16 @@
    #+end_src
 ** Default minibuffer size
    #+begin_src elisp
-     ;;      (defun xah-setup-minibuffer ()
-     ;;        "make minibuffer use larger font size.
-     ;;      And possibly other settings.
-     ;;      Created: 2024-05-29
-     ;;      Version: 2024-05-29"
-     ;;        (text-scale-set 4))
+	  (defun xah-setup-minibuffer ()
+	    "make minibuffer use larger font size.
+	  And possibly other settings.
+	  Created: 2024-05-29
+	  Version: 2024-05-29"
+	    (text-scale-set 4))
 
-     ;;      (add-hook 'minibuffer-mode-hook 'xah-setup-minibuffer )
+     (add-hook 'minibuffer-mode-hook 'xah-setup-minibuffer )
 
-     ;; (add-hook 'temp-buffer-window-setup-hook 'xah-setup-minibuffer )
+     (add-hook 'temp-buffer-window-setup-hook 'xah-setup-minibuffer )
 
      ;;      (defvar original-minibuffer-font-size (face-attribute 'minibuffer-prompt :height))
      ;;      (defvar custom-minibuffer-font-size 120)
@@ -700,6 +707,30 @@
 
    #+end_src
 * Completion system
+** YaSnipper
+   #+begin_src elisp
+     (use-package yasnippet)
+     (yas-global-mode 1)
+   #+end_src
+** Orderless
+   #+begin_src elisp
+
+    (use-package orderless
+      :custom
+      (completion-styles '(orderless basic))
+      (completion-category-defaults nil)
+      (partial-completion t)
+      (completion-category-overrides '((file (styles partial-completion)))))
+
+	 (defun orderless-fast-dispatch (word index total)
+       (and (= index 0) (= total 1) (length< word 4)
+	    (cons 'orderless-literal-prefix word)))
+
+      (orderless-define-completion-style orderless-fast
+       (orderless-style-dispatchers '(orderless-fast-dispatch))
+       (orderless-matching-styles '(orderless-literal orderless-regexp)))
+   #+end_src
+
 ** Corfu
    #+begin_src elisp
 
@@ -808,6 +839,36 @@
 
    #+end_src
    
+** Cape
+   This is a very expensi
+   #+begin_src elisp
+	  ;; Add extensions 
+	  (use-package cape
+	    ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
+	    ;; Press C-c p ? to for help.
+	    ;; :bind ("C-c p" . cape-prefix-map) ;; Alternative keys: M-p, M-+, ...
+	    ;; Alternatively bind Cape commands individually.
+	     :bind (("C-c p d" . cape-dabbrev)
+		    ("C-c p h" . cape-history))
+	    ;;        ("C-c p f" . cape-file)
+	    ;;        ...)
+	    :init
+	    ;; Add to the global default value of `completion-at-point-functions' which is
+	    ;; used by `completion-at-point'.  The order of the functions matters, the
+	    ;; first function returning a result wins.  Note that the list of buffer-local
+	    ;; completion functions takes precedence over the global list.
+	    (add-hook 'completion-at-point-functions #'cape-dabbrev)
+	    (add-hook 'completion-at-point-functions #'cape-file)
+	    (add-hook 'completion-at-point-functions #'cape-elisp-block)
+	    (add-hook 'completion-at-point-functions #'cape-dict)
+	    :custom
+	    (defalias 'cape-dabbrev+dict
+       (cape-capf-super #'cape-dabbrev #'cape-dict))
+     (add-to-list 'completion-at-point-functions #'cape-dabbrev+dict)
+	    ;; ...
+	  )
+   #+end_src
+
 * IDE
 ** Languages I want to use
 *** JSON
@@ -821,17 +882,17 @@
 *** Vue Mode
     #+begin_src elisp
 
-      (use-package vue-ts-mode
-	:init (slot/vc-install :fetcher "github" :repo "8uff3r/vue-ts-mode"))
+      ;; (use-package vue-ts-mode
+      ;;   :init (slot/vc-install :fetcher "github" :repo "8uff3r/vue-ts-mode"))
 
 
-      (add-to-list 'load-path (concat user-emacs-directory "vue-ts-mode"))
-      (require 'vue-ts-mode)
+      ;; (add-to-list 'load-path (concat user-emacs-directory "vue-ts-mode"))
+      ;; (require 'vue-ts-mode)
 
-      ;; 
+      ;; ;; 
 
-      ;; tmp fix as long as i cannot use 'vue-ts-mode
-      (add-to-list 'auto-mode-alist '("\\.vue\\'" . typescript-ts-mode))
+      ;; ;; tmp fix as long as i cannot use 'vue-ts-mode
+      ;; (add-to-list 'auto-mode-alist '("\\.vue\\'" . typescript-ts-mode))
 
     #+end_src
 ** TODO Ts and more
@@ -874,7 +935,7 @@
        :custom
        (treesit-auto-add-to-auto-mode-alist 'all)
        :init
-       ;; (global-treesit-auto-mode)		;
+       ;;(global-treesit-auto-mode)		;
        )
 
 
@@ -929,101 +990,109 @@
 
 *** Base installation
     #+begin_src elisp
-	    (use-package lsp-mode
-	      :diminish "LSP"
-	      :ensure t
-	      :hook ((lsp-mode . lsp-diagnostics-mode)
-      ;;	       (lsp-mode . lsp-enable-which-key-integration)
-		     ((tsx-ts-mode
-		       typescript-ts-mode
-		       js-ts-mode
-		       ) . lsp-deferred))
-	      :custom
-	      (lsp-keymap-prefix "s-l")           ; Prefix for LSP actions
-	      (lsp-completion-provider :none)       ; Using Corfu as the provider
-	      (lsp-diagnostics-provider :flycheck)
-	      (lsp-session-file (locate-user-emacs-file ".lsp-session"))
-	      (lsp-log-io nil)                      ; IMPORTANT! Use only for debugging! Drastically affects performance
-	      (lsp-keep-workspace-alive nil)        ; Close LSP server if all project buffers are closed
-	      (lsp-idle-delay 0.5)                  ; Debounce timer for `after-change-function'
-	      ;; core
-	      (lsp-enable-xref t)                   ; Use xref to find references
-	      (lsp-auto-configure t)                ; Used to decide between current active servers
-	      (lsp-eldoc-enable-hover t)            ; Display signature information in the echo area
-	      (lsp-enable-dap-auto-configure t)     ; Debug support
-	      (lsp-enable-file-watchers nil)
-	      ;;(lsp-enable-folding nil)              ; I disable folding since I use origami
-	      ;;(lsp-enable-imenu t)
-	      ;;(lsp-enable-indentation nil)          ; I use prettier
-	      (lsp-enable-links nil)                ; No need since we have `browse-url'
-	      ;;(lsp-enable-on-type-formatting nil)   ; Prettier handles this
-	      (lsp-enable-suggest-server-download t) ; Useful prompt to download LSP providers
-	      (lsp-enable-symbol-highlighting t)     ; Shows usages of symbol at point in the current buffer
-	      (lsp-enable-text-document-color nil)   ; This is Treesitter's job
+      ;;add local path as it contains the lsp booster function
+      (add-to-list 'exec-path "~/.local/bin")
 
-	      (lsp-ui-sideline-show-hover nil)      ; Sideline used only for diagnostics
-	      (lsp-ui-sideline-diagnostic-max-lines 20) ; 20 lines since typescript errors can be quite big
-	      ;; completion
-	      (lsp-completion-enable t)
-	      (lsp-completion-enable-additional-text-edit t) ; Ex: auto-insert an import for a completion candidate
-	      (lsp-enable-snippet t)                         ; Important to provide full JSX completion
-	      (lsp-completion-show-kind t)                   ; Optional
-	      ;; headerline
-	      (lsp-headerline-breadcrumb-enable t)  ; Optional, I like the breadcrumbs
-	      (lsp-headerline-breadcrumb-enable-diagnostics nil) ; Don't make them red, too noisy
-	      (lsp-headerline-breadcrumb-enable-symbol-numbers nil)
-	      (lsp-headerline-breadcrumb-icons-enable nil)
-	      ;; modeline
-	      (lsp-modeline-code-actions-enable nil) ; Modeline should be relatively clean
-	      (lsp-modeline-diagnostics-enable nil)  ; Already supported through `flycheck'
-	      (lsp-modeline-workspace-status-enable nil) ; Modeline displays "LSP" when lsp-mode is enabled
-	      (lsp-signature-doc-lines 1)                ; Don't raise the echo area. It's distracting
-	      (lsp-ui-doc-use-childframe t)              ; Show docs for symbol at point
-	      (lsp-eldoc-render-all nil)            ; This would be very useful if it would respect `lsp-signature-doc-lines', currently it's distracting
-	      ;; lens
-	      (lsp-lens-enable nil)                 ; Optional, I don't need it
-	      ;; semantic
-	      (lsp-semantic-tokens-enable nil)      ; Related to highlighting, and we defer to treesitter
-	      :config
-	      ;; (lsp-enable-which-key-integration t)
-	      :bind (:map lsp-mode-map
-			 ("C-c t s" . lsp-treemacs-symbols)
-			 ("C-c l d" . consult-lsp-diagnostics)
-			 ("C-c l f s" . consult-lsp-file-symbols)
-			 ("C-c l f q" . consult-lsp-file)
-			 )
-	      :preface
-	    (defun lsp-booster--advice-json-parse (old-fn &rest args)
-	      "Try to parse bytecode instead of json."
-	      (or
-	       (when (equal (following-char) ?#)
+      (use-package lsp-mode
+	:diminish "LSP"
+	:ensure t
+	:hook ((lsp-mode . lsp-diagnostics-mode)
+	       ;;	       (lsp-mode . lsp-enable-which-key-integration)
+	       ((tsx-ts-mode
+		 typescript-ts-mode
+		 js-ts-mode
+		 ) . lsp-deferred))
+	:custom
+	(lsp-keymap-prefix "C-c l")           ; Prefix for LSP actions
+	(lsp-completion-provider :none)       ; Using Corfu as the provider
+	(lsp-diagnostics-provider :flycheck)
+	(lsp-session-file (locate-user-emacs-file ".lsp-session"))
+	(lsp-log-io nil)                      ; IMPORTANT! Use only for debugging! Drastically affects performance
+	(lsp-keep-workspace-alive nil)        ; Close LSP server if all project buffers are closed
+	(lsp-idle-delay 0.5)                  ; Debounce timer for `after-change-function'
+	;; core
+	(lsp-enable-xref t)                   ; Use xref to find references
+	(lsp-auto-configure t)                ; Used to decide between current active servers
+	(lsp-eldoc-enable-hover t)            ; Display signature information in the echo area
+	(lsp-enable-dap-auto-configure t)     ; Debug support
+	(lsp-enable-file-watchers nil)
+	;;(lsp-enable-folding nil)              ; I disable folding since I use origami
+	;;(lsp-enable-imenu t)
+	;;(lsp-enable-indentation nil)          ; I use prettier
+	(lsp-enable-links nil)                ; No need since we have `browse-url'
+	;;(lsp-enable-on-type-formatting nil)   ; Prettier handles this
+	(lsp-enable-suggest-server-download t) ; Useful prompt to download LSP providers
+	(lsp-enable-symbol-highlighting t)     ; Shows usages of symbol at point in the current buffer
+	(lsp-enable-text-document-color nil)   ; This is Treesitter's job
 
-		 (let ((bytecode (read (current-buffer))))
-		   (when (byte-code-function-p bytecode)
-		     (funcall bytecode))))
-	       (apply old-fn args)))
-	    (defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
-	      "Prepend emacs-lsp-booster command to lsp CMD."
-	      (let ((orig-result (funcall old-fn cmd test?)))
-		(if (and (not test?)                             ;; for check lsp-server-present?
-			 (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
-			 lsp-use-plists
-			 (not (functionp 'json-rpc-connection))  ;; native json-rpc
-			 (executable-find "emacs-lsp-booster"))
-		    (progn
-		      (message "Using emacs-lsp-booster for %s!" orig-result)
-		      (cons "emacs-lsp-booster" orig-result))
-		  orig-result)))
-	    :init
-	    (setq lsp-use-plists t)
-	    ;; Initiate https://github.com/blahgeek/emacs-lsp-booster for performance
-	    (advice-add (if (progn (require 'json)
-				   (fboundp 'json-parse-buffer))
-			    'json-parse-buffer
-			  'json-read)
-			:around
-			#'lsp-booster--advice-json-parse)
-	    (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
+	(lsp-ui-sideline-show-hover nil)      ; Sideline used only for diagnostics
+	(lsp-ui-sideline-diagnostic-max-lines 20) ; 20 lines since typescript errors can be quite big
+	;; completion
+	(lsp-completion-enable t)
+	(lsp-completion-enable-additional-text-edit t) ; Ex: auto-insert an import for a completion candidate
+	(lsp-enable-snippet t)                         ; Important to provide full JSX completion
+	(lsp-completion-show-kind t)                   ; Optional
+	;; headerline
+	(lsp-headerline-breadcrumb-enable t)  ; Optional, I like the breadcrumbs
+	(lsp-headerline-breadcrumb-enable-diagnostics nil) ; Don't make them red, too noisy
+	(lsp-headerline-breadcrumb-enable-symbol-numbers nil)
+	(lsp-headerline-breadcrumb-icons-enable nil)
+	;; modeline
+	(lsp-modeline-code-actions-enable nil) ; Modeline should be relatively clean
+	(lsp-modeline-diagnostics-enable nil)  ; Already supported through `flycheck'
+	(lsp-modeline-workspace-status-enable nil) ; Modeline displays "LSP" when lsp-mode is enabled
+	(lsp-signature-doc-lines 1)                ; Don't raise the echo area. It's distracting
+	(lsp-ui-doc-use-childframe t)              ; Show docs for symbol at point
+	(lsp-eldoc-render-all nil)            ; This would be very useful if it would respect `lsp-signature-doc-lines', currently it's distracting
+	;; lens
+	(lsp-lens-enable nil)                 ; Optional, I don't need it
+	;; semantic
+	(lsp-semantic-tokens-enable nil)      ; Related to highlighting, and we defer to treesitter
+	:config
+	;; (lsp-enable-which-key-integration t)
+	:bind (:map lsp-mode-map
+		    ("C-c l t s" . lsp-treemacs-symbols)
+		    ("C-c l d" . consult-lsp-diagnostics)
+		    ("C-c l f s" . consult-lsp-file-symbols)
+		    ("C-c l f q" . consult-lsp-file)
+		    )
+	:preface
+	       ;; tune lsp mode performance
+       (setq read-process-output-max (* 10 1024 1024)) ;; 10mb
+       (setq gc-cons-threshold 200000000)
+
+	(defun lsp-booster--advice-json-parse (old-fn &rest args)
+	  "Try to parse bytecode instead of json."
+	  (or
+	   (when (equal (following-char) ?#)
+
+	     (let ((bytecode (read (current-buffer))))
+	       (when (byte-code-function-p bytecode)
+		 (funcall bytecode))))
+	   (apply old-fn args)))
+	(defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+	  "Prepend emacs-lsp-booster command to lsp CMD."
+	  (let ((orig-result (funcall old-fn cmd test?)))
+	    (if (and (not test?)                             ;; for check lsp-server-present?
+		     (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+		     lsp-use-plists
+		     (not (functionp 'json-rpc-connection))  ;; native json-rpc
+		     (executable-find "emacs-lsp-booster"))
+		(progn
+		  (message "Using emacs-lsp-booster for %s!" orig-result)
+		  (cons "emacs-lsp-booster" orig-result))
+	      orig-result)))
+	:init
+	(setq lsp-use-plists t)
+	;; Initiate https://github.com/blahgeek/emacs-lsp-booster for performance
+	(advice-add (if (progn (require 'json)
+			       (fboundp 'json-parse-buffer))
+			'json-parse-buffer
+		      'json-read)
+		    :around
+		    #'lsp-booster--advice-json-parse)
+	(advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
+
     #+end_src
 
   
@@ -1037,10 +1106,6 @@
        (use-package lsp-treemacs
 	 :config
 	 )
-
-       ;; tune lsp mode performance
-       (setq read-process-output-max (* 10 1024 1024)) ;; 10mb
-       (setq gc-cons-threshold 200000000)
 
        (with-eval-after-load 'js
 	 (define-key js-mode-map (kbd "M-.") nil))
@@ -1239,7 +1304,7 @@
        (ido-remove-tramp-from-cache)
        (ido-save-history))
    #+END_SRC
-
+   
 * Chrome Link Store
   #+begin_src elisp
 	(use-package web-server)
@@ -1302,10 +1367,12 @@
 
 * Counsel
   #+BEGIN_SRC emacs-lisp
-    (use-package counsel)
-    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-    (use-package counsel
-      :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only))
+    ;;(use-package counsel)
+
+     (use-package counsel
+       :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-pretty))
+    ;;(global-set-key (kbd "C-x C-f") counsel-find-file)
+
   #+END_SRC
 
 * Vertico
@@ -1386,21 +1453,6 @@
     ;; algorithms), but let us keep things simple.
     ;;
     ;; Further reading: https://protesilaos.com/emacs/dotemacs#h:7cc77fd0-8f98-4fc0-80be-48a758fcb6e2
-    (use-package orderless
-      :custom
-      (completion-styles '(orderless basic))
-      (completion-category-defaults nil)
-      (partial-completion t)
-      (completion-category-overrides '((file (styles partial-completion)))))
-
-	 (defun orderless-fast-dispatch (word index total)
-       (and (= index 0) (= total 1) (length< word 4)
-	    (cons 'orderless-literal-prefix word)))
-
-      (orderless-define-completion-style orderless-fast
-       (orderless-style-dispatchers '(orderless-fast-dispatch))
-       (orderless-matching-styles '(orderless-literal orderless-regexp)))
-
 
     (use-package embark
       :ensure t
@@ -1454,8 +1506,6 @@
       (global-set-key (kbd "C-x C-k a") 'consult-ag)
       (global-set-key (kbd "C-x C-k f") 'consult-locate)
       (global-set-key (kbd "C-s") 'consult-line))
-
-
 
     (use-package embark-org-roam)
   #+end_src
@@ -1961,3 +2011,12 @@
        :custom
        (pomm-audio-enabled t))
    #+end_src
+* EPA Custom
+  Do load the custom encrypted setup as last item. If something goes wrong I can still
+  #+begin_src elisp
+    (require 'epa-file)
+
+    (epa-file-enable)
+    (setq custom-epa-file (expand-file-name "epa.el.gpg" user-emacs-directory))
+    (load custom-epa-file)
+  #+end_src
