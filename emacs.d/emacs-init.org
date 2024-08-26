@@ -652,7 +652,7 @@
        "Set the default font size to SIZE."
        (set-face-attribute 'default nil :height (* size 10)))
 
-     (set-default-font-size 9)
+     (set-default-font-size 12)
    #+end_src
 ** Default minibuffer size
    #+begin_src elisp
