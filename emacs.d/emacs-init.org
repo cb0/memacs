@@ -715,18 +715,29 @@
 ** Orderless
    #+begin_src elisp
 
-    (use-package orderless
-      :custom
-      (completion-styles '(orderless basic))
-      (completion-category-defaults nil)
-      (partial-completion t)
-      (completion-category-overrides '((file (styles partial-completion)))))
+     (use-package orderless
+       :custom
+       (completion-styles '(orderless basic))
+       (orderless-matching-styles
+	'(orderless-literal
+	  orderless-prefixes
+	  orderless-initialism
+	  orderless-regexp
+	  orderless-flex                       ; Basically fuzzy finding
+	  ;; orderless-strict-leading-initialism
+	  ;; orderless-strict-initialism
+	  ;; orderless-strict-full-initialism
+	  ;; orderless-without-literal          ; Recommended for dispatches instead
+	  ))
+       (completion-category-defaults nil)
+       (partial-completion t)
+       (completion-category-overrides '((file (styles basic-faces partial-completion)))))
 
-	 (defun orderless-fast-dispatch (word index total)
+     (defun orderless-fast-dispatch (word index total)
        (and (= index 0) (= total 1) (length< word 4)
 	    (cons 'orderless-literal-prefix word)))
 
-      (orderless-define-completion-style orderless-fast
+     (orderless-define-completion-style orderless-fast
        (orderless-style-dispatchers '(orderless-fast-dispatch))
        (orderless-matching-styles '(orderless-literal orderless-regexp)))
    #+end_src
@@ -1369,8 +1380,8 @@
   #+BEGIN_SRC emacs-lisp
     ;;(use-package counsel)
 
-     (use-package counsel
-       :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-pretty))
+     ;;(use-package counsel
+     ;;  :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-pretty))
     ;;(global-set-key (kbd "C-x C-f") counsel-find-file)
 
   #+END_SRC
