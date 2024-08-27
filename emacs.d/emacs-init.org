@@ -130,12 +130,84 @@
 * EPA
   Use the internal password prompt and no external tool
   #+begin_src elisp
-    (setenv "GPG_AGENT_INFO" nil)
+    ;; (setenv "GPG_AGENT_INFO" nil)
   #+end_src
+** Auth Sources
+   #+begin_src elisp
+	  ;; (use-package dash)
+	  ;; (use-package s)
+
+	  ;; (add-to-list 'load-path "~/.emacs.d/keepass-auth-source")
+
+	  ;; (require 'keepass-auth-source)
+
+	  ;; (add-to-list 'auth-sources "~/sync/KP/Final-Framework.kdbx") 
+
+	  ;; (setq auth-sources '((:source "~/.authinfo.gpg")))
+
+	  ;; (require 'auth-source)
+
+	  ;; (defun secrets-unlock-item (collection item)
+	  ;;   "Unlock item labeled ITEM from collection labeled COLLECTION.
+	  ;;  If successful, return the object path of the item."
+	  ;;   (let ((item-path (secrets-item-path collection item)))
+	  ;; 	 (unless (secrets-empty-path item-path)
+	  ;; 	   (secrets-prompt
+	  ;; 	    (cadr
+	  ;; 	     (dbus-call-method
+	  ;; 	      :session secrets-service secrets-path secrets-interface-service
+	  ;; 	      "Unlock" `(:array :object-path ,item-path)))))
+	  ;; 	 item-path))
+
+
+	  ;; (defun secrets-get-secret (collection item)
+	  ;;   "Return the secret of item labeled ITEM in COLLECTION.
+	  ;; If there are several items labeled ITEM, it is undefined which
+	  ;; one is returned.  If there is no such item, return nil.
+
+	  ;; ITEM can also be an object path, which is used if contained in COLLECTION."
+
+	  ;;   (let ((item-path (secrets-unlock-item collection item)))
+	  ;; 	 (unless (secrets-empty-path item-path)
+	  ;; 	   (dbus-byte-array-to-string
+	  ;; 	    (nth 2
+	  ;; 		 (dbus-call-method
+	  ;; 		  :session secrets-service item-path secrets-interface-item
+	  ;; 		  "GetSecret" :object-path secrets-session-path))))))
+
+     ;; (setq exwm-manage-force-tiling nil)
+     
+	  ;; (require 'secrets nil t)
+	  ;; (secrets-open-session)
+	  ;; (secrets-get-secret "keyring" "test")
+
+
+
+
+   #+end_src
+
+   #+RESULTS:
+   : auth-source
+   
+** EPA Custom
+   Do load the custom encrypted setup as last item. If something goes wrong I can still
+   #+begin_src elisp
+     (require 'epa-file)
+
+     (epa-file-enable)
+    
+     (setq custom-epa-file (expand-file-name "epa.el.gpg" user-emacs-directory))
+     (load custom-epa-file)
+   #+end_src
+
 * Hydra
   #+begin_src elisp
     (use-package hydra)
   #+end_src   
+* Path
+  #+begin_src elisp
+	  (add-to-list 'exec-path "~/.bun/bin/")
+  #+end_src
 * Customize emacs itself
 ** Always follow a symlink without asking me
    #+begin_src elisp
@@ -731,7 +803,7 @@
 	  ))
        (completion-category-defaults nil)
        (partial-completion t)
-       (completion-category-overrides '((file (styles basic-faces partial-completion)))))
+       (completion-category-overrides '((file (styles basic partial-completion)))))
 
      (defun orderless-fast-dispatch (word index total)
        (and (= index 0) (= total 1) (length< word 4)
@@ -1496,11 +1568,22 @@
 		     (window-parameters (mode-line-format . none)))))
 
   #+end_src
+
+  #+RESULTS:
+  : embark-bindings
   
-* 
 * consult
   #+begin_src elisp
-    (use-package consult)
+
+    (setq read-file-name-completion-ignore-case t)
+
+    (use-package consult
+      :custom
+      (global-set-key (kbd "C-x b") 'consult-buffer)
+	  (global-set-key (kbd "C-x g") 'consult-git-grep)
+	  (global-set-key (kbd "C-x C-k a") 'consult-ag)
+	  (global-set-key (kbd "C-x C-k f") 'consult-locate)
+	  (global-set-key (kbd "C-s") 'consult-line))
 
     (use-package consult-lsp)
 
@@ -1510,60 +1593,10 @@
     (use-package embark-consult
       :ensure t ; only need to install it, embark loads it after consult if found
       :hook
-      (embark-collect-mode . consult-preview-at-point-mode)
-      :init
-      (global-set-key (kbd "C-x b") 'consult-buffer)
-      (global-set-key (kbd "C-x g") 'consult-git-grep)
-      (global-set-key (kbd "C-x C-k a") 'consult-ag)
-      (global-set-key (kbd "C-x C-k f") 'consult-locate)
-      (global-set-key (kbd "C-s") 'consult-line))
+      (embark-collect-mode . consult-preview-at-point-mode))
 
     (use-package embark-org-roam)
   #+end_src
-* Swiper
-  Generic completion frontend
-  #+BEGIN_SRC emacs-lisp
-    ;;(use-package swiper)
-
-    ;;(setq magit-completing-read-function 'ivy-completing-read)
-    ;;(setq projectile-completion-system 'ivy)
-
-    ;;(ivy-mode 1)
-    ;;(ivy-mode -1)
-
-    ;; (setq ivy-use-virtual-buffers t)
-    ;; (global-set-key "\C-s" 'swiper)
-    ;; (global-set-key (kbd "C-c C-r") 'ivy-resume)
-    ;; (global-set-key (kbd "M-x") 'counsel-M-x)
-    ;; (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-    ;; (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-    ;; (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-    ;; (global-set-key (kbd "<f1> l") 'counsel-load-library)
-    ;; (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-    ;; (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-    ;; (global-set-key (kbd "C-c g") 'counsel-git)
-    ;; (global-set-key (kbd "C-c j") 'counsel-git-grep)
-    ;; (global-set-key (kbd "C-c k") 'counsel-ag)
-    ;; (global-set-key (kbd "C-x l") 'counsel-locate)
-    ;; (package-require 'helm-rhythmbox)
-    ;;(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-
-    ;; (defun counsel ()
-    ;;   "Elisp completion at point."
-    ;;   (interactive)
-    ;;   (let* ((bnd (bounds-of-thing-at-point 'symbol))
-    ;;          (str (buffer-substring-no-properties (car bnd) (cdr bnd)))
-    ;;          (candidates (all-completions str obarray))
-    ;;          (ivy-height 7)
-    ;;          (res (ivy-read (format "pattern (%s): " str)
-    ;;                         candidates)))
-    ;;     (when (stringp res)
-    ;;       (delete-region (car bnd) (cdr bnd))
-    ;;       (insert res))))
-
-
-  #+END_SRC
-
 * Org Mode
 ** Install and set custom things for org-mode
    :LOGBOOK:
@@ -2008,12 +2041,29 @@
 ** Shell Maker
    #+begin_src elisp
      (use-package shell-maker)
+     
+   #+end_src
+** ChatGPT
+   See [[https://github.com/xenodium/chatgpt-shell/issues/217][here]] for super usefull tipps!
+   #+begin_src elisp
+     (setenv "ANTHROPIC_API_KEY" cb0/claude-shell-api-token)
+
+     (use-package chatgpt-shell
+       :ensure t
+       :custom
+       (chatgpt-shell-api-url-base "http://127.0.0.1:4000")
+       (chatgpt-shell-openai-key cb0/chatgpt-shell-openai-key))
+
+
+     (require 'ob-chatgpt-shell)
+     (ob-chatgpt-shell-setup)
    #+end_src
 ** Claude AI
    #+begin_src elisp
-     ;; (use-package claude-shell
-     ;;   :custom
-     ;;   (claude-shell-streaming t))
+     (use-package claude-shell
+       :custom
+       (claude-shell-api-token cb0/claude-shell-api-token)
+       (claude-shell-streaming t))
    #+end_src
 * Productivity tweaks
 ** Pomodore timing
@@ -2022,12 +2072,3 @@
        :custom
        (pomm-audio-enabled t))
    #+end_src
-* EPA Custom
-  Do load the custom encrypted setup as last item. If something goes wrong I can still
-  #+begin_src elisp
-    (require 'epa-file)
-
-    (epa-file-enable)
-    (setq custom-epa-file (expand-file-name "epa.el.gpg" user-emacs-directory))
-    (load custom-epa-file)
-  #+end_src
