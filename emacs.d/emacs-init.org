@@ -1495,8 +1495,8 @@
   #+BEGIN_SRC emacs-lisp
     ;;(use-package counsel)
 
-     ;;(use-package counsel
-     ;;  :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-pretty))
+     (use-package counsel
+       :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-pretty))
     ;;(global-set-key (kbd "C-x C-f") counsel-find-file)
 
   #+END_SRC
