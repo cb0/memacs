@@ -1,13 +1,18 @@
 * What is this file about ?
-  This is my personal emacs configuration, which I started all over on <2024-07-12 Fr> because I was fed up with problems in the old config.
+  This is my personal emacs configuration, +which I started all over on <2024-07-12 Fr> because I was fed up with problems in the old config.+ which I did use for a very long time.
 ** My Target
    With this file I want to configure emacs instances on arch and os x. Also exwm on arch.
 * Personal Information
-  If you need to contact me, here is my mail.
-
+  If you need to contact me, connect to me on github and send me a message.
+  I am no longer active on social media or any other site. Event though my profiles still exist.
+  There will be a personal page in the future.
+  
 * Startup customizatio Start server
 ** Starting the emacs server from here.
    Notes on server. I do not use the server call `(server-start)` anymore, because systemd and emacs server with exwm running in client works for me ONLY.
+* TODO elpaca
+  Install from https://github.com/progfolio/elpaca
+
 * Setup package install
   
 ** Default package source
