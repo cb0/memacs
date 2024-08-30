@@ -1076,6 +1076,8 @@
       ;;add local path as it contains the lsp booster function
       (add-to-list 'exec-path "~/.local/bin")
 
+      (use-package json-ls)
+
       (use-package lsp-mode
 	:diminish "LSP"
 	:ensure t
@@ -1083,7 +1085,7 @@
 	       ;;	       (lsp-mode . lsp-enable-which-key-integration)
 	       ((tsx-ts-mode
 		 typescript-ts-mode
-		 js-ts-mode
+		 js-ts-mode-map		
 		 ) . lsp-deferred))
 	:custom
 	(lsp-keymap-prefix "C-c l")           ; Prefix for LSP actions
