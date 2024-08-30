@@ -1640,10 +1640,21 @@
 
     (use-package embark-org-roam)
   #+end_src
+* Http Helper
+** Ob-http
+   To be able to use emacs org-mode's bable feature and make request and get responses, I need this package first.
+   #+begin_src elisp
+     (use-package ob-http)
+   #+end_src
+
+   Later I will tell org-mode to use it. See [[*Install and set custom things for org-mode][Install and set custom things for org-mode]].
+
+   
+
 * Org Mode
 ** Install and set custom things for org-mode
    :LOGBOOK:
-   CLOCK: [2024-07-25 Do 22:33]
+   CLOCK: [2024-07-25 Do 22:33]--[2024-07-26 Fr 00:33] =>  2:00
    :END:
    #+BEGIN_SRC emacs-lisp
 						  ; Activate org-mode
@@ -1668,7 +1679,8 @@
 	   'org-babel-load-languages
 	   ;; load all language marked with (lang . t).
 	   '((C . t)
-     ;;	(org . t)
+	     ( http . t)
+	     ;;	(org . t)
 	     (shell . t)))
 
 	  ;; turn off "evaluate code question" in org-mode code blocks
