@@ -22,3 +22,5 @@
 *.DS_Store
 /emacs.d/claude/
 /emacs.d/epa.el
+/emacs.d/.chatgpt-shell.el
+/emacs.d/.lsp-session

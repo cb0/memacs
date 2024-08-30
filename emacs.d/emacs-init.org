@@ -977,45 +977,48 @@
       ;; (add-to-list 'load-path (concat user-emacs-directory "vue-ts-mode"))
       ;; (require 'vue-ts-mode)
 
+      (use-package vue-mode
+	:mode "\\.vue\\'"
+	:config
+	(add-hook 'vue-mode-hook #'lsp-mode))
+
+      ```
+
       ;; ;; 
 
       ;; ;; tmp fix as long as i cannot use 'vue-ts-mode
-      ;; (add-to-list 'auto-mode-alist '("\\.vue\\'" . typescript-ts-mode))
+      ;; (add-to-list 'auto-mode-alist '("\\.vue\\'" . lsp-mode))
 
     #+end_src
 ** TODO Ts and more
    This needs to be revised, it kind of works but I cannot use the query builer.
    #+begin_src elisp
+     (setq treesit-language-source-alist
+	   '((bash . ("https://github.com/tree-sitter/tree-sitter-bash" "v0.21.0"))
+	     (cmake . ("https://github.com/uyha/tree-sitter-cmake" "v0.5.0"))
+	     (css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.21.1"))
+	     (elisp . ("https://github.com/Wilfred/tree-sitter-elisp" "1.6.0"))
+	     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.21.4" "src"))
+	     (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.21.0"))
+	     (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "0.21.2" "tsx/src"))
+	     (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "0.21.2" "typescript/src"))
+	     (vue . ("https://github.com/ikatyang/tree-sitter-vue" "v0.2.1"))))
 
-	 (setq treesit-language-source-alist
-	    '((bash . ("https://github.com/tree-sitter/tree-sitter-bash" "v0.21.0"))
-	      (cmake . ("https://github.com/uyha/tree-sitter-cmake" "v0.5.0"))
-	      (css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.21.1"))
-	      (elisp . ("https://github.com/Wilfred/tree-sitter-elisp" "1.6.0"))
-	      (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.21.4" "src"))
-	      (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.21.0"))
-	      (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "0.21.2" "tsx/src"))
-	      (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "0.21.2" "typescript/src"))
-	      ;;(vue . ("https://github.com/ikatyang/tree-sitter-vue" "v0.2.1")))
-	    ))
-
-	 ;; (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
-
+     ;; (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
 
      (setq major-mode-remap-alist
 	   '((bash-mode . bash-ts-mode)
 	     (js2-mode . js-ts-mode)
 	     (typescript-mode . typescript-ts-mode)
 	     (json-mode . json-ts-mode)
-	     (css-mode . css-ts-mode)))
+	     (css-mode . css-ts-mode)	))
 
-	 ;; (setq treesit-language-source-alist
-	 ;;  '((vue "https://github.com/ikatyang/tree-sitter-vue")
-	 ;;    (css "https://github.com/tree-sitter/tree-sitter-css")
-	 ;;    (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")))
+     ;; (setq treesit-language-source-alist
+     ;;  '((vue "https://github.com/ikatyang/tree-sitter-vue")
+     ;;    (css "https://github.com/tree-sitter/tree-sitter-css")
+     ;;    (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")))
 
-	 ;; (mapc #'treesit-install-language-grammar '(vue css typescript))
-
+     ;; (mapc #'treesit-install-language-grammar '(vue css typescript))
 
      (use-package treesit-auto
        :custom
@@ -1023,14 +1026,14 @@
        :custom
        (treesit-auto-add-to-auto-mode-alist 'all)
        :init
-       ;;(global-treesit-auto-mode)		;
+       (global-treesit-auto-mode)		;
        )
 
 
 
-	 ;; (setq treesit-auto-langs '(python typescript))
+     ;; (setq treesit-auto-langs '(python typescript))
 
-	 ;; (setq treesit-auto-instal l 'prompt)
+     ;; (setq treesit-auto-instal l 'prompt)
    #+end_src
 
 ** Tree Sitter Fold
@@ -1182,6 +1185,7 @@
 		    :around
 		    #'lsp-booster--advice-json-parse)
 	(advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
+
 
     #+end_src
 
