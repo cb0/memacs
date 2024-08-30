@@ -1,4 +1,8 @@
 * What is this file about ?
+  :PROPERTIES:
+  :ID:       d36b5190-f05e-48fa-a180-2d257e054d35
+  :ROAM_ALIASES: "emacs init file - written in org-mode" "init file exwm"
+  :END:
   This is my personal emacs configuration, +which I started all over on <2024-07-12 Fr> because I was fed up with problems in the old config.+ which I did use for a very long time.
 ** My Target
    With this file I want to configure emacs instances on arch and os x. Also exwm on arch.
@@ -137,7 +141,8 @@
   #+begin_src elisp
     ;; (setenv "GPG_AGENT_INFO" nil)
   #+end_src
-** Auth Sources
+** TODO Auth Sources
+   See https://www.reddit.com/r/emacs/comments/14xjcje/access_your_passwordmanager_from_emacs_on_linux/ and fix
    #+begin_src elisp
 	  ;; (use-package dash)
 	  ;; (use-package s)
@@ -958,6 +963,11 @@
    #+end_src
 
 * IDE
+  :PROPERTIES:
+  :ID:       bbda0aea-a425-4d53-9486-ebb183717561
+  :ROAM_ALIASES: "IDE Settings in Emacs" "IDE Settings"
+  :END:
+  
 ** Languages I want to use
 *** JSON
     #+begin_src elisp
