@@ -1888,6 +1888,36 @@
    #+END_SRC
 
 ** Babel
+*** Structure Templates
+
+    As described [[info:org#Structure Templates][here]] I do want to extend my templates to be able to quickly write various code blocks like
+
+    #+begin_export ascii
+      #+BEGIN_SRC emacs-lisp
+      #+END_SRC
+    #+end_export
+
+    #+begin_src elisp
+      (setq org-structure-template-alist '(("a" . "export ascii")
+					  ("C" . "comment")
+					  ("b" . "src bash")
+					  ("e" . "src elisp")
+					  ("E" . "export")
+					  ("h" . "export html")
+					  ("j" . "json")
+					  ("l" . "export latex")
+					  ("q" . "quote")
+					  ("s" . "src")
+					  ("v" . "verse")))
+    #+end_src
+
+    #+begin_src bash
+      echo "Test"
+    #+end_src
+
+    #+RESULTS:
+    : Test
+    
 *** Remote dir fix!
     When evaluation source blocks inside org mode I get the same error as [[https://lists.gnu.org/archive/html/emacs-orgmode/2016-01/msg00281.html][here]].
     There is a fix for this by [[http://www.howardism.org/Technical/Emacs/literate-devops.html#fn.2][Howard]] but it involves adjusting org-mode source code. As this might change when updating, I will use this solution, proposed by John Kitchin [[https://lists.gnu.org/archive/html/emacs-orgmode/2016-01/msg00321.html][here]].
