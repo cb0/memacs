@@ -1941,6 +1941,15 @@
     #+BEGIN_SRC emacs-lisp
       (setq temporary-file-directory "/tmp/")
     #+END_SRC
+** Corg
+   Looks like a great additional package I just [[https://isamert.net/2024/08/20/corg-el-announcement.html][found today]] (<2024-08-30 Fr>). And it was only released a week ago.
+
+   #+begin_src elisp
+     (use-package corg
+       :init
+       (slot/vc-install :fetcher "github" :repo "isamert/corg.el")
+       (add-hook 'org-mode-hook #'corg-setup))
+   #+end_src
 * Org Roam
 ** Installation
    #+begin_src elisp
