@@ -223,6 +223,21 @@
    #+begin_src elisp
      (setq vc-follow-symlinks t)
    #+end_src
+** Symon
+   To get some nice looking stats and free up my polybar, I want to try symon.
+   I was inspired trying this after reading [[https://web.archive.org/web/20180509003117/https://ambrevar.bitbucket.io/emacs-eshell/]["eshell as my main shell"]].
+   But I have to disable it, because of  [[https://github.com/zk-phi/symon/issues/44][a bug]] 
+   #+begin_src elisp
+     ;; (use-package symon
+     ;;   :init
+     ;;   (symon-mode))
+#+end_src
+** Manage system pacman
+   #+begin_src elisp
+     (use-package system-packages
+       :custom
+       (system-packages-package-manager 'pacman))
+   #+end_src
 * EXWM
   A very nice window manager for keyboard driven working.
 ** Basic exwm setup
