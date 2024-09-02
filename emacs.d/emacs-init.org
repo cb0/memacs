@@ -603,7 +603,7 @@
 * Keyboard changes
 ** Rebind capslock to control
    #+BEGIN_SRC elisp
-     (start-process-shell-command "xmodmap" nil "setxkbmap -layout de,us -option ctrl:nocaps")
+     (start-process-shell-command "xmodmap" nil "setxkbmap -layout us -option ctrl:nocaps")
    #+END_SRC
 
 *** Ask before qutting emacs
