@@ -238,6 +238,26 @@
        :custom
        (system-packages-package-manager 'pacman))
    #+end_src
+** Process manager like top
+   Taken from https://laurencewarne.github.io/emacs/programming/2022/12/26/exploring-proced.html
+   #+begin_src elisp
+     (use-package proced
+       :ensure nil
+       :commands proced
+       :bind (("C-M-p" . proced))
+       :custom
+       (proced-auto-update-flag t)
+       (proced-goal-attribute nil)
+       (proced-show-remote-processes t)
+       (proced-enable-color-flag t)
+       (proced-format 'custom)
+       :config
+       (add-to-list
+	'proced-format-alist
+	'(custom user pid ppid sess tree pcpu pmem rss start time state (args comm)))
+       (visual-line-mode))
+
+   #+end_src
 * EXWM
   A very nice window manager for keyboard driven working.
 ** Basic exwm setup
