@@ -869,10 +869,10 @@
        (completion-styles '(orderless basic))
        (orderless-matching-styles
 	'(orderless-literal
-	  orderless-prefixes
-	  orderless-initialism
+	  ;; orderless-prefixes
+	  ;;orderless-initialism
 	  orderless-regexp
-	  orderless-flex                       ; Basically fuzzy finding
+	  ;;orderless-flex                       ; Basically fuzzy finding
 	  ;; orderless-strict-leading-initialism
 	  ;; orderless-strict-initialism
 	  ;; orderless-strict-full-initialism
@@ -1005,31 +1005,32 @@
 ** Cape
    This is a very expensi
    #+begin_src elisp
-     ;; Add extensions 
-     (use-package cape
-       ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
-       ;; Press C-c p ? to for help.
-       ;; :bind ("C-c p" . cape-prefix-map) ;; Alternative keys: M-p, M-+, ...
-       ;; Alternatively bind Cape commands individually.
-       :bind (("C-c p d" . cape-dabbrev)
-	      ("C-c p h" . cape-history))
-       ("C-c p f" . cape-file)
-       ;;        ...)
-       :init
-       ;; Add to the global default value of `completion-at-point-functions' which is
-       ;; used by `completion-at-point'.  The order of the functions matters, the
-       ;; first function returning a result wins.  Note that the list of buffer-local
-       ;; completion functions takes precedence over the global list.
-       (add-hook 'completion-at-point-functions #'cape-dabbrev)
-       (add-hook 'completion-at-point-functions #'cape-file)
-       (add-hook 'completion-at-point-functions #'cape-elisp-block)
-       (add-hook 'completion-at-point-functions #'cape-dict)
-       :custom
-       (defalias 'cape-dabbrev+dict
-	 (cape-capf-super #'cape-dabbrev #'cape-dict))
-       (add-to-list 'completion-at-point-functions #'cape-dabbrev+dict)
-       ;; ...
-       )
+     ;; Add extensions
+
+     ;; (use-package cape
+     ;;   ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
+     ;;   ;; Press C-c p ? to for help.
+     ;;   ;; :bind ("C-c p" . cape-prefix-map) ;; Alternative keys: M-p, M-+, ...
+     ;;   ;; Alternatively bind Cape commands individually.
+     ;;   :bind (("C-c p d" . cape-dabbrev)
+     ;; 	 ("C-c p h" . cape-history))
+     ;;   ("C-c p f" . cape-file)
+     ;;   ;;        ...)
+     ;;   :init
+     ;;   ;; Add to the global default value of `completion-at-point-functions' which is
+     ;;   ;; used by `completion-at-point'.  The order of the functions matters, the
+     ;;   ;; first function returning a result wins.  Note that the list of buffer-local
+     ;;   ;; completion functions takes precedence over the global list.
+     ;;   (add-hook 'completion-at-point-functions #'cape-dabbrev)
+     ;;   (add-hook 'completion-at-point-functions #'cape-file)
+     ;;   (add-hook 'completion-at-point-functions #'cape-elisp-block)
+     ;;   (add-hook 'completion-at-point-functions #'cape-dict)
+     ;;   :custom
+     ;;   (defalias 'cape-dabbrev+dict
+     ;;     (cape-capf-super #'cape-dabbrev #'cape-dict))
+     ;;   (add-to-list 'completion-at-point-functions #'cape-dabbrev+dict)
+     ;;   ;; ...
+     ;;   )
    #+end_src
 
 * IDE
