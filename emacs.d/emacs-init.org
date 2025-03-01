@@ -205,7 +205,7 @@
      (require 'epa-file)
 
      (epa-file-enable)
-    
+
      (setq custom-epa-file (expand-file-name "epa.el.gpg" user-emacs-directory))
      (load custom-epa-file)
    #+end_src
@@ -218,6 +218,11 @@
   #+begin_src elisp
 	  (add-to-list 'exec-path "~/.bun/bin/")
   #+end_src
+* Shell in emacs
+** MultiTerm
+   #+begin_src elisp
+     
+   #+end_src
 * Customize emacs itself
 ** Always follow a symlink without asking me
    #+begin_src elisp
@@ -257,6 +262,12 @@
 	'(custom user pid ppid sess tree pcpu pmem rss start time state (args comm)))
        (visual-line-mode))
 
+   #+end_src
+* Linux adjustments
+  I want to control pacman and possibly other stuff from within emacs.
+** Pacman
+   #+begin_src elisp
+     (use-package arch-packer)
    #+end_src
 * EXWM
   A very nice window manager for keyboard driven working.
@@ -437,6 +448,13 @@
 	 (setq exwm-layout-show-all-buffers t))))
 
    #+end_src
+** COMMENT Resize of windows with mouse
+   #+begin_src elisp
+     ;; Allow resizing with mouse, of non-floating windows.
+     (setq window-divider-default-bottom-width 3
+	   window-divider-default-right-width 3)
+     (window-divider-mode)
+   #+end_src
 ** Hide minibuffer and echo area
    Get more space by hiding the echo area and the mini buffer when not required.
    #+begin_src elisp
@@ -517,8 +535,6 @@
       (desktop-environment-brightness-normal-increment "5%+")
       (desktop-environment-brightness-normal-decrement "5%-")
       (desktop-environment-screenshot-command "flameshot gui"))
-
-
 
     ;; ;; This needs a more elegant ASCII banner
     ;; (defhydra hydra-exwm-move-resize (:timeout 4)
@@ -722,14 +738,23 @@
    #+BEGIN_SRC elisp
      (global-set-key [f11] 'toggle-frame-fullscreen)
    #+END_SRC
-** Zen Burn theme
+** COMMENT Darkula Theme
+   #+begin_src elisp
+     (use-package darcula-theme
+       :ensure t)
+       ;; :config			 ;
+       ;; ;; your preferred main font face here
+       ;; (set-frame-font "Inconsolata-14"))
+
+   #+end_src
+** COMMENT Zen Burn theme
    #+BEGIN_SRC elisp
      ;; (use-package zenburn-theme)
      ;; (load-theme 'zenburn t)
 
-       (use-package modus-themes
-        :init
-        (load-theme 'modus-operandi t))
+     ;; (use-package modus-themes
+     ;;    :init
+     ;;    (load-theme 'modus-operandi t))
 
    #+END_SRC
 ** Background image with transparency
@@ -748,6 +773,11 @@
      (add-to-list 'default-frame-alist '(alpha . (85 . 85)))
      (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
      (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+     (add-hook 'exwm-after-startup-hook (lambda () (select-frame (exwm-frame))
+					  (exwm-layout-toggle-fullscreen)))
+
+
    #+end_src
    
 ** Increase mode line height
@@ -824,14 +854,16 @@
 
    #+end_src
 * Completion system
-** YaSnipper
+** COMMENT YaSnipper
    #+begin_src elisp
-     (use-package yasnippet)
-     (yas-global-mode 1)
+     (use-package yasnippet
+       :config
+       (setq yas-snippet-dirs
+	     '("~/.emacs.d/snippets"))
+       (yas-global-mode 1))
    #+end_src
 ** Orderless
    #+begin_src elisp
-
      (use-package orderless
        :custom
        (completion-styles '(orderless basic))
@@ -973,31 +1005,31 @@
 ** Cape
    This is a very expensi
    #+begin_src elisp
-	  ;; Add extensions 
-	  (use-package cape
-	    ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
-	    ;; Press C-c p ? to for help.
-	    ;; :bind ("C-c p" . cape-prefix-map) ;; Alternative keys: M-p, M-+, ...
-	    ;; Alternatively bind Cape commands individually.
-	     :bind (("C-c p d" . cape-dabbrev)
-		    ("C-c p h" . cape-history))
-	    ;;        ("C-c p f" . cape-file)
-	    ;;        ...)
-	    :init
-	    ;; Add to the global default value of `completion-at-point-functions' which is
-	    ;; used by `completion-at-point'.  The order of the functions matters, the
-	    ;; first function returning a result wins.  Note that the list of buffer-local
-	    ;; completion functions takes precedence over the global list.
-	    (add-hook 'completion-at-point-functions #'cape-dabbrev)
-	    (add-hook 'completion-at-point-functions #'cape-file)
-	    (add-hook 'completion-at-point-functions #'cape-elisp-block)
-	    (add-hook 'completion-at-point-functions #'cape-dict)
-	    :custom
-	    (defalias 'cape-dabbrev+dict
-       (cape-capf-super #'cape-dabbrev #'cape-dict))
-     (add-to-list 'completion-at-point-functions #'cape-dabbrev+dict)
-	    ;; ...
-	  )
+     ;; Add extensions 
+     (use-package cape
+       ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
+       ;; Press C-c p ? to for help.
+       ;; :bind ("C-c p" . cape-prefix-map) ;; Alternative keys: M-p, M-+, ...
+       ;; Alternatively bind Cape commands individually.
+       :bind (("C-c p d" . cape-dabbrev)
+	      ("C-c p h" . cape-history))
+       ("C-c p f" . cape-file)
+       ;;        ...)
+       :init
+       ;; Add to the global default value of `completion-at-point-functions' which is
+       ;; used by `completion-at-point'.  The order of the functions matters, the
+       ;; first function returning a result wins.  Note that the list of buffer-local
+       ;; completion functions takes precedence over the global list.
+       (add-hook 'completion-at-point-functions #'cape-dabbrev)
+       (add-hook 'completion-at-point-functions #'cape-file)
+       (add-hook 'completion-at-point-functions #'cape-elisp-block)
+       (add-hook 'completion-at-point-functions #'cape-dict)
+       :custom
+       (defalias 'cape-dabbrev+dict
+	 (cape-capf-super #'cape-dabbrev #'cape-dict))
+       (add-to-list 'completion-at-point-functions #'cape-dabbrev+dict)
+       ;; ...
+       )
    #+end_src
 
 * IDE
@@ -1073,8 +1105,8 @@
        (treesit-auto-install 'prompt)
        :custom
        (treesit-auto-add-to-auto-mode-alist 'all)
-       :init
-       (global-treesit-auto-mode)		;
+       ;;:init
+       ;;(global-treesit-auto-mode)		;
        )
 
 
@@ -1131,8 +1163,9 @@
     #+begin_src elisp
       ;;add local path as it contains the lsp booster function
       (add-to-list 'exec-path "~/.local/bin")
+      (add-to-list 'exec-path "/home/cb0/.cargo/bin")
 
-      (use-package json-ls)
+      ;;(use-package json-ls)
 
       (use-package lsp-mode
 	:diminish "LSP"
@@ -1315,7 +1348,7 @@
 *** Node
     #+begin_src elisp
       (use-package npm-mode)
-      (npm-global-mode)
+      ;; (npm-global-mode)
     #+end_src
 ** Key Management
 *** Duplicate Lines
@@ -1677,13 +1710,27 @@
 
     (setq read-file-name-completion-ignore-case t)
 
+    (setq consult-async-min-input 1)
+
     (use-package consult
-      :custom
+      :config
+      (setq consult-async-min-input 1)
+
+      ;; Show candidates immediately when typing
+      (setq consult-async-min-input 1)
+
+      ;; Optional: make async search more responsive
+      (setq consult-async-input-throttle 0.2)
+      (setq consult-async-input-debounce 0.1)
       (global-set-key (kbd "C-x b") 'consult-buffer)
-	  (global-set-key (kbd "C-x g") 'consult-git-grep)
-	  (global-set-key (kbd "C-x C-k a") 'consult-ag)
-	  (global-set-key (kbd "C-x C-k f") 'consult-locate)
-	  (global-set-key (kbd "C-s") 'consult-line))
+      (global-set-key (kbd "C-x g") 'consult-git-grep)
+      (global-set-key (kbd "C-x C-k a") 'consult-ag)
+      (global-set-key (kbd "C-x C-k f") 'consult-locate)
+      (global-set-key (kbd "C-s") 'consult-line))
+
+    (setq completion-ignore-case t)
+    (setq read-file-name-completion-ignore-case t)
+    (setq read-buffer-completion-ignore-case t)
 
     (use-package consult-lsp)
 
@@ -1705,9 +1752,13 @@
    #+end_src
 
    Later I will tell org-mode to use it. See [[*Install and set custom things for org-mode][Install and set custom things for org-mode]].
-
-   
-
+* Avy - former AceJump
+  #+begin_src elisp
+    (use-package avy
+      :config
+      (global-set-key (kbd "C-c j") 'avy-goto-word-or-subword-1)
+      (global-set-key (kbd "s-.") 'avy-goto-word-or-subword-1))
+  #+end_src
 * Org Mode
 ** Install and set custom things for org-mode
    :LOGBOOK:
@@ -2002,6 +2053,55 @@
        (slot/vc-install :fetcher "github" :repo "isamert/corg.el")
        (add-hook 'org-mode-hook #'corg-setup))
    #+end_src
+** Custom functions
+*** Aggregate all nodes without headings into a new buffer
+    For my wedding speech I added a lot of notes, infos and stuff info a org mode buffer.
+    Now I want to quickly get all the text in that node and all subnotes. But without the headings.
+    This is what this function should do.
+    #+begin_src elisp
+      (defun cb0/org-collect-content-without-headings ()
+	(interactive)
+	(let ((content ""))
+	  (org-map-entries
+	   (lambda ()
+	     (setq content
+		   (concat content
+			   (buffer-substring-no-properties
+			    (line-beginning-position 2)
+			    (org-entry-end-position))
+			   "\n\n"))))
+	  (with-current-buffer (get-buffer-create "*Org Content Without Headings*")
+	    (erase-buffer)
+	    (insert content)
+	    (goto-char (point-min))
+	    (while (re-search-forward "^\\*+ .*\n" nil t)
+	      (replace-match ""))
+	    (switch-to-buffer (current-buffer)))))
+
+      (defun cb0/org-collect-content-without-headings-current-subtree ()
+	(interactive)
+	(save-excursion
+	  (org-back-to-heading t)
+	  (let ((start (point))
+		(end (save-excursion (org-end-of-subtree t t)))
+		(content ""))
+	    (org-map-entries
+	     (lambda ()
+	       (setq content
+		     (concat content
+			     (buffer-substring-no-properties
+			      (line-beginning-position 2)
+			      (org-entry-end-position))
+			     "\n\n")))
+	     t 'tree)
+	    (with-current-buffer (get-buffer-create "*Org Content Without Headings*")
+	      (erase-buffer)
+	      (insert content)
+	      (goto-char (point-min))
+	      (while (re-search-forward "^\\*+ .*\n" nil t)
+		(replace-match ""))
+	      (switch-to-buffer (current-buffer))))))
+    #+end_src
 * Org Roam
 ** Installation
    #+begin_src elisp
@@ -2199,15 +2299,17 @@
    #+begin_src elisp
      (setenv "ANTHROPIC_API_KEY" cb0/claude-shell-api-token)
 
-     (use-package chatgpt-shell
-       :ensure t
-       :custom
-       (chatgpt-shell-api-url-base "http://127.0.0.1:4000")
-       (chatgpt-shell-openai-key cb0/chatgpt-shell-openai-key))
+       (use-package chatgpt-shell
+	:ensure t
+	:custom
+	(chatgpt-shell-api-url-base "http://127.0.0.1:4000")
+	(chatgpt-shell-openai-key cb0/chatgpt-shell-openai-key))
 
+     (setq chatgpt-shell-openai-key
+      (auth-source-pick-first-password :host "api.deepseek.com"))
 
-     (require 'ob-chatgpt-shell)
-     (ob-chatgpt-shell-setup)
+      (require 'ob-chatgpt-shell)
+      (ob-chatgpt-shell-setup)
    #+end_src
 ** Claude AI
    #+begin_src elisp
@@ -2216,6 +2318,51 @@
        (claude-shell-api-token cb0/claude-shell-api-token)
        (claude-shell-streaming t))
    #+end_src
+** NEED_FEEDBACK ahyatt/llm
+   This package looks promising, but it is not completed and I do not see how to build it hassle free.
+   https://lists.gnu.org/archive/html/emacs-devel/2024-01/msg01134.html
+   #+begin_src elisp
+
+	       (defun my-llm-get-key (host)
+	     (plist-get (car (auth-source-search :host host)) :secret))
+	     (my-llm-get-key "api.openai.com")
+
+     ;;     ;; (use-package llm-refactoring
+     ;;     ;;   :init
+     ;;     ;;   (require 'llm-openai)
+     ;;     ;; (setq llm-refactoring-provider (make-llm-openai :key (my-llm-get-key "api.openai.com"))))
+
+     ;; (use-package llm)
+     ;; (use-package llm-flows)
+
+     ;;     (use-package llm)
+   #+end_src
+   #+begin_src elisp
+
+   #+end_src
+** gptel
+   #+begin_src elisp
+     (use-package gptel
+       :config
+       ;; :key can be a function that returns the API key.
+       (gptel-make-gemini "Gemini My" :key (my-llm-get-key "api.openai.com") :stream t)
+       ;; DeepSeek offers an OpenAI compatible API
+       (gptel-make-openai "DeepSeek mein"
+	 :host "api.deepseek.com"
+	 :endpoint "/chat/completions"
+	 :stream t
+	 :key (my-llm-get-key "api.deepseek.com")
+	 :models '(deepseek-chat deepseek-reasoner)))
+   #+end_src
+*** Babel integration
+    #+begin_src elisp
+;;      (org-babel-do-load-languages
+;;  'org-babel-load-languages
+;; '((llm . t)))
+
+(defun org-babel-execute:llm (body params)
+  (gptel-request body :stream nil))
+    #+end_src
 * Productivity tweaks
 ** Pomodore timing
    #+begin_src elisp
@@ -2223,3 +2370,8 @@
        :custom
        (pomm-audio-enabled t))
    #+end_src
+ChatGPT(4/General)> Please tell me a joke
+<shell-maker-end-of-prompt>
+
+
+ChatGPT(4o/General)> 
