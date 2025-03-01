@@ -1343,8 +1343,7 @@
      (global-set-key (kbd "M-,") 'xref-go-back)
    #+end_src
 
-** Project support
-   
+** Project support  
 *** Node
     #+begin_src elisp
       (use-package npm-mode)
@@ -1391,6 +1390,38 @@
       (global-set-key (kbd "C-c C-d") 'duplicate-line)
     #+end_src
    
+** Projectile and Sidebar
+   I want to have a IDE like tree explorer when I want it.
+   #+begin_src elisp
+     (use-package projectile
+       :ensure t
+       :config
+       (projectile-mode +1)
+       :bind (:map projectile-mode-map
+	      ("C-c p" . projectile-command-map)))
+
+   #+end_src
+** Treemacs
+   #+begin_src elisp
+
+     ;; Install via package manager
+     (use-package treemacs
+       :ensure t
+       :bind
+       (:map global-map
+	     ("M-1" . treemacs)          ;; Similar to ALT+1
+	     ("C-c t" . treemacs))
+       :config
+       ;; Enable project integration
+       (treemacs-project-follow-mode t)
+       ;; Follow the currently selected file
+       (treemacs-follow-mode t))
+
+     ;; Add treemacs-projectile for better integration
+     (use-package treemacs-projectile
+       :ensure t)
+
+   #+end_src
 * Code Handling
 ** Region expanding
    #+begin_src elisp
@@ -2215,6 +2246,7 @@
      ;; (require 'git)
      (use-package magit)
      (global-set-key (kbd "<f5>") 'magit-status)
+     (global-set-key (kbd "C-x RET m") 'magit-status)
 
      ;;taken from http://tullo.ch/articles/modern-emacs-setup/
      ;; (defadvice magit-status (around magit-fullscreen activate)
