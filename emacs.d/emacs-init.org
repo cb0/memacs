@@ -719,6 +719,18 @@
        (winum-mode))
    #+end_src
 * Customize my theme:
+** Safe theme loading
+   #+begin_src elisp
+(defun safe-load-theme (theme)
+  (interactive
+   (list (intern (completing-read "Load theme: "
+                                 (mapcar #'symbol-name
+                                         (custom-available-themes))))))
+  (mapc #'disable-theme custom-enabled-themes)
+  (condition-case nil
+      (load-theme theme t)
+    (error (message "Could not load theme %s" theme))))
+   #+end_src
 ** Line Wrapping
    I really like when long lines are wrapped so I don't have to scroll to the right.
    The [[https://www.emacswiki.org/emacs/LineWrap][emacs wiki]] has different options for that. I for now will use `[[https://www.emacswiki.org/emacs/VisualLineMode][visual-line-mode]]`.
@@ -741,8 +753,10 @@
 ** COMMENT Darkula Theme
    #+begin_src elisp
      (use-package darcula-theme
-       :ensure t)
-       ;; :config			 ;
+       :ensure t
+
+       :config
+       (load-theme 'darcula))
        ;; ;; your preferred main font face here
        ;; (set-frame-font "Inconsolata-14"))
 
@@ -757,6 +771,14 @@
      ;;    (load-theme 'modus-operandi t))
 
    #+END_SRC
+** gruvbox-dark-hard!!!
+   #+begin_src elisp
+     ;; (use-package solarized-theme
+     ;;   :config
+     ;;      (load-theme 'solarized-light t))
+
+     (safe-load-theme 'gruvbox-dark-hard)
+   #+end_src
 ** Background image with transparency
    First install `feh` as system package and set bg image
 
@@ -766,11 +788,19 @@
        (interactive)
        (start-process-shell-command
 	"feh" nil  "feh --bg-scale ~/.config/background/DSCF6257.JPG"))
+     (defun efs/set-wallpaper2 ()
+       (interactive)
+       (start-process-shell-command
+	"feh" nil  "feh --bg-scale ~/.config/background/vintage-paper.jpg"))
 
      (efs/set-wallpaper)
+     (efs/set-wallpaper2)
 
-     (set-frame-parameter (selected-frame) 'alpha '(85 . 85))
-     (add-to-list 'default-frame-alist '(alpha . (85 . 85)))
+     ;; Define transparency variable (adjust the docstring as needed)
+(defvar my-frame-transparency 60
+  "Frame transparency level (0-100). 100 is fully opaque, 0 is transparent.")
+     (set-frame-parameter (selected-frame) 'alpha (cons my-frame-transparency my-frame-transparency))
+     (add-to-list 'default-frame-alist '(alpha . (cons my-frame-transparency my-frame-transparency)))
      (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
      (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
