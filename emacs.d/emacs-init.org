@@ -401,11 +401,13 @@
 	     ([?\C-d] . [delete])
 	     ([?\C-k] . [S-end delete])))
 
+     ;;(exwm-enable)
 
      ;;using xim input
-     (require 'exwm-xim)
+     ;;(require 'exwm-xim)
 
-     (exwm-xim-enable)
+     ;; (exwm-xim-enable)
+     ;;(exwm-xim-mode)
      ;; ;;(exwm-xim--exit)
 
      (setq exwm-input-prefix-keys
