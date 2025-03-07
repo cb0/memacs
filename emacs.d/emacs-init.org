@@ -14,6 +14,13 @@
 * Startup customizatio Start server
 ** Starting the emacs server from here.
    Notes on server. I do not use the server call `(server-start)` anymore, because systemd and emacs server with exwm running in client works for me ONLY.
+   #+begin_src elisp
+     (setq exwm-debug t)
+     ;; (when (daemonp)
+     ;;   (setq server-name "framework")
+     ;;   (setq server-socket-dir "~/.emacs.d/server")
+       ;;(server-start);;)
+   #+end_src
 * TODO elpaca
   Install from https://github.com/progfolio/elpaca
 
