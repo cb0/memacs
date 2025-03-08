@@ -735,13 +735,13 @@
    #+END_SRC
 ** COMMENT Darkula Theme
    #+begin_src elisp
-     (use-package darcula-theme
-       :ensure t
+     ;; (use-package darcula-theme
+     ;;   :ensure t
 
-       :config
-       (load-theme 'darcula))
-       ;; ;; your preferred main font face here
-       ;; (set-frame-font "Inconsolata-14"))
+     ;;   :config
+     ;;   (load-theme 'darcula))
+     ;;   ;; ;; your preferred main font face here
+     ;;   ;; (set-frame-font "Inconsolata-14"))
 
    #+end_src
 ** COMMENT Zen Burn theme
@@ -756,43 +756,40 @@
    #+END_SRC
 ** gruvbox-dark-hard!!!
    #+begin_src elisp
-     ;; (use-package solarized-theme
-     ;;   :config
-     ;;      (load-theme 'solarized-light t))
-
-     (safe-load-theme 'gruvbox-dark-hard)
+          ;; (use-package solarized-theme
+          ;;   :config
+          ;;      (load-theme 'solarized-light t))
+          (use-package gruvbox-theme
+            :ensure t
+            :config (safe-load-theme 'gruvbox-dark-hard))
    #+end_src
 ** Background image with transparency
    First install `feh` as system package and set bg image
 
    Then add the transparency
    #+begin_src elisp
-     (defun efs/set-wallpaper ()
-       (interactive)
-       (start-process-shell-command
-	"feh" nil  "feh --bg-scale ~/.config/background/DSCF6257.JPG"))
-     (defun efs/set-wallpaper2 ()
-       (interactive)
-       (start-process-shell-command
-	"feh" nil  "feh --bg-scale ~/.config/background/vintage-paper.jpg"))
+	  (defun efs/set-wallpaper ()
+	    (interactive)
+	    (start-process-shell-command
+	     "feh" nil  "feh --bg-scale ~/.config/background/DSCF6257.JPG"))
+	  (defun efs/set-wallpaper2 ()
+	    (interactive)
+	    (start-process-shell-command
+	     "feh" nil  "feh --bg-scale ~/.config/background/vintage-paper.jpg"))
 
-     (efs/set-wallpaper)
-     (efs/set-wallpaper2)
+;;	  (efs/set-wallpaper)
+	  (efs/set-wallpaper2)
 
-     ;; Define transparency variable (adjust the docstring as needed)
-(defvar my-frame-transparency 60
-  "Frame transparency level (0-100). 100 is fully opaque, 0 is transparent.")
-     (set-frame-parameter (selected-frame) 'alpha (cons my-frame-transparency my-frame-transparency))
-     (add-to-list 'default-frame-alist '(alpha . (cons my-frame-transparency my-frame-transparency)))
-     (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
-     (add-to-list 'default-frame-alist '(fullscreen . maximized))
+	  (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+	  (add-to-list 'default-frame-alist '(alpha . '(90 . 90 )))
+	  (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+	  (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-     (add-hook 'exwm-after-startup-hook (lambda () (select-frame (exwm-frame))
-					  (exwm-layout-toggle-fullscreen)))
+	  (add-hook 'exwm-after-startup-hook (lambda () (select-frame (exwm-frame))
+					       (exwm-layout-toggle-fullscreen)))
 
 
    #+end_src
-   
 ** Increase mode line height
    #+begin_src elisp
      (setq exwm-systemtray-height 32)
