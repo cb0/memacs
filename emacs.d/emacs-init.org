@@ -369,7 +369,6 @@
      (add-hook 'exwm-manage-finish-hook #'efs/configure-window-by-class)
 
      ;;(exwm-config-example)
-     (exwm-enable)
 
      (setq exwm-input-simulation-keys
 	   '(([?\C-b] . [left])
