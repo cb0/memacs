@@ -496,6 +496,8 @@
 
        ;; Launch apps that will run in the background
        (efs/run-in-background "nm-applet")
+
+       (gpastel-mode)
      )
 
      (add-hook 'efs/exwm-init-hook #'efs/after-exwm-init)
