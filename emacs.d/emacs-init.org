@@ -2404,8 +2404,8 @@
        :custom
        (pomm-audio-enabled t))
    #+end_src
-ChatGPT(4/General)> Please tell me a joke
-<shell-maker-end-of-prompt>
+* Final message
+   #+begin_src elisp
+     (message "Finish loading emacs config")
+   #+end_src
 
-
-ChatGPT(4o/General)> 
