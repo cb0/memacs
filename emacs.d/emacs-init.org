@@ -1063,24 +1063,13 @@
 *** Vue Mode
     #+begin_src elisp
 
-      ;; (use-package vue-ts-mode
-      ;;   :init (slot/vc-install :fetcher "github" :repo "8uff3r/vue-ts-mode"))
-
-
-      ;; (add-to-list 'load-path (concat user-emacs-directory "vue-ts-mode"))
-      ;; (require 'vue-ts-mode)
+      (use-package vue-ts-mode :vc (:url "https://github.com/8uff3r/vue-ts-mode"))
 
       (use-package vue-mode
-	:mode "\\.vue\\'"
-	:config
-	(add-hook 'vue-mode-hook #'lsp-mode))
+      	:mode "\\.vue\\'"
+      	:config
+      	(add-hook 'vue-mode-hook #'lsp-mode))
 
-      ```
-
-      ;; ;; 
-
-      ;; ;; tmp fix as long as i cannot use 'vue-ts-mode
-      ;; (add-to-list 'auto-mode-alist '("\\.vue\\'" . lsp-mode))
 
     #+end_src
 ** TODO Ts and more
