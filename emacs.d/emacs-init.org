@@ -29,6 +29,11 @@
 ** Default package source
    To be able to install packages inside of emacs, we need to make sure emacs knows where to get those packages from. Just like with any other package manager.
     #+BEGIN_SRC elisp
+
+      ;;; package: --- emacs org mode
+
+      ;;; Commentary:
+
       (require 'package)
 
       (setq package-archives '(("melpa" . "http://melpa.org/packages/")
@@ -43,6 +48,31 @@
       (setq use-package-always-ensure t)
 
     #+END_SRC
+
+** VC Install
+   #+begin_src elisp
+     ;; (cl-defun slot/vc-install (&key (fetcher "github") repo name rev backend)
+     ;;   "Install a package from a remote if it's not already installed.
+     ;; This is a thin wrapper around `package-vc-install' in order to
+     ;; make non-interactive usage more ergonomic.  Takes the following
+     ;; named arguments:
+
+     ;; - FETCHER the remote where to get the package (e.g., \"gitlab\").
+     ;;   If omitted, this defaults to \"github\".
+
+     ;; - REPO should be the name of the repository (e.g.,
+     ;;   \"slotThe/arXiv-citation\".
+
+     ;; - NAME, REV, and BACKEND are as in `package-vc-install' (which
+     ;;   see)."
+     ;;   (let* ((url (format "https://www.%s.com/%s" fetcher repo))
+     ;; 	      (iname (when name (intern name)))
+     ;; 	      (pac-name (or iname (intern (file-name-base repo)))))
+     ;; 	 (unless (package-installed-p pac-name)
+     ;; 	   (package-vc-install url iname rev backend))))
+   #+end_src
+
+   #+RESULTS:
 
 ** Benchmarking startup time
    #+BEGIN_SRC elisp
@@ -83,13 +113,13 @@
        ;;(dashboard-setup-startup-hook)
        (setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name)))
        (setq dashboard-item-shortcuts '((recents   . "r")
-				      (bookmarks . "m")
-				      (projects  . "p")
-				      (agenda    . "a")
-				      (registers . "e")))
+     				      (bookmarks . "m")
+     				      (projects  . "p")
+     				      (agenda    . "a")
+     				      (registers . "e")))
        (setq dashboard-item-names '(("Recent Files:"               . "Recently opened files:")
-				  ("Agenda for today:"           . "Today's agenda:")
-				  ("Agenda for the coming week:" . "Agenda:")))
+     				  ("Agenda for today:"           . "Today's agenda:")
+     				  ("Agenda for the coming week:" . "Agenda:")))
        (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
      (setq dashboard-icon-type 'nerd-icons)) ; use `nerd-icons' package
 
@@ -167,7 +197,7 @@
 	  ;; 		  :session secrets-service item-path secrets-interface-item
 	  ;; 		  "GetSecret" :object-path secrets-session-path))))))
 
-     ;; (setq exwm-manage-force-tiling nil)
+;;     (setq exwm-manage-force-tiling t)
      
 	  ;; (require 'secrets nil t)
 	  ;; (secrets-open-session)
@@ -184,12 +214,12 @@
 ** EPA Custom
    Do load the custom encrypted setup as last item. If something goes wrong I can still
    #+begin_src elisp
-     (require 'epa-file)
+     ;;(require 'epa-file)
 
-     (epa-file-enable)
+     ;;(epa-file-enable)
 
-     (setq custom-epa-file (expand-file-name "epa.el.gpg" user-emacs-directory))
-     (load custom-epa-file)
+     ;;(setq custom-epa-file (expand-file-name "epa.el.gpg" user-emacs-directory))
+     ;;(load custom-epa-file)
    #+end_src
 
 * Hydra
@@ -258,13 +288,22 @@
     #+BEGIN_SRC elisp
       (cond
        ((not (string-equal system-type "darwin"))
-	(progn
-	  (use-package exwm)
-	  ;;(require 'exwm)
-	  )))
+        (progn
+          (use-package exwm
+            :ensure
+            :config
+            (unless (server-running-p)
+      	(server-start))
+            )
+          (require 'exwm)
+          (exwm-enable)
+          (featurep 'exwm)
+          )
+        )
+       )
 
     #+END_SRC
-
+    
 
 ** Helper function
    #+begin_src elisp
@@ -336,7 +375,7 @@
 
 ** Configure WM
    #+begin_src elisp
-     (setq exwm-workspace-number 5)
+     (setq exwm-workspace-number 9)
 
      ;; use line mode on startup
      (setq exwm-manage-configurations '((t line-mode t)))
@@ -385,7 +424,7 @@
      ;;(exwm-enable)
 
      ;;using xim input
-     ;;(require 'exwm-xim)
+;;     (require 'exwm-xim)
 
      ;; (exwm-xim-enable)
      ;;(exwm-xim-mode)
@@ -450,7 +489,6 @@
 
    #+end_src
 ** Screen resolution
-
    #+begin_src elisp
      (require 'exwm-randr)
      ;;(exwm-randr-enable)
@@ -506,6 +544,9 @@
      ;; (efs/run-in-background "pavucontrol")
      (efs/run-in-background "blueman-applet")
    #+end_src
+
+   #+RESULTS:
+
 ** Desktop environment management
   #+begin_src elisp
     (add-to-list 'load-path "~/.emacs.d/lib/desktop-environment/")
@@ -595,7 +636,7 @@
     ;;    (enwc)
     ;;  (error nil))
   #+end_src
-
+  
 
 ** Fix Focus Problem
    Switching workspaces, the x window on the new workspace sometimes does not get the focus back.
@@ -611,7 +652,11 @@
 			    (xcb:flush exwm--connection))))
    #+end_src
 ** Enable exwm
-   This is done in my profile file
+   This is done in my xinitrc file on startup
+      #+begin_src elisp
+	;;(exwm-enable)
+
+   #+end_src
 
 ** Logout
    #+begin_src elisp
@@ -758,12 +803,11 @@
    #+END_SRC
 ** gruvbox-dark-hard!!!
    #+begin_src elisp
-          ;; (use-package solarized-theme
-          ;;   :config
-          ;;      (load-theme 'solarized-light t))
-          (use-package gruvbox-theme
-            :ensure t
-            :config (safe-load-theme 'gruvbox-dark-hard))
+     ;; (use-package solarized-theme
+     ;;   :config
+     ;;      (load-theme 'solarized-light t))
+
+     (safe-load-theme 'gruvbox-dark-hard)
    #+end_src
 ** Background image with transparency
    First install `feh` as system package and set bg image
@@ -876,34 +920,37 @@
    #+end_src
 ** Orderless
    #+begin_src elisp
+
      (use-package orderless
-       :custom
-       (completion-styles '(orderless basic))
-       (orderless-matching-styles
-	'(orderless-literal
-	  ;; orderless-prefixes
-	  ;;orderless-initialism
-	  orderless-regexp
-	  ;;orderless-flex                       ; Basically fuzzy finding
-	  ;; orderless-strict-leading-initialism
-	  ;; orderless-strict-initialism
-	  ;; orderless-strict-full-initialism
-	  ;; orderless-without-literal          ; Recommended for dispatches instead
-	  ))
-       (completion-category-defaults nil)
-       (partial-completion t)
-       (completion-category-overrides '((file (styles basic partial-completion))))
-	    ;; Make Orderless work with fewer characters
-       (orderless-component-separator #'orderless-escapable-split-on-space)
-       (completion-styles '(orderless basic)))
+	    :custom
+	    (completion-styles '(orderless basic))
+	    (orderless-matching-styles
+	     '(orderless-literal
+	       ;; orderless-prefixes
+	       ;;orderless-initialism
+	       orderless-regexp
+	       ;;orderless-flex                       ; Basically fuzzy finding
+	       ;; orderless-strict-leading-initialism
+	       ;; orderless-strict-initialism
+	       ;; orderless-strict-full-initialism
+	       ;; orderless-without-literal          ; Recommended for dispatches instead
+	       ))
+	    (completion-category-defaults nil)
+	    (partial-completion t)
+	    (completion-category-overrides '((file (styles basic partial-completion))))
+		 ;; Make Orderless work with fewer characters
+	    (orderless-component-separator #'orderless-escapable-split-on-space)
+	    (completion-styles '(orderless basic)))
 
-     (defun orderless-fast-dispatch (word index total)
-       (and (= index 0) (= total 1) (length< word 4)
-	    (cons 'orderless-literal-prefix word)))
+	  (defun orderless-fast-dispatch (word index total)
+	    (and (= index 0) (= total 1) (length< word 4)
+		 (cons 'orderless-literal-prefix word)))
 
-     (orderless-define-completion-style orderless-fast
-       (orderless-style-dispatchers '(orderless-fast-dispatch))
-       (orderless-matching-styles '(orderless-literal orderless-regexp)))
+	  (orderless-define-completion-style orderless-fast
+	    (orderless-style-dispatchers '(orderless-fast-dispatch))
+	    (orderless-matching-styles '(orderless-literal orderless-regexp)))
+
+
    #+end_src
 
 ** Corfu
@@ -1063,13 +1110,24 @@
 *** Vue Mode
     #+begin_src elisp
 
-      (use-package vue-ts-mode :vc (:url "https://github.com/8uff3r/vue-ts-mode"))
+      ;; (use-package vue-ts-mode
+      ;;   :init (slot/vc-install :fetcher "github" :repo "8uff3r/vue-ts-mode"))
+
+
+      ;; (add-to-list 'load-path (concat user-emacs-directory "vue-ts-mode"))
+      ;; (require 'vue-ts-mode)
 
       (use-package vue-mode
-      	:mode "\\.vue\\'"
-      	:config
-      	(add-hook 'vue-mode-hook #'lsp-mode))
+	:mode "\\.vue\\'"
+	:config
+	(add-hook 'vue-mode-hook #'lsp-mode))
 
+      ```
+
+      ;; ;; 
+
+      ;; ;; tmp fix as long as i cannot use 'vue-ts-mode
+      ;; (add-to-list 'auto-mode-alist '("\\.vue\\'" . lsp-mode))
 
     #+end_src
 ** TODO Ts and more
@@ -1311,8 +1369,8 @@
 ** TODO Tailwind
    Cannot use as uses straight.
    #+begin_src elisp
-     (use-package lsp-tailwindcss
-       :init (slot/vc-install :fetcher "github" :repo "merrickluo/lsp-tailwindcss"))
+;;     (use-package lsp-tailwindcss
+  ;;     :init (slot/vc-install :fetcher "github" :repo "merrickluo/lsp-tailwindcss"))
 
      ;; (use-package lsp-tailwindcss
      ;;       :straight '(lsp-tailwindcss :type git :host github :repo "merrickluo/lsp-tailwindcss")
@@ -1467,19 +1525,19 @@
 * Session Management
 ** Desktop mode
    #+BEGIN_SRC emacs-lisp
-     (use-package desktop)
-     (desktop-save-mode 1)
-     (setq history-length 250)
-     ;(add-to-list 'desktop-globals-to-save 'file-name-history)
+     ;; (use-package desktop)
+     ;; (desktop-save-mode 1)
+     ;; (setq history-length 250)
+     ;; ;(add-to-list 'desktop-globals-to-save 'file-name-history)
 
-     (defun my-desktop-save ()
-       (interactive)
-       ;; Don't call desktop-save-in-desktop-dir, as it prints a message.
-       (if (eq (desktop-owner) (emacs-pid))
-	   (desktop-save desktop-dirname)))
-     (add-hook 'auto-save-hook 'my-desktop-save)
+     ;; (defun my-desktop-save ()
+     ;;   (interactive)
+     ;;   ;; Don't call desktop-save-in-desktop-dir, as it prints a message.
+     ;;   (if (eq (desktop-owner) (emacs-pid))
+     ;; 	   (desktop-save desktop-dirname)))
+     ;; (add-hook 'auto-save-hook 'my-desktop-save)
 
-     ;;(desktop-read)
+     ;; ;;(desktop-read)
 
   #+END_SRC
 * Autocomplete
@@ -1616,11 +1674,28 @@
 
 * Counsel
   #+BEGIN_SRC emacs-lisp
-    ;;(use-package counsel)
+	;;(use-package counsel)
 
-     (use-package counsel
-       :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-pretty))
-    ;;(global-set-key (kbd "C-x C-f") counsel-find-file)
+	 (use-package counsel
+	   :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-pretty))
+	;;(global-set-key (kbd "C-x C-f") counsel-find-file)
+
+
+    (defun my/exwm-counsel-yank-pop ()
+      "Same as `counsel-yank-pop' and paste into exwm buffer."
+      (interactive)
+      (let ((inhibit-read-only t)
+	    ;; Make sure we send selected yank-pop candidate to
+	    ;; clipboard:
+	    (yank-pop-change-selection t))
+	(call-interactively #'counsel-yank-pop))
+      (when (derived-mode-p 'exwm-mode)
+	;; https://github.com/ch11ng/exwm/issues/413#issuecomment-386858496
+	(exwm-input--set-focus (exwm--buffer->id (window-buffer (selected-window))))
+	(exwm-input--fake-key ?\C-y)))
+
+	(exwm-input-set-key (kbd "M-y") #'my/exwm-counsel-yank-pop)
+
 
   #+END_SRC
 
@@ -2081,10 +2156,10 @@
    Looks like a great additional package I just [[https://isamert.net/2024/08/20/corg-el-announcement.html][found today]] (<2024-08-30 Fr>). And it was only released a week ago.
 
    #+begin_src elisp
-     (use-package corg
-       :init
-       (slot/vc-install :fetcher "github" :repo "isamert/corg.el")
-       (add-hook 'org-mode-hook #'corg-setup))
+     ;; (use-package corg
+     ;;   :init
+     ;;   (slot/vc-install :fetcher "github" :repo "isamert/corg.el")
+     ;;   (add-hook 'org-mode-hook #'corg-setup))
    #+end_src
 ** Custom functions
 *** Aggregate all nodes without headings into a new buffer
@@ -2331,26 +2406,26 @@
 ** ChatGPT
    See [[https://github.com/xenodium/chatgpt-shell/issues/217][here]] for super usefull tipps!
    #+begin_src elisp
-     (setenv "ANTHROPIC_API_KEY" cb0/claude-shell-api-token)
+        ;;  (setenv "ANTHROPIC_API_KEY" cb0/claude-shell-api-token)
 
-       (use-package chatgpt-shell
-	:ensure t
-	:custom
-	(chatgpt-shell-api-url-base "http://127.0.0.1:4000")
-	(chatgpt-shell-openai-key cb0/chatgpt-shell-openai-key))
+          ;;   (use-package chatgpt-shell
+          ;; 	:ensure t
+          ;; 	:custom
+          ;; 	(chatgpt-shell-api-url-base "http://127.0.0.1:4000")
+          ;; 	(chatgpt-shell-openai-key cb0/chatgpt-shell-openai-key))
 
-     (setq chatgpt-shell-openai-key
-      (auth-source-pick-first-password :host "api.deepseek.com"))
+          ;; (setq chatgpt-shell-openai-key
+          ;;  (auth-source-pick-first-password :host "api.deepseek.com"))
 
-      (require 'ob-chatgpt-shell)
-      (ob-chatgpt-shell-setup)
+     ;;      (require 'ob-chatgpt-shell)
+     ;;      (ob-chatgpt-shell-setup)
    #+end_src
 ** Claude AI
    #+begin_src elisp
-     (use-package claude-shell
-       :custom
-       (claude-shell-api-token cb0/claude-shell-api-token)
-       (claude-shell-streaming t))
+     ;;(use-package claude-shell
+     ;;  :custom
+     ;;  (claude-shell-api-token cb0/claude-shell-api-token)
+     ;;  (claude-shell-streaming t))
    #+end_src
 ** NEED_FEEDBACK ahyatt/llm
    This package looks promising, but it is not completed and I do not see how to build it hassle free.
@@ -2359,7 +2434,7 @@
 
 	       (defun my-llm-get-key (host)
 	     (plist-get (car (auth-source-search :host host)) :secret))
-	     (my-llm-get-key "api.openai.com")
+	     ;;(my-llm-get-key "api.openai.com")
 
      ;;     ;; (use-package llm-refactoring
      ;;     ;;   :init
@@ -2376,17 +2451,17 @@
    #+end_src
 ** gptel
    #+begin_src elisp
-     (use-package gptel
-       :config
-       ;; :key can be a function that returns the API key.
-       (gptel-make-gemini "Gemini My" :key (my-llm-get-key "api.openai.com") :stream t)
-       ;; DeepSeek offers an OpenAI compatible API
-       (gptel-make-openai "DeepSeek mein"
-	 :host "api.deepseek.com"
-	 :endpoint "/chat/completions"
-	 :stream t
-	 :key (my-llm-get-key "api.deepseek.com")
-	 :models '(deepseek-chat deepseek-reasoner)))
+     ;; (use-package gptel
+     ;;   :config
+     ;;   ;; :key can be a function that returns the API key.
+     ;;   (gptel-make-gemini "Gemini My" :key (my-llm-get-key "api.openai.com") :stream t)
+     ;;   ;; DeepSeek offers an OpenAI compatible API
+     ;;   (gptel-make-openai "DeepSeek mein"
+     ;; 	 :host "api.deepseek.com"
+     ;; 	 :endpoint "/chat/completions"
+     ;; 	 :stream t
+     ;; 	 :key (my-llm-get-key "api.deepseek.com")
+     ;; 	 :models '(deepseek-chat deepseek-reasoner)))
    #+end_src
 *** Babel integration
     #+begin_src elisp
