@@ -470,6 +470,20 @@
 	 (setq exwm-layout-show-all-buffers t))))
 
    #+end_src
+** Resize of window with keyboard
+   #+begin_src elisp
+     ;; exwm-layout-enlarge-window[-horizontally] - Make a window larger by a number of pixels
+     ;; exwm-layout-shrink-window[-horizontally] - Make a window smaller by a number of pixels
+     ;; frame-pixel-width / frame-pixel-height 
+
+
+     (global-set-key (kbd "C-s-f") 'shrink-window-if-larger-than-buffer)
+     (global-set-key (kbd "C-s-b") 'enlarge-window)
+
+     (global-set-key (kbd "C-s-n") 'shrink-window-horizontally)
+     (global-set-key (kbd "C-s-p") 'enlarge-window-horizontally)
+
+   #+end_src
 ** COMMENT Resize of windows with mouse
    #+begin_src elisp
      ;; Allow resizing with mouse, of non-floating windows.
