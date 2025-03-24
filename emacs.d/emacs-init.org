@@ -375,75 +375,75 @@
 
 ** Configure WM
    #+begin_src elisp
-     (setq exwm-workspace-number 9)
+          (setq exwm-workspace-number 9)
 
-     ;; use line mode on startup
-     (setq exwm-manage-configurations '((t line-mode t)))
+          ;; use line mode on startup
+          (setq exwm-manage-configurations '((t line-mode t)))
 
-     ;; All buffers created in EXWM mode are named "*EXWM*". You may want to
-     ;; change it in `exwm-update-class-hook' and `exwm-update-title-hook', which
-     ;; are run when a new X window class name or title is available.  Here's
-     ;; some advice on this topic:
-     ;; + Always use `exwm-workspace-rename-buffer` to avoid naming conflict.
-     ;; + For applications with multiple windows (e.g. GIMP), the class names of
-					     ;    all windows are probably the same.  Using window titles for them makes
-     ;;   more sense.
-     ;; In the following example, we use class names for all windows except for
-     ;; Java applications and GIMP.
-     (add-hook 'exwm-update-class-hook
-	       (lambda ()
-		 (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-			     (string= "gimp" exwm-instance-name))
-		   (exwm-workspace-rename-buffer exwm-class-name))))
+          ;; All buffers created in EXWM mode are named "*EXWM*". You may want to
+          ;; change it in `exwm-update-class-hook' and `exwm-update-title-hook', which
+          ;; are run when a new X window class name or title is available.  Here's
+          ;; some advice on this topic:
+          ;; + Always use `exwm-workspace-rename-buffer` to avoid naming conflict.
+          ;; + For applications with multiple windows (e.g. GIMP), the class names of
+     					     ;    all windows are probably the same.  Using window titles for them makes
+          ;;   more sense.
+          ;; In the following example, we use class names for all windows except for
+          ;; Java applications and GIMP.
+          (add-hook 'exwm-update-class-hook
+     	       (lambda ()
+     		 (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+     			     (string= "gimp" exwm-instance-name))
+     		   (exwm-workspace-rename-buffer exwm-class-name))))
 
-     (add-hook 'exwm-update-title-hook
-	       (lambda ()
-		 (when (or (not exwm-instance-name)
-			   (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-			   (string= "gimp" exwm-instance-name))
-		   (exwm-workspace-rename-buffer exwm-title))))
+          (add-hook 'exwm-update-title-hook
+     	       (lambda ()
+     		 (when (or (not exwm-instance-name)
+     			   (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+     			   (string= "gimp" exwm-instance-name))
+     		   (exwm-workspace-rename-buffer exwm-title))))
 
-     (add-hook 'exwm-update-class-hook #'efs/exwm-update-class)
-     (add-hook 'exwm-update-title-hook #'efs/exwm-update-title)
-     (add-hook 'exwm-manage-finish-hook #'efs/configure-window-by-class)
+          (add-hook 'exwm-update-class-hook #'efs/exwm-update-class)
+          (add-hook 'exwm-update-title-hook #'efs/exwm-update-title)
+          (add-hook 'exwm-manage-finish-hook #'efs/configure-window-by-class)
 
-     ;;(exwm-config-example)
+          ;;(exwm-config-example)
 
-     (setq exwm-input-simulation-keys
-	   '(([?\C-b] . [left])
-	     ([?\C-f] . [right])
-	     ([?\C-p] . [up])
-	     ([?\C-n] . [down])
-	     ([?\C-a] . [home])
-	     ([?\C-e] . [end])
-	     ([?\M-v] . [prior])
-	     ([?\C-v] . [next])
-	     ([?\C-d] . [delete])
-	     ([?\C-k] . [S-end delete])))
+          (setq exwm-input-simulation-keys
+     	   '(([?\C-b] . [left])
+     	     ([?\C-f] . [right])
+     	     ([?\C-p] . [up])
+     	     ([?\C-n] . [down])
+     	     ([?\C-a] . [home])
+     	     ([?\C-e] . [end])
+     	     ([?\M-v] . [prior])
+     	     ([?\C-v] . [next])
+     	     ([?\C-d] . [delete])
+     	     ([?\C-k] . [S-end delete])))
 
-     ;;(exwm-enable)
+          ;;(exwm-enable)
 
-     ;;using xim input
-;;     (require 'exwm-xim)
+          ;;using xim input
+     ;;     (require 'exwm-xim)
 
-     ;; (exwm-xim-enable)
-     ;;(exwm-xim-mode)
-     ;; ;;(exwm-xim--exit)
+          ;; (exwm-xim-enable)
+          ;;(exwm-xim-mode)
+          ;; ;;(exwm-xim--exit)
 
-     (setq exwm-input-prefix-keys
-	   '(?\C-x
-	     ?\C-u
-	     ?\C-h	   
-	     ?\M-x
-	     ?\M-`
-	     ?\M-&
-	     ?\M-:
-	     ?\C-\\
-	     ?\C-\M-j
-	     ?\C-\ ))
+          (setq exwm-input-prefix-keys
+     	   '(?\C-x
+     	     ?\C-u
+     	     ?\C-h	   
+     	     ?\M-x
+     	     ?\M-`
+     	     ?\M-&
+     	     ?\M-:
+     	     ?\C-\\
+     	     ?\C-\M-j
+     	     ?\C-\ ))
 
-     ;; use Ctrl + \ to switch input method
-     (push ?\C-\\ exwm-input-prefix-keys)
+          ;; use Ctrl + \ to switch input method
+          (push ?\C-\\ exwm-input-prefix-keys)
 
    #+end_src
 ** Modify exwm startup
@@ -716,24 +716,24 @@
        "Increment the number forward from point by 'arg'."
        (interactive "p*")
        (save-excursion
-	 (save-match-data
-	   (let (inc-by field-width answer)
-	     (setq inc-by (if arg arg 1))
-	     (skip-chars-backward "0123456789")
-	     (when (re-search-forward "[0-9]+" nil t)
-	       (setq field-width (- (match-end 0) (match-beginning 0)))
-	       (setq answer (+ (string-to-number (match-string 0) 10) inc-by))
-	       (when (< answer 0)
-		 (setq answer (+ (expt 10 field-width) answer)))
-	       (replace-match (format (concat "%0" (int-to-string field-width) "d")
-				      answer)))))))
+     	 (save-match-data
+     	   (let (inc-by field-width answer)
+     	     (setq inc-by (if arg arg 1))
+     	     (skip-chars-backward "0123456789")
+     	     (when (re-search-forward "[0-9]+" nil t)
+     	       (setq field-width (- (match-end 0) (match-beginning 0)))
+     	       (setq answer (+ (string-to-number (match-string 0) 10) inc-by))
+     	       (when (< answer 0)
+     		 (setq answer (+ (expt 10 field-width) answer)))
+     	       (replace-match (format (concat "%0" (int-to-string field-width) "d")
+     				      answer)))))))
 
      (defun my-decrement-number-decimal (&optional arg)
        (interactive "p*")
        (let (inc-by)
-	 (setq inc-by (if arg arg 1))
-	 (my-increment-number-decimal (* -1 inc-by))
-	 ))
+     	 (setq inc-by (if arg arg 1))
+     	 (my-increment-number-decimal (* -1 inc-by))
+     	 ))
 
      (global-set-key (kbd "M-+") 'my-increment-number-decimal)
      (global-set-key (kbd "M-_") 'my-decrement-number-decimal)
@@ -828,25 +828,38 @@
 
    Then add the transparency
    #+begin_src elisp
-	  (defun efs/set-wallpaper ()
-	    (interactive)
-	    (start-process-shell-command
-	     "feh" nil  "feh --bg-scale ~/.config/background/DSCF6257.JPG"))
-	  (defun efs/set-wallpaper2 ()
-	    (interactive)
-	    (start-process-shell-command
-	     "feh" nil  "feh --bg-scale ~/.config/background/vintage-paper.jpg"))
+     (defun efs/set-wallpaper ()
+       (interactive)
+       (start-process-shell-command
+        "feh" nil  "feh --bg-scale ~/.config/background/DSCF6257.JPG"))
+     (defun efs/set-wallpaper2 ()
+       (interactive)
+       (start-process-shell-command
+        "feh" nil  "feh --bg-scale ~/.config/background/vintage-paper.jpg"))
 
-;;	  (efs/set-wallpaper)
-	  (efs/set-wallpaper2)
+     ;;	  (efs/set-wallpaper)
+     (efs/set-wallpaper2)
 
-	  (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
-	  (add-to-list 'default-frame-alist '(alpha . '(90 . 90 )))
-	  (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
-	  (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-	  (add-hook 'exwm-after-startup-hook (lambda () (select-frame (exwm-frame))
-					       (exwm-layout-toggle-fullscreen)))
+
+     ;; (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+     ;; (add-to-list 'default-frame-alist '(alpha . '(90 . 90 )))
+     (defun my-set-transparency (_frame)
+       (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+       (add-to-list 'default-frame-alist '(alpha . (90 . 90))))
+
+     (if (frame-live-p (selected-frame))
+         (my-set-transparency nil)
+       (add-hook 'after-make-frame-functions #'my-set-transparency))
+
+
+
+
+     (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+     (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+     (add-hook 'exwm-after-startup-hook (lambda () (select-frame (exwm-frame))
+     				     (exwm-layout-toggle-fullscreen)))
 
 
    #+end_src
@@ -923,189 +936,6 @@
        (focus-mode))
 
    #+end_src
-* Completion system
-** COMMENT YaSnipper
-   #+begin_src elisp
-     (use-package yasnippet
-       :config
-       (setq yas-snippet-dirs
-	     '("~/.emacs.d/snippets"))
-       (yas-global-mode 1))
-   #+end_src
-** Orderless
-   #+begin_src elisp
-
-     (use-package orderless
-	    :custom
-	    (completion-styles '(orderless basic))
-	    (orderless-matching-styles
-	     '(orderless-literal
-	       ;; orderless-prefixes
-	       ;;orderless-initialism
-	       orderless-regexp
-	       ;;orderless-flex                       ; Basically fuzzy finding
-	       ;; orderless-strict-leading-initialism
-	       ;; orderless-strict-initialism
-	       ;; orderless-strict-full-initialism
-	       ;; orderless-without-literal          ; Recommended for dispatches instead
-	       ))
-	    (completion-category-defaults nil)
-	    (partial-completion t)
-	    (completion-category-overrides '((file (styles basic partial-completion))))
-		 ;; Make Orderless work with fewer characters
-	    (orderless-component-separator #'orderless-escapable-split-on-space)
-	    (completion-styles '(orderless basic)))
-
-	  (defun orderless-fast-dispatch (word index total)
-	    (and (= index 0) (= total 1) (length< word 4)
-		 (cons 'orderless-literal-prefix word)))
-
-	  (orderless-define-completion-style orderless-fast
-	    (orderless-style-dispatchers '(orderless-fast-dispatch))
-	    (orderless-matching-styles '(orderless-literal orderless-regexp)))
-
-
-   #+end_src
-
-** Corfu
-   #+begin_src elisp
-
-	  ;;; Code:
-     (use-package corfu
-       :ensure t
-       ;; Optional customizations
-       :custom
-       (corfu-cycle t)                 ; Allows cycling through candidates
-       (corfu-auto t)                  ; Enable auto completion
-       (corfu-auto-prefix 2)           ; Minimum length of prefix for completion
-       (corfu-separator ?\s)          ;; Orderless field separator
-
-       (corfu-auto-delay 0.5)            ; No delay for completion
-       (corfu-popupinfo-delay '(0.5 . 0.2))  ; Automatically update info popup after that numver of seconds
-       (corfu-preview-current 'insert) ; insert previewed candidate
-       (corfu-preselect 'prompt)
-       (corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
-       (corfu-auto t)
-       (corfu-quit-no-match 'separator)
-       (completion-styles '(orderless-fast basic))
-
-       ;; Optionally use TAB for cycling, default is `corfu-complete'.
-       :bind (:map corfu-map
-		   ("M-SPC"      . corfu-insert-separator)
-		   ("TAB"        . corfu-next)
-		   ([tab]        . corfu-next)
-		   ("S-TAB"      . corfu-previous)
-		   ([backtab]    . corfu-previous)
-		   ("S-<return>" . corfu-insert)
-		   ("RET"        . corfu-insert))
-
-       :init
-       (global-corfu-mode)
-       (corfu-history-mode)
-       (corfu-popupinfo-mode) ; Popup completion info
-       :config
-       (add-hook 'eshell-mode-hook
-		 (lambda () (setq-local corfu-quit-at-boundary t
-					corfu-quit-no-match t
-					corfu-auto nil)
-		   (corfu-mode))
-		 nil
-		 t))
-
-     (defun get-focused-monitor-geometry ()
-       "Get the geometry of the monitor displaying the selected frame in EXWM."
-       (let* ((monitor-attrs (frame-monitor-attributes))
-	      (workarea (assoc 'workarea monitor-attrs))
-	      (geometry (cdr workarea)))
-	 (list (nth 0 geometry) ; X
-	       (nth 1 geometry) ; Y
-	       (nth 2 geometry) ; Width
-	       (nth 3 geometry) ; Height
-	       )))
-
-     (defun advise-corfu-make-frame-with-monitor-awareness (orig-fun frame x y width height buffer)
-       "Advise `corfu--make-frame` to be monitor-aware, adjusting X and Y according to the focused monitor."
-
-       ;; Get the geometry of the currently focused monitor
-       (let* ((monitor-geometry (get-focused-monitor-geometry))
-	      (monitor-x (nth 0 monitor-geometry))
-	      (monitor-y (nth 1 monitor-geometry))
-	      (selected-frame-position (frame-position))
-	      (selected-frame-x (car selected-frame-position))
-	      (selected-frame-y (cdr selected-frame-position))
-	      (new-x (+ monitor-x selected-frame-x x))
-	      (new-y (+ monitor-y selected-frame-y y)))
-
-	 ;; Call the original function with potentially adjusted coordinates
-	 (funcall orig-fun frame new-x new-y width height buffer)))
-
-     (advice-add 'corfu--make-frame :around #'advise-corfu-make-frame-with-monitor-awareness)
-
-     ;; A few more useful configurations...
-     (use-package emacs
-       :custom
-       ;; TAB cycle if there are only few candidates
-       ;; (completion-cycle-threshold 3)
-
-       ;; Enable indentation+completion using the TAB key.
-       ;; `completion-at-point' is often bound to M-TAB.
-       (tab-always-indent 'complete)
-
-       ;; Emacs 30 and newer: Disable Ispell completion function. As an alternative,
-       ;; try `cape-dict'.
-       ;; @ToDo: enable once upgraded to emacs 30
-       ;; (text-mode-ispell-word-completion nil)
-
-       ;; Emacs 28 and newer: Hide commands in M-x which do not apply to the current
-       ;; mode.  Corfu commands are hidden, since they are not used via M-x. This
-       ;; setting is useful beyond Corfu.
-       (read-extended-command-predicate #'command-completion-default-include-p))
-
-     ;; Use Dabbrev with Corfu!
-     (use-package dabbrev
-       ;; Swap M-/ and C-M-/
-       :bind (("M-/" . dabbrev-completion)
-	      ("C-M-/" . dabbrev-expand))
-       :config
-       (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
-       ;; Since 29.1, use `dabbrev-ignored-buffer-regexps' on older.
-       (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
-       (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
-       (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode))
-
-   #+end_src
-   
-** Cape
-   This is a very expensi
-   #+begin_src elisp
-     ;; Add extensions
-
-     ;; (use-package cape
-     ;;   ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
-     ;;   ;; Press C-c p ? to for help.
-     ;;   ;; :bind ("C-c p" . cape-prefix-map) ;; Alternative keys: M-p, M-+, ...
-     ;;   ;; Alternatively bind Cape commands individually.
-     ;;   :bind (("C-c p d" . cape-dabbrev)
-     ;; 	 ("C-c p h" . cape-history))
-     ;;   ("C-c p f" . cape-file)
-     ;;   ;;        ...)
-     ;;   :init
-     ;;   ;; Add to the global default value of `completion-at-point-functions' which is
-     ;;   ;; used by `completion-at-point'.  The order of the functions matters, the
-     ;;   ;; first function returning a result wins.  Note that the list of buffer-local
-     ;;   ;; completion functions takes precedence over the global list.
-     ;;   (add-hook 'completion-at-point-functions #'cape-dabbrev)
-     ;;   (add-hook 'completion-at-point-functions #'cape-file)
-     ;;   (add-hook 'completion-at-point-functions #'cape-elisp-block)
-     ;;   (add-hook 'completion-at-point-functions #'cape-dict)
-     ;;   :custom
-     ;;   (defalias 'cape-dabbrev+dict
-     ;;     (cape-capf-super #'cape-dabbrev #'cape-dict))
-     ;;   (add-to-list 'completion-at-point-functions #'cape-dabbrev+dict)
-     ;;   ;; ...
-     ;;   )
-   #+end_src
-
 * IDE
   :PROPERTIES:
   :ID:       bbda0aea-a425-4d53-9486-ebb183717561
@@ -1148,24 +978,24 @@
    This needs to be revised, it kind of works but I cannot use the query builer.
    #+begin_src elisp
      (setq treesit-language-source-alist
-	   '((bash . ("https://github.com/tree-sitter/tree-sitter-bash" "v0.21.0"))
-	     (cmake . ("https://github.com/uyha/tree-sitter-cmake" "v0.5.0"))
-	     (css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.21.1"))
-	     (elisp . ("https://github.com/Wilfred/tree-sitter-elisp" "1.6.0"))
-	     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.21.4" "src"))
-	     (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.21.0"))
-	     (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "0.21.2" "tsx/src"))
-	     (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "0.21.2" "typescript/src"))
-	     (vue . ("https://github.com/ikatyang/tree-sitter-vue" "v0.2.1"))))
+     	   '((bash . ("https://github.com/tree-sitter/tree-sitter-bash" "v0.21.0"))
+     	     (cmake . ("https://github.com/uyha/tree-sitter-cmake" "v0.5.0"))
+     	     (css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.21.1"))
+     	     (elisp . ("https://github.com/Wilfred/tree-sitter-elisp" "1.6.0"))
+     	     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.21.4" "src"))
+     	     (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.21.0"))
+     	     (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "0.21.2" "tsx/src"))
+     	     (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "0.21.2" "typescript/src"))
+     	     (vue . ("https://github.com/ikatyang/tree-sitter-vue" "v0.2.1"))))
 
      ;; (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
 
      (setq major-mode-remap-alist
-	   '((bash-mode . bash-ts-mode)
-	     (js2-mode . js-ts-mode)
-	     (typescript-mode . typescript-ts-mode)
-	     (json-mode . json-ts-mode)
-	     (css-mode . css-ts-mode)	))
+     	   '((bash-mode . bash-ts-mode)
+     	     (js2-mode . js-ts-mode)
+     	     (typescript-mode . typescript-ts-mode)
+     	     (json-mode . json-ts-mode)
+     	     (css-mode . css-ts-mode)	))
 
      ;; (setq treesit-language-source-alist
      ;;  '((vue "https://github.com/ikatyang/tree-sitter-vue")
@@ -1184,6 +1014,8 @@
        )
 
 
+     ;;requirement for vue-ts-mode
+     (use-package ido-completing-read+)
 
      ;; (setq treesit-auto-langs '(python typescript))
 
@@ -1242,104 +1074,107 @@
       ;;(use-package json-ls)
 
       (use-package lsp-mode
-	:diminish "LSP"
-	:ensure t
-	:hook ((lsp-mode . lsp-diagnostics-mode)
-	       ;;	       (lsp-mode . lsp-enable-which-key-integration)
-	       ((tsx-ts-mode
-		 typescript-ts-mode
-		 js-ts-mode-map		
-		 ) . lsp-deferred))
-	:custom
-	(lsp-keymap-prefix "C-c l")           ; Prefix for LSP actions
-	(lsp-completion-provider :none)       ; Using Corfu as the provider
-	(lsp-diagnostics-provider :flycheck)
-	(lsp-session-file (locate-user-emacs-file ".lsp-session"))
-	(lsp-log-io nil)                      ; IMPORTANT! Use only for debugging! Drastically affects performance
-	(lsp-keep-workspace-alive nil)        ; Close LSP server if all project buffers are closed
-	(lsp-idle-delay 0.5)                  ; Debounce timer for `after-change-function'
-	;; core
-	(lsp-enable-xref t)                   ; Use xref to find references
-	(lsp-auto-configure t)                ; Used to decide between current active servers
-	(lsp-eldoc-enable-hover t)            ; Display signature information in the echo area
-	(lsp-enable-dap-auto-configure t)     ; Debug support
-	(lsp-enable-file-watchers nil)
-	;;(lsp-enable-folding nil)              ; I disable folding since I use origami
-	;;(lsp-enable-imenu t)
-	;;(lsp-enable-indentation nil)          ; I use prettier
-	(lsp-enable-links nil)                ; No need since we have `browse-url'
-	;;(lsp-enable-on-type-formatting nil)   ; Prettier handles this
-	(lsp-enable-suggest-server-download t) ; Useful prompt to download LSP providers
-	(lsp-enable-symbol-highlighting t)     ; Shows usages of symbol at point in the current buffer
-	(lsp-enable-text-document-color nil)   ; This is Treesitter's job
+        :diminish "LSP"
+        :ensure t
+        :hook ((lsp-mode . lsp-diagnostics-mode)
+            	 ;;	       (lsp-mode . lsp-enable-which-key-integration)
+            	 ((tsx-ts-mode
+            	   typescript-ts-mode
+            	   js-ts-mode-map		
+            	   ) . lsp-deferred))
+        :custom
+        (lsp-keymap-prefix "C-c l")           ; Prefix for LSP actions
+        ;; (lsp-completion-provider :none)       ; Using Corfu as the provider
+        (lsp-diagnostics-provider :flycheck)
+        (lsp-session-file (locate-user-emacs-file ".lsp-session"))
+        (lsp-log-io nil)                      ; IMPORTANT! Use only for debugging! Drastically affects performance
+        (lsp-keep-workspace-alive nil)        ; Close LSP server if all project buffers are closed
+        (lsp-idle-delay 0.5)                  ; Debounce timer for `after-change-function'
+        ;; core
+        (lsp-enable-xref t)                   ; Use xref to find references
+        (lsp-auto-configure t)                ; Used to decide between current active servers
+        (lsp-eldoc-enable-hover t)            ; Display signature information in the echo area
+        (lsp-enable-dap-auto-configure t)     ; Debug support
+        (lsp-enable-file-watchers nil)
+        ;;(lsp-enable-folding nil)              ; I disable folding since I use origami
+        ;;(lsp-enable-imenu t)
+        ;;(lsp-enable-indentation nil)          ; I use prettier
+        (lsp-enable-links nil)                ; No need since we have `browse-url'
+        ;;(lsp-enable-on-type-formatting nil)   ; Prettier handles this
+        (lsp-enable-suggest-server-download t) ; Useful prompt to download LSP providers
+        (lsp-enable-symbol-highlighting t)     ; Shows usages of symbol at point in the current buffer
+        (lsp-enable-text-document-color nil)   ; This is Treesitter's job
 
-	(lsp-ui-sideline-show-hover nil)      ; Sideline used only for diagnostics
-	(lsp-ui-sideline-diagnostic-max-lines 20) ; 20 lines since typescript errors can be quite big
-	;; completion
-	(lsp-completion-enable t)
-	(lsp-completion-enable-additional-text-edit t) ; Ex: auto-insert an import for a completion candidate
-	(lsp-enable-snippet t)                         ; Important to provide full JSX completion
-	(lsp-completion-show-kind t)                   ; Optional
-	;; headerline
-	(lsp-headerline-breadcrumb-enable t)  ; Optional, I like the breadcrumbs
-	(lsp-headerline-breadcrumb-enable-diagnostics nil) ; Don't make them red, too noisy
-	(lsp-headerline-breadcrumb-enable-symbol-numbers nil)
-	(lsp-headerline-breadcrumb-icons-enable nil)
-	;; modeline
-	(lsp-modeline-code-actions-enable nil) ; Modeline should be relatively clean
-	(lsp-modeline-diagnostics-enable nil)  ; Already supported through `flycheck'
-	(lsp-modeline-workspace-status-enable nil) ; Modeline displays "LSP" when lsp-mode is enabled
-	(lsp-signature-doc-lines 1)                ; Don't raise the echo area. It's distracting
-	(lsp-ui-doc-use-childframe t)              ; Show docs for symbol at point
-	(lsp-eldoc-render-all nil)            ; This would be very useful if it would respect `lsp-signature-doc-lines', currently it's distracting
-	;; lens
-	(lsp-lens-enable nil)                 ; Optional, I don't need it
-	;; semantic
-	(lsp-semantic-tokens-enable nil)      ; Related to highlighting, and we defer to treesitter
-	:config
-	;; (lsp-enable-which-key-integration t)
-	:bind (:map lsp-mode-map
-		    ("C-c l t s" . lsp-treemacs-symbols)
-		    ("C-c l d" . consult-lsp-diagnostics)
-		    ("C-c l f s" . consult-lsp-file-symbols)
-		    ("C-c l f q" . consult-lsp-file)
-		    )
-	:preface
-	       ;; tune lsp mode performance
-       (setq read-process-output-max (* 10 1024 1024)) ;; 10mb
-       (setq gc-cons-threshold 200000000)
+        (lsp-ui-sideline-show-hover nil)      ; Sideline used only for diagnostics
+        (lsp-ui-sideline-diagnostic-max-lines 20) ; 20 lines since typescript errors can be quite big
+        ;; completion
+        (lsp-completion-enable t)
+        (lsp-completion-enable-additional-text-edit t) ; Ex: auto-insert an import for a completion candidate
+        (lsp-enable-snippet t)                         ; Important to provide full JSX completion
+        (lsp-completion-show-kind t)                   ; Optional
+        ;; headerline
+        (lsp-headerline-breadcrumb-enable t)  ; Optional, I like the breadcrumbs
+        (lsp-headerline-breadcrumb-enable-diagnostics nil) ; Don't make them red, too noisy
+        (lsp-headerline-breadcrumb-enable-symbol-numbers nil)
+        (lsp-headerline-breadcrumb-icons-enable nil)
+        ;; modeline
+        (lsp-modeline-code-actions-enable nil) ; Modeline should be relatively clean
+        (lsp-modeline-diagnostics-enable nil)  ; Already supported through `flycheck'
+        (lsp-modeline-workspace-status-enable nil) ; Modeline displays "LSP" when lsp-mode is enabled
+        (lsp-signature-doc-lines 1)                ; Don't raise the echo area. It's distracting
+        (lsp-ui-doc-use-childframe t)              ; Show docs for symbol at point
+        (lsp-eldoc-render-all nil)            ; This would be very useful if it would respect `lsp-signature-doc-lines', currently it's distracting
+        ;; lens
+        (lsp-lens-enable nil)                 ; Optional, I don't need it
+        ;; semantic
+        (lsp-semantic-tokens-enable nil)      ; Related to highlighting, and we defer to treesitter
+        :config
+        ;; (lsp-enable-which-key-integration t)
+        :bind (:map lsp-mode-map
+            	      ("C-c l t s" . lsp-treemacs-symbols)
+            	      ("C-c l d" . consult-lsp-diagnostics)
+            	      ("C-c l f s" . consult-lsp-file-symbols)
+            	      ("C-c l f q" . consult-lsp-file)
+            	      )
+        :preface
+        ;; tune lsp mode performance
+        (setq read-process-output-max (* 10 1024 1024)) ;; 10mb
+        (setq gc-cons-threshold 200000000)
 
-	(defun lsp-booster--advice-json-parse (old-fn &rest args)
-	  "Try to parse bytecode instead of json."
-	  (or
-	   (when (equal (following-char) ?#)
+        (defun lsp-booster--advice-json-parse (old-fn &rest args)
+          "Try to parse bytecode instead of json."
+          (or
+           (when (equal (following-char) ?#)
 
-	     (let ((bytecode (read (current-buffer))))
-	       (when (byte-code-function-p bytecode)
-		 (funcall bytecode))))
-	   (apply old-fn args)))
-	(defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
-	  "Prepend emacs-lsp-booster command to lsp CMD."
-	  (let ((orig-result (funcall old-fn cmd test?)))
-	    (if (and (not test?)                             ;; for check lsp-server-present?
-		     (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
-		     lsp-use-plists
-		     (not (functionp 'json-rpc-connection))  ;; native json-rpc
-		     (executable-find "emacs-lsp-booster"))
-		(progn
-		  (message "Using emacs-lsp-booster for %s!" orig-result)
-		  (cons "emacs-lsp-booster" orig-result))
-	      orig-result)))
-	:init
-	(setq lsp-use-plists t)
-	;; Initiate https://github.com/blahgeek/emacs-lsp-booster for performance
-	(advice-add (if (progn (require 'json)
-			       (fboundp 'json-parse-buffer))
-			'json-parse-buffer
-		      'json-read)
-		    :around
-		    #'lsp-booster--advice-json-parse)
-	(advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
+             (let ((bytecode (read (current-buffer))))
+            	 (when (byte-code-function-p bytecode)
+            	   (funcall bytecode))))
+           (apply old-fn args)))
+        (defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+          "Prepend emacs-lsp-booster command to lsp CMD."
+          (let ((orig-result (funcall old-fn cmd test?)))
+            (if (and (not test?)                             ;; for check lsp-server-present?
+            	       (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+            	       lsp-use-plists
+            	       (not (functionp 'json-rpc-connection))  ;; native json-rpc
+            	       (executable-find "emacs-lsp-booster"))
+            	  (progn
+            	    (message "Using emacs-lsp-booster for %s!" orig-result)
+            	    (cons "emacs-lsp-booster" orig-result))
+            	orig-result)))
+        :init
+        (setq lsp-use-plists t)
+        ;; Initiate https://github.com/blahgeek/emacs-lsp-booster for performance
+        (advice-add (if (progn (require 'json)
+            			 (fboundp 'json-parse-buffer))
+            		  'json-parse-buffer
+            		'json-read)
+            	      :around
+            	      #'lsp-booster--advice-json-parse)
+        (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
+
+      ;; Add to your config
+      (advice-remove 'lsp-resolve-final-command #'lsp-booster--advice-final-command)
 
 
     #+end_src
@@ -1383,25 +1218,27 @@
 ** TODO Tailwind
    Cannot use as uses straight.
    #+begin_src elisp
-;;     (use-package lsp-tailwindcss
-  ;;     :init (slot/vc-install :fetcher "github" :repo "merrickluo/lsp-tailwindcss"))
+          ;;     (use-package lsp-tailwindcss
+            ;;     :init (slot/vc-install :fetcher "github" :repo "merrickluo/lsp-tailwindcss"))
+          (use-package package-vc
+       :ensure t)
 
-     ;; (use-package lsp-tailwindcss
-     ;;       :straight '(lsp-tailwindcss :type git :host github :repo "merrickluo/lsp-tailwindcss")
-     ;;       :init (setq lsp-tailwindcss-add-on-mode t)
-     ;;  :custom
+     ;;(with-eval-after-load 'package
+     ;;  (package-vc-install "https://github.com/merrickluo/lsp-tailwindcss"))
 
-     ;;       :config
-     ;;       (dolist (tw-major-mode
-     ;; 	       '(css-mode
-     ;; 		 css-ts-mode
-     ;; 		 typescript-mode
-     ;; 		 typescript-ts-mode
-     ;; 		 tsx-ts-mode
-     ;; 		 js2-mode
-     ;; 		 js-ts-mode
-     ;; 		 clojure-mode))
-     ;; 	(add-to-list 'lsp-tailwindcss-major-modes tw-major-mode)))
+     (use-package lsp-tailwindcss
+                 :init (setq lsp-tailwindcss-add-on-mode t)
+                 :config
+                     (dolist (tw-major-mode
+          	       '(css-mode
+          		 css-ts-mode
+          		 typescript-mode
+          		 typescript-ts-mode
+          		 tsx-ts-mode
+          		 js2-mode
+          		 js-ts-mode
+          		 clojure-mode))
+          	(add-to-list 'lsp-tailwindcss-major-modes tw-major-mode)))''
    #+end_src
 ** TODO eslint
    Cannot install atm because network issue ?? 
