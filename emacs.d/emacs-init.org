@@ -1257,8 +1257,12 @@
 ** Project support  
 *** Node
     #+begin_src elisp
-      (use-package npm-mode)
-      ;; (npm-global-mode)
+      ;; Install npm-mode
+      (use-package npm-mode
+        :ensure t
+        :hook (js-mode . npm-mode)
+        :config
+        (npm-global-mode))
     #+end_src
 ** Key Management
 *** Duplicate Lines
