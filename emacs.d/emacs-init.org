@@ -10,7 +10,7 @@
   If you need to contact me, connect to me on github and send me a message.
   I am no longer active on social media or any other site. Event though my profiles still exist.
   There will be a personal page in the future.
-  
+
 * Startup customizatio Start server
 ** Starting the emacs server from here.
    Notes on server. I do not use the server call `(server-start)` anymore, because systemd and emacs server with exwm running in client works for me ONLY.
@@ -25,27 +25,64 @@
   Install from https://github.com/progfolio/elpaca
 
 * Setup package install
-  
+
 ** Default package source
    To be able to install packages inside of emacs, we need to make sure emacs knows where to get those packages from. Just like with any other package manager.
     #+BEGIN_SRC elisp
+
+      ;; Log function (defined in main emacs file)
+      (defun log-config (message)
+        (with-current-buffer (get-buffer-create "*Config-Log*")
+          (goto-char (point-max))
+          (insert (format "[%s] %s\n"
+                          (format-time-string "%H:%M:%S")
+                          message))))
 
       ;;; package: --- emacs org mode
 
       ;;; Commentary:
 
+      (log-config "Setting up package archives...")
+
+      ;; Ensure url-cache is available
+      (require 'url-cache nil t)
+
+      ;; Workaround for missing shortdoc (Emacs 28+ feature)
+      (unless (require 'shortdoc nil t)
+        (message "shortdoc not available - some help functions may be limited"))
+
+      ;; Network configuration
+      (setq url-proxy-services nil)  ;; Clear any proxy settings
+      (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")  ;; Fix TLS issues
+
       (require 'package)
 
-      (setq package-archives '(("melpa" . "http://melpa.org/packages/")
-			       ("org" . "http://orgmode.org/elpa/")
-			       ("elpa" . "http://elpa.gnu.org/packages/")
-			       ( "jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/")))
+      (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                               ("org" . "https://orgmode.org/elpa/")
+                               ("elpa" . "https://elpa.gnu.org/packages/")))
 
-	    (unless package-archive-contents
-	      (package-refresh-contents))
+      (log-config "Package archives configured")
+
+      ;; Only refresh if we don't have package contents
+      (unless package-archive-contents
+        (condition-case nil
+            (progn
+              (log-config "Refreshing package contents...")
+              (package-refresh-contents)
+              (log-config "Package refresh completed"))
+          (error
+           (log-config "Package refresh failed, continuing anyway...")
+           (message "Package refresh failed, continuing anyway..."))))
+
+      (log-config "Installing use-package if needed...")
+      (unless (package-installed-p 'use-package)
+        (package-install 'use-package))
 
       (require 'use-package)
       (setq use-package-always-ensure t)
+      (setq use-package-verbose t)
+
+      (log-config "Package setup completed")
 
     #+END_SRC
 
@@ -98,7 +135,7 @@
     ;; but if possible, use the minibuffer
   #+END_SRC
 
-* Startup  
+* Startup
 ** Disable bell
    #+begin_src elisp
      (setq ring-bell-function 'ignore)
@@ -163,7 +200,7 @@
 
 	  ;; (require 'keepass-auth-source)
 
-	  ;; (add-to-list 'auth-sources "~/sync/KP/Final-Framework.kdbx") 
+	  ;; (add-to-list 'auth-sources "~/sync/KP/Final-Framework.kdbx")
 
 	  ;; (setq auth-sources '((:source "~/.authinfo.gpg")))
 
@@ -198,7 +235,7 @@
 	  ;; 		  "GetSecret" :object-path secrets-session-path))))))
 
 ;;     (setq exwm-manage-force-tiling t)
-     
+
 	  ;; (require 'secrets nil t)
 	  ;; (secrets-open-session)
 	  ;; (secrets-get-secret "keyring" "test")
@@ -210,7 +247,7 @@
 
    #+RESULTS:
    : auth-source
-   
+
 ** EPA Custom
    Do load the custom encrypted setup as last item. If something goes wrong I can still
    #+begin_src elisp
@@ -225,7 +262,7 @@
 * Hydra
   #+begin_src elisp
     (use-package hydra)
-  #+end_src   
+  #+end_src
 * Path
   #+begin_src elisp
 	  (add-to-list 'exec-path "~/.bun/bin/")
@@ -233,7 +270,7 @@
 * Shell in emacs
 ** MultiTerm
    #+begin_src elisp
-     
+
    #+end_src
 * Customize emacs itself
 ** Always follow a symlink without asking me
@@ -243,7 +280,7 @@
 ** Symon
    To get some nice looking stats and free up my polybar, I want to try symon.
    I was inspired trying this after reading [[https://web.archive.org/web/20180509003117/https://ambrevar.bitbucket.io/emacs-eshell/]["eshell as my main shell"]].
-   But I have to disable it, because of  [[https://github.com/zk-phi/symon/issues/44][a bug]] 
+   But I have to disable it, because of  [[https://github.com/zk-phi/symon/issues/44][a bug]]
    #+begin_src elisp
      ;; (use-package symon
      ;;   :init
@@ -303,7 +340,7 @@
        )
 
     #+END_SRC
-    
+
 
 ** Helper function
    #+begin_src elisp
@@ -354,7 +391,7 @@
 	 (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
 
    #+end_src
-   
+
 ** Window looks and theme
    #+begin_src elisp
      ;; (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
@@ -433,7 +470,7 @@
           (setq exwm-input-prefix-keys
      	   '(?\C-x
      	     ?\C-u
-     	     ?\C-h	   
+     	     ?\C-h
      	     ?\M-x
      	     ?\M-`
      	     ?\M-&
@@ -474,7 +511,7 @@
    #+begin_src elisp
      ;; exwm-layout-enlarge-window[-horizontally] - Make a window larger by a number of pixels
      ;; exwm-layout-shrink-window[-horizontally] - Make a window smaller by a number of pixels
-     ;; frame-pixel-width / frame-pixel-height 
+     ;; frame-pixel-width / frame-pixel-height
 
 
      (global-set-key (kbd "C-s-f") 'shrink-window-if-larger-than-buffer)
@@ -600,7 +637,7 @@
 
 
     ;; Workspace switching
-    (setq exwm-input-global-keys	   
+    (setq exwm-input-global-keys
 	`(;; reset to line mode (C-c C-k switch to char mode)
 	  ([?\s-\C-r] . exwm-reset)
 	  ;; switch workspaces
@@ -646,11 +683,11 @@
     (use-package enwc)
     ;;(require 'enwc)
     (setq enwc-default-backend 'nm)
-    ;;(condition-case nil			
+    ;;(condition-case nil
     ;;    (enwc)
     ;;  (error nil))
   #+end_src
-  
+
 
 ** Fix Focus Problem
    Switching workspaces, the x window on the new workspace sometimes does not get the focus back.
@@ -694,7 +731,7 @@
        "Close only if y was pressed."
        (interactive)
        (if (y-or-n-p (format "Are you sure you want to close this frame? "))
-	   (save-buffers-kill-emacs)                                                                                            
+	   (save-buffers-kill-emacs)
 	 (message "Canceled frame close")))
 
      (when (daemonp)
@@ -750,7 +787,7 @@
 	   (kill-new filename)
 	   (message "Copied buffer file name '%s' to the clipboard." filename))))
 
-   #+END_SRC    
+   #+END_SRC
 ** Winner mode
    #+begin_src elisp
      (winner-mode 1)
@@ -941,7 +978,7 @@
   :ID:       bbda0aea-a425-4d53-9486-ebb183717561
   :ROAM_ALIASES: "IDE Settings in Emacs" "IDE Settings"
   :END:
-  
+
 ** Languages I want to use
 *** JSON
     #+begin_src elisp
@@ -968,7 +1005,7 @@
 
       ```
 
-      ;; ;; 
+      ;; ;;
 
       ;; ;; tmp fix as long as i cannot use 'vue-ts-mode
       ;; (add-to-list 'auto-mode-alist '("\\.vue\\'" . lsp-mode))
@@ -1014,8 +1051,9 @@
        )
 
 
-     ;;requirement for vue-ts-mode
-     (use-package ido-completing-read+)
+     ;; Removed ido-completing-read+ as it conflicts with Vertico
+     ;; ;;requirement for vue-ts-mode
+     ;; ;; (use-package ido-completing-read+)
 
      ;; (setq treesit-auto-langs '(python typescript))
 
@@ -1062,7 +1100,7 @@
 		   ("M-n" . flycheck-next-error) ; optional but recommended error navigation
 		   ("M-p" . flycheck-previous-error)))
    #+end_src
-  
+
 ** LSP
 
 *** Base installation
@@ -1080,7 +1118,7 @@
             	 ;;	       (lsp-mode . lsp-enable-which-key-integration)
             	 ((tsx-ts-mode
             	   typescript-ts-mode
-            	   js-ts-mode-map		
+            	   js-ts-mode-map
             	   ) . lsp-deferred))
         :custom
         (lsp-keymap-prefix "C-c l")           ; Prefix for LSP actions
@@ -1128,6 +1166,12 @@
         (lsp-lens-enable nil)                 ; Optional, I don't need it
         ;; semantic
         (lsp-semantic-tokens-enable nil)      ; Related to highlighting, and we defer to treesitter
+
+        ;; Error prevention
+        (lsp-auto-guess-root t)               ; Try to find project root
+        (lsp-restart 'auto-restart)          ; Auto restart crashed servers
+        (lsp-enable-on-type-formatting nil)  ; Disable to prevent conflicts
+
         :config
         ;; (lsp-enable-which-key-integration t)
         :bind (:map lsp-mode-map
@@ -1176,10 +1220,25 @@
       ;; Add to your config
       (advice-remove 'lsp-resolve-final-command #'lsp-booster--advice-final-command)
 
+      ;; Safety check: Remove any malformed LSP clients
+      (with-eval-after-load 'lsp-mode
+        (log-config "Checking LSP client configurations...")
+        ;; Remove any clients that might have malformed commands
+        (setq lsp-clients
+              (cl-remove-if (lambda (client)
+                              (condition-case nil
+                                  (lsp--server-binary-present? client)
+                                (error
+                                 (message "Removing malformed LSP client: %s"
+                                         (lsp--client-server-id client))
+                                 t)))  ; Remove if error occurs
+                            lsp-clients))
+        (log-config "LSP client check completed"))
+
 
     #+end_src
 
-  
+
 *** Plugins
 **** LSP Treemacs
      CLOSED: [2024-08-16 Fr 16:15]
@@ -1194,9 +1253,15 @@
        (with-eval-after-load 'js
 	 (define-key js-mode-map (kbd "M-.") nil))
 
-       ;; (use-package lsp-completion		
+       ;; (use-package lsp-completion
        ;;   :no-require
        ;;   :hook ((lsp-mode . lsp-completion-mode)))
+
+       ;; Configure Company to work well with LSP
+       (with-eval-after-load 'company
+         ;; Ensure company-capf (completion-at-point) is prioritized for LSP
+         (setq company-backends '((company-capf company-dabbrev-code company-keywords)
+                                  company-dabbrev)))
 
        (use-package lsp-ui
 	 :ensure t
@@ -1226,22 +1291,23 @@
      ;;(with-eval-after-load 'package
      ;;  (package-vc-install "https://github.com/merrickluo/lsp-tailwindcss"))
 
-     (use-package lsp-tailwindcss
-                 :init (setq lsp-tailwindcss-add-on-mode t)
-                 :config
-                     (dolist (tw-major-mode
-          	       '(css-mode
-          		 css-ts-mode
-          		 typescript-mode
-          		 typescript-ts-mode
-          		 tsx-ts-mode
-          		 js2-mode
-          		 js-ts-mode
-          		 clojure-mode))
-          	(add-to-list 'lsp-tailwindcss-major-modes tw-major-mode)))''
+     ;; Commented out until Tailwind CSS LSP server is properly installed
+     ;; (use-package lsp-tailwindcss
+     ;;             :init (setq lsp-tailwindcss-add-on-mode t)
+     ;;             :config
+     ;;                 (dolist (tw-major-mode
+     ;;      	       '(css-mode
+     ;;      		 css-ts-mode
+     ;;      		 typescript-mode
+     ;;      		 typescript-ts-mode
+     ;;      		 tsx-ts-mode
+     ;;      		 js2-mode
+     ;;      		 js-ts-mode
+     ;;      		 clojure-mode))
+     ;;      	(add-to-list 'lsp-tailwindcss-major-modes tw-major-mode)))
    #+end_src
 ** TODO eslint
-   Cannot install atm because network issue ?? 
+   Cannot install atm because network issue ??
    #+begin_src elisp
      ;; (use-package lsp-eslint
      ;;       :demand t
@@ -1254,7 +1320,7 @@
      (global-set-key (kbd "M-,") 'xref-go-back)
    #+end_src
 
-** Project support  
+** Project support
 *** Node
     #+begin_src elisp
       ;; Install npm-mode
@@ -1304,7 +1370,7 @@
 
       (global-set-key (kbd "C-c C-d") 'duplicate-line)
     #+end_src
-   
+
 ** Projectile and Sidebar
    I want to have a IDE like tree explorer when I want it.
    #+begin_src elisp
@@ -1344,7 +1410,7 @@
        :config
 
      (global-set-key (kbd "C-]") 'er/expand-region))
-     
+
    #+end_src
 ** Commenting of code
    When commenting code I use `M-,` to do this
@@ -1368,7 +1434,7 @@
     #+END_SRC
 
 * File Handling
-  
+
 ** Recentf
    To enable me to quickly navigate to my recent files, this mode is recommended.
    #+begin_src elisp
@@ -1397,8 +1463,43 @@
   #+END_SRC
 * Autocomplete
   #+BEGIN_SRC emacs-lisp
-    ;;(use-package company)
-    ;;(add-hook 'after-init-hook 'global-company-mode)
+    (log-config "Setting up Company mode...")
+
+    ;; (use-package company
+    ;;   :ensure t
+    ;;   :init
+    ;;   (log-config "Initializing Company mode globally...")
+    ;;   ;;(global-company-mode 1)
+    ;;   :config
+    ;;   (log-config "Configuring Company settings...")
+    ;;   ;; Trigger completion immediately
+    ;;   (setq company-idle-delay 0.2)
+    ;;   ;; Minimum characters before completion triggers
+    ;;   (setq company-minimum-prefix-length 1)
+    ;;   ;; Show numbers for quick selection
+    ;;   (setq company-show-numbers t)
+    ;;   ;; Make completion case-insensitive
+    ;;   (setq company-dabbrev-downcase nil)
+    ;;   (setq company-dabbrev-ignore-case t)
+    ;;   ;; Align completions nicely
+    ;;   (setq company-tooltip-align-annotations t)
+    ;;   ;; Maximum number of candidates to show
+    ;;   (setq company-tooltip-limit 10)
+    ;;   ;; Enable completion in comments and strings
+    ;;   (setq company-dabbrev-code-everywhere t)
+    ;;   (log-config "Company configuration completed")
+    ;;   :bind
+    ;;   (:map company-active-map
+    ;;         ("C-n" . company-select-next)
+    ;;         ("C-p" . company-select-previous)
+    ;;         ("TAB" . company-complete-selection)
+    ;;         ("<tab>" . company-complete-selection))
+    ;;   ;; Global keybinding to manually trigger completion
+    ;;   :bind
+    ;;   ("M-/" . company-complete))
+
+    ;; (log-config "Company setup completed successfully")
+
   #+END_SRC
 * Key Management
 ** Set default font size
@@ -1466,7 +1567,7 @@
        (ido-remove-tramp-from-cache)
        (ido-save-history))
    #+END_SRC
-   
+
 * Chrome Link Store
   #+begin_src elisp
 	(use-package web-server)
@@ -1531,25 +1632,25 @@
   #+BEGIN_SRC emacs-lisp
 	;;(use-package counsel)
 
-	 (use-package counsel
-	   :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-pretty))
+	 ;; (use-package counsel
+	;;   :custom (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-pretty))
 	;;(global-set-key (kbd "C-x C-f") counsel-find-file)
 
 
-    (defun my/exwm-counsel-yank-pop ()
-      "Same as `counsel-yank-pop' and paste into exwm buffer."
+    (defun my/exwm-consult-yank-pop ()
+      "Same as `consult-yank-pop' and paste into exwm buffer."
       (interactive)
       (let ((inhibit-read-only t)
 	    ;; Make sure we send selected yank-pop candidate to
 	    ;; clipboard:
 	    (yank-pop-change-selection t))
-	(call-interactively #'counsel-yank-pop))
+	(call-interactively #'consult-yank-pop))
       (when (derived-mode-p 'exwm-mode)
 	;; https://github.com/ch11ng/exwm/issues/413#issuecomment-386858496
 	(exwm-input--set-focus (exwm--buffer->id (window-buffer (selected-window))))
 	(exwm-input--fake-key ?\C-y)))
 
-	(exwm-input-set-key (kbd "M-y") #'my/exwm-counsel-yank-pop)
+	(exwm-input-set-key (kbd "M-y") #'my/exwm-consult-yank-pop)
 
 
   #+END_SRC
@@ -1558,6 +1659,8 @@
   I used to use ivy, but have seen [[https://youtu.be/d3aaxOqwHhI?si=-qnBNB9gz3gwo40K][vertico]] presentation here and liked it and want to try it aswell.
 
   #+begin_src elisp
+    (log-config "Setting up Vertico completion framework...")
+
     (use-package vertico
       :bind (:map vertico-map
 		  ("C-j" . vertico-next)
@@ -1633,6 +1736,12 @@
     ;;
     ;; Further reading: https://protesilaos.com/emacs/dotemacs#h:7cc77fd0-8f98-4fc0-80be-48a758fcb6e2
 
+    (use-package orderless
+      :ensure t
+      :custom
+      (completion-styles '(orderless basic))
+      (completion-category-overrides '((file (styles basic partial-completion)))))
+
     (use-package embark
       :ensure t
 
@@ -1667,7 +1776,7 @@
 
   #+RESULTS:
   : embark-bindings
-  
+
 * consult
   #+begin_src elisp
 
@@ -1689,7 +1798,8 @@
       (global-set-key (kbd "C-x g") 'consult-git-grep)
       (global-set-key (kbd "C-x C-k a") 'consult-ag)
       (global-set-key (kbd "C-x C-k f") 'consult-locate)
-      (global-set-key (kbd "C-s") 'consult-line))
+      ;; Use C-s C-s for consult-line, keep C-s for normal isearch
+      (global-set-key (kbd "C-c C-s") 'consult-line))
 
     (setq completion-ignore-case t)
     (setq read-file-name-completion-ignore-case t)
@@ -1841,7 +1951,8 @@
 	    '((t (:overline "#A7A6AA" :foreground "#000000" :background "#9a9a9a")))
 	    "Face used for the line delimiting the end of source blocks.")
 
-	  (setq org-completion-use-ido t)
+	  ;; Use standard completion instead of ido to avoid conflicts with Vertico
+	  (setq org-completion-use-ido nil)
 
 	  (setq exec-path (append exec-path '("/usr/bin/mscgen")))
 
@@ -2000,7 +2111,7 @@
 
     #+RESULTS:
     : Test
-    
+
 *** Remote dir fix!
     When evaluation source blocks inside org mode I get the same error as [[https://lists.gnu.org/archive/html/emacs-orgmode/2016-01/msg00281.html][here]].
     There is a fix for this by [[http://www.howardism.org/Technical/Emacs/literate-devops.html#fn.2][Howard]] but it involves adjusting org-mode source code. As this might change when updating, I will use this solution, proposed by John Kitchin [[https://lists.gnu.org/archive/html/emacs-orgmode/2016-01/msg00321.html][here]].
@@ -2115,7 +2226,7 @@
 	      ("C-c n t"   . org-roam-dailies-goto-today)
 	      ("C-c n y"   . org-roam-dailies-goto-yesterday)
 	      ("C-c n r"   . org-roam-dailies-goto-tomorrow)
-	      ("C-c n R"   . my/org-roam-refresh-agenda-list)	     
+	      ("C-c n R"   . my/org-roam-refresh-agenda-list)
 	      ("C-c n g"   . org-roam-graph)
 	      :map org-mode-map
 	      ("C-M-i"     . completion-at-point))
@@ -2202,7 +2313,7 @@
      ;;prevent magit update message 1.4
      ;;(setq magit-last-seen-setup-instructions "1.4.0")
 
-     (setq magit-completing-read-function 'magit-ido-completing-read)
+     ;; (setq magit-completing-read-function 'magit-ido-completing-read)
      ;; (package-require 'ido-ubiquitous)
      ;; (ido-ubiquitous-mode 1)
    #+END_SRC
@@ -2256,7 +2367,7 @@
 ** Shell Maker
    #+begin_src elisp
      (use-package shell-maker)
-     
+
    #+end_src
 ** ChatGPT
    See [[https://github.com/xenodium/chatgpt-shell/issues/217][here]] for super usefull tipps!
@@ -2336,6 +2447,10 @@
    #+end_src
 * Final message
    #+begin_src elisp
+     (log-config "=== REACHED END OF CONFIG FILE ===")
      (message "Finish loading emacs config")
+     (log-config "Config loading completed - switching to log buffer")
+     ;; Show the log buffer so user can see the results
+     (when (get-buffer "*Config-Log*")
+       (display-buffer "*Config-Log*"))
    #+end_src
-
