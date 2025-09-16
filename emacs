@@ -22,6 +22,9 @@
 
 (log-config "About to load org-babel config file")
 
+(setq warning-minimum-level :error)
+(setq byte-compile-warnings '(not obsolete))
+
 ;; Wrap the org-babel loading in error handling
 (condition-case err
     (progn

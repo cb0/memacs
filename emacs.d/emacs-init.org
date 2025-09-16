@@ -333,7 +333,6 @@
       	(server-start))
             )
           (require 'exwm)
-          (exwm-enable)
           (featurep 'exwm)
           )
         )
@@ -458,7 +457,7 @@
      	     ([?\C-d] . [delete])
      	     ([?\C-k] . [S-end delete])))
 
-          ;;(exwm-enable)
+
 
           ;;using xim input
      ;;     (require 'exwm-xim)
@@ -485,11 +484,11 @@
    #+end_src
 ** Modify exwm startup
    #+begin_src elisp
-	;;from https://config.daviwil.com/desktop
-	;;Hide the modeline on all X windows
-	(add-hook 'exwm-floating-setup-hook
-		  (lambda ()
-		    (exwm-layout-hide-mode-line)))
+     	;;from https://config.daviwil.com/desktop
+     	;;Hide the modeline on all X windows
+     	(add-hook 'exwm-floating-setup-hook
+     		  (lambda ()
+     		    (exwm-layout-hide-mode-line)))
 
      ;; Ctrl+Q will enable the next key to be sent directly
      (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
@@ -638,31 +637,31 @@
 
     ;; Workspace switching
     (setq exwm-input-global-keys
-	`(;; reset to line mode (C-c C-k switch to char mode)
-	  ([?\s-\C-r] . exwm-reset)
-	  ;; switch workspaces
-	  ([?\s-w] . exwm-workspace-switch)
-	  ;; hydro to rresize windows
-	  ;;([?\s-r] . hydra-exwm-move-resize/body)
-	  ;; quick jump to current directory
-	  ([?\s-e] . dired-jump)
-	  ;; quick jump to home directory
-	  ([?\s-E] . (lambda () (interactive) (dired "~")))
+    	`(;; reset to line mode (C-c C-k switch to char mode)
+    	  ([?\s-\C-r] . exwm-reset)
+    	  ;; switch workspaces
+    	  ([?\s-w] . exwm-workspace-switch)
+    	  ;; hydro to rresize windows
+    	  ;;([?\s-r] . hydra-exwm-move-resize/body)
+    	  ;; quick jump to current directory
+    	  ([?\s-e] . dired-jump)
+    	  ;; quick jump to home directory
+    	  ([?\s-E] . (lambda () (interactive) (dired "~")))
 
-	  ([?\s-Q] . (lambda () (interactive) (kill-buffer)))
-	  ([?\s-`] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
-	  ([?\s-&] . (lambda (command)
-		       (interactive (list (read-shell-command "$ ")))
-		       (start-process-shell-command command nil command)))
-	  ([?\C-\s-l] . (lambda ()
-			  (interactive)
-			  (start-process "" nil "/usr/bin/slock")))
-	  ,@(mapcar (lambda (i)
-		      `(,(kbd (format "s-%d" i)) .
-			(lambda ()
-			  (interactive)
-			  (exwm-workspace-switch-create ,i))))
-		    (number-sequence 0 9))))
+    	  ([?\s-Q] . (lambda () (interactive) (kill-buffer)))
+    	  ([?\s-`] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
+    	  ([?\s-&] . (lambda (command)
+    		       (interactive (list (read-shell-command "$ ")))
+    		       (start-process-shell-command command nil command)))
+    	  ([?\C-\s-l] . (lambda ()
+    			  (interactive)
+    			  (start-process "" nil "/usr/bin/slock")))
+    	  ,@(mapcar (lambda (i)
+    		      `(,(kbd (format "s-%d" i)) .
+    			(lambda ()
+    			  (interactive)
+    			  (exwm-workspace-switch-create ,i))))
+    		    (number-sequence 0 9))))
 
     ;; setting these in exwm-input-global-keys does not work
     (exwm-input-set-key (kbd "s-<left>") 'windmove-left)
@@ -675,7 +674,9 @@
     (exwm-input-set-key (kbd "S-s-<left>") 'windmove-swap-states-left)
     (exwm-input-set-key (kbd "S-s-<right>") 'windmove-swap-states-right)
 
-    ;; (exwm-enable)
+    (exwm-wm-mode)
+
+
   #+end_src
 
 ** Network manager
@@ -705,9 +706,41 @@
 ** Enable exwm
    This is done in my xinitrc file on startup
       #+begin_src elisp
-	;;(exwm-enable)
+
 
    #+end_src
+
+** Minibuffer - switch buffers
+   When switching buffers with `C-x b` and then `C-n`, buffers in char mode will steal the key combination.
+   Thats why I want to save all current buffer states, when switching to the minibuffer, and restore afterwards.
+     #+BEGIN_SRC emacs-lisp
+       (defvar my/exwm-char-mode-buffers nil
+         "List of buffers that were in char-mode before minibuffer operation.")
+
+       (defun my/minibuffer-setup-hook ()
+         "Switch all EXWM buffers to line-mode when entering minibuffer."
+         (setq my/exwm-char-mode-buffers nil)
+         (dolist (buffer (buffer-list))
+           (when (and (buffer-live-p buffer)
+                      (eq (buffer-local-value 'major-mode buffer) 'exwm-mode))
+             (with-current-buffer buffer
+               (when (eq exwm--selected-input-mode 'char-mode)
+                 (exwm-input-release-keyboard)
+                 (push buffer my/exwm-char-mode-buffers))))))
+
+       (defun my/minibuffer-exit-hook ()
+         "Restore EXWM buffers to char-mode when exiting minibuffer."
+         (dolist (buffer my/exwm-char-mode-buffers)
+           (when (and (buffer-live-p buffer)
+                      (eq (buffer-local-value 'major-mode buffer) 'exwm-mode))
+             (with-current-buffer buffer
+               (exwm-input-grab-keyboard))))
+         (setq my/exwm-char-mode-buffers nil))
+
+       (add-hook 'minibuffer-setup-hook #'my/minibuffer-setup-hook)
+       (add-hook 'minibuffer-exit-hook #'my/minibuffer-exit-hook)
+  #+END_SRC
+
 
 ** Logout
    #+begin_src elisp
@@ -716,6 +749,49 @@
        (recentf-save-list)
        (save-some-buffers))
    #+end_src
+
+* Autocomplete
+
+  #+BEGIN_SRC emacs-lisp
+    (log-config "Setting up Company mode...")
+
+    (use-package company
+      :ensure t
+      :init
+      (log-config "Initializing Company mode globally...")
+      (global-company-mode 1)
+      :config
+      (log-config "Configuring Company settings...")
+      ;; Trigger completion immediately
+      (setq company-idle-delay 0.2)
+      ;; Minimum characters before completion triggers
+      (setq company-minimum-prefix-length 1)
+      ;; Show numbers for quick selection
+      (setq company-show-numbers t)
+      ;; Make completion case-insensitive
+      (setq company-dabbrev-downcase nil)
+      (setq company-dabbrev-ignore-case t)
+      ;; Align completions nicely
+      (setq company-tooltip-align-annotations t)
+      ;; Maximum number of candidates to show
+      (setq company-tooltip-limit 10)
+      ;; Enable completion in comments and strings
+      (setq company-dabbrev-code-everywhere t)
+      (log-config "Company configuration completed")
+      :bind
+      (:map company-active-map
+            ("C-n" . company-select-next)
+            ("C-p" . company-select-previous)
+            ("TAB" . company-complete-selection)
+            ("<tab>" . company-complete-selection))
+      ;; Global keybinding to manually trigger completion
+      :bind
+      ("M-/" . company-complete))
+
+    (log-config "Company setup completed successfully")
+
+
+  #+END_SRC
 
 * Keyboard changes
 ** Rebind capslock to control
@@ -858,7 +934,7 @@
      ;;   :config
      ;;      (load-theme 'solarized-light t))
 
-     (safe-load-theme 'gruvbox-dark-hard)
+     (safe-load-theme 'gruvbox-dark-hard) 
    #+end_src
 ** Background image with transparency
    First install `feh` as system package and set bg image
@@ -991,19 +1067,34 @@
 *** Vue Mode
     #+begin_src elisp
 
-      ;; (use-package vue-ts-mode
-      ;;   :init (slot/vc-install :fetcher "github" :repo "8uff3r/vue-ts-mode"))
+
+
 
 
       ;; (add-to-list 'load-path (concat user-emacs-directory "vue-ts-mode"))
       ;; (require 'vue-ts-mode)
 
-      (use-package vue-mode
-	:mode "\\.vue\\'"
-	:config
-	(add-hook 'vue-mode-hook #'lsp-mode))
 
-      ```
+        ;;     (use-package vue-ts-mode
+        ;; :mode "\\.vue\\'"
+        ;; :config
+        ;; (add-hook 'vue-mode-hook #'lsp-mode))
+
+
+
+      ;; (use-package vue-mode
+      ;;   :ensure t
+      ;;   :mode "\\.vue\\'"
+      ;;   :config
+      ;;   ;; Hook lsp-mode to start when you open a .vue file
+      ;;   (add-hook 'vue-mode-hook #'lsp))
+
+      ;; (use-package vue-mode
+      ;;   :mode "\\.vue\\'"
+      ;;   :config
+      ;;   (add-hook 'vue-mode-hook #'lsp-mode))
+
+
 
       ;; ;;
 
@@ -1019,20 +1110,20 @@
      	     (cmake . ("https://github.com/uyha/tree-sitter-cmake" "v0.5.0"))
      	     (css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.21.1"))
      	     (elisp . ("https://github.com/Wilfred/tree-sitter-elisp" "1.6.0"))
-     	     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.21.4" "src"))
-     	     (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.21.0"))
-     	     (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "0.21.2" "tsx/src"))
-     	     (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "0.21.2" "typescript/src"))
+     	     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.23.1" "src"))
+     	     (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.24.8"))
+     	     (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "0.23.2" "tsx/src"))
+     	     (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "0.23.2" "typescript/src"))
      	     (vue . ("https://github.com/ikatyang/tree-sitter-vue" "v0.2.1"))))
 
-     ;; (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
+     (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
 
      (setq major-mode-remap-alist
      	   '((bash-mode . bash-ts-mode)
      	     (js2-mode . js-ts-mode)
      	     (typescript-mode . typescript-ts-mode)
      	     (json-mode . json-ts-mode)
-     	     (css-mode . css-ts-mode)	))
+     	     (css-mode . css-ts-mode)))
 
      ;; (setq treesit-language-source-alist
      ;;  '((vue "https://github.com/ikatyang/tree-sitter-vue")
@@ -1041,15 +1132,20 @@
 
      ;; (mapc #'treesit-install-language-grammar '(vue css typescript))
 
+     ;; (use-package treesit-auto
+     ;;   :custom
+     ;;   (treesit-auto-install 'prompt)
+     ;;   :custom
+     ;;   (treesit-auto-add-to-auto-mode-alist 'all)
+     ;;   ;;:init
+     ;;   (global-treesit-auto-mode)		;
+     ;;   )
      (use-package treesit-auto
        :custom
        (treesit-auto-install 'prompt)
-       :custom
        (treesit-auto-add-to-auto-mode-alist 'all)
-       ;;:init
-       ;;(global-treesit-auto-mode)		;
-       )
-
+       :config
+       (global-treesit-auto-mode))
 
      ;; Removed ido-completing-read+ as it conflicts with Vertico
      ;; ;;requirement for vue-ts-mode
@@ -1103,139 +1199,148 @@
 
 ** LSP
 
-*** Base installation
+*** COMMENT Base installation
     #+begin_src elisp
       ;;add local path as it contains the lsp booster function
       (add-to-list 'exec-path "~/.local/bin")
+
       (add-to-list 'exec-path "/home/cb0/.cargo/bin")
+      (add-to-list 'exec-path "/home/cb0/.nvm/versions/node/v24.3.0/bin/")
+
+
+
 
       ;;(use-package json-ls)
+      ;; (use-package lsp-mode
+      ;;   :diminish "LSP"
+      ;;   :ensure t
+      ;;   :hook ((lsp-mode . lsp-diagnostics-mode)
+      ;;       	 ;; (typescript-mode lsp)
+      ;;       	 ;; (vue-mode lsp)
+      ;;          ;;	       (lsp-mode . lsp-enable-which-key-integration)
+      ;;          (
+      ;; 	  (
+      ;; 	   ;; tsx-ts-mode			;
+      ;;            ;; typescript-ts-mode
+      ;;            ;; js-ts-mode
+      ;;       	   ;; javascript-mode
+      ;;       	   ;; typescript-mode
+      ;;       	   ;; vue-ts-mode
+      ;;            ) . lsp-deferred))
+      ;;   :custom
+      ;;   (lsp-keymap-prefix "C-c l")           ; Prefix for LSP actions
+      ;;   ;; (lsp-completion-provider :none)       ; Using Corfu as the provider
+      ;;   (lsp-diagnostics-provider :flycheck)
+      ;;   (lsp-session-file (locate-user-emacs-file ".lsp-session"))
+      ;;   (lsp-log-io nil)                      ; IMPORTANT! Use only for debugging! Drastically affects performance
+      ;;   (lsp-keep-workspace-alive nil)        ; Close LSP server if all project buffers are closed
+      ;;   (lsp-idle-delay 0.5)                  ; Debounce timer for `after-change-function'
+      ;;   ;; core
+      ;;   (lsp-enable-xref t)                   ; Use xref to find references
+      ;;   (lsp-auto-configure t)                ; Used to decide between current active servers
+      ;;   (lsp-eldoc-enable-hover t)            ; Display signature information in the echo area
+      ;;   (lsp-enable-dap-auto-configure t)     ; Debug support
+      ;;   (lsp-enable-file-watchers nil)
+      ;;   ;;(lsp-enable-folding nil)              ; I disable folding since I use origami
+      ;;   ;;(lsp-enable-imenu t)
+      ;;   ;;(lsp-enable-indentation nil)          ; I use prettier
+      ;;   (lsp-enable-links nil)                ; No need since we have `browse-url'
+      ;;   ;;(lsp-enable-on-type-formatting nil)   ; Prettier handles this
+      ;;   (lsp-enable-suggest-server-download t) ; Useful prompt to download LSP providers
+      ;;   (lsp-enable-symbol-highlighting t)     ; Shows usages of symbol at point in the current buffer
+      ;;   (lsp-enable-text-document-color nil)   ; This is Treesitter's job
 
-      (use-package lsp-mode
-        :diminish "LSP"
-        :ensure t
-        :hook ((lsp-mode . lsp-diagnostics-mode)
-            	 ;;	       (lsp-mode . lsp-enable-which-key-integration)
-            	 ((tsx-ts-mode
-            	   typescript-ts-mode
-            	   js-ts-mode-map
-            	   ) . lsp-deferred))
-        :custom
-        (lsp-keymap-prefix "C-c l")           ; Prefix for LSP actions
-        ;; (lsp-completion-provider :none)       ; Using Corfu as the provider
-        (lsp-diagnostics-provider :flycheck)
-        (lsp-session-file (locate-user-emacs-file ".lsp-session"))
-        (lsp-log-io nil)                      ; IMPORTANT! Use only for debugging! Drastically affects performance
-        (lsp-keep-workspace-alive nil)        ; Close LSP server if all project buffers are closed
-        (lsp-idle-delay 0.5)                  ; Debounce timer for `after-change-function'
-        ;; core
-        (lsp-enable-xref t)                   ; Use xref to find references
-        (lsp-auto-configure t)                ; Used to decide between current active servers
-        (lsp-eldoc-enable-hover t)            ; Display signature information in the echo area
-        (lsp-enable-dap-auto-configure t)     ; Debug support
-        (lsp-enable-file-watchers nil)
-        ;;(lsp-enable-folding nil)              ; I disable folding since I use origami
-        ;;(lsp-enable-imenu t)
-        ;;(lsp-enable-indentation nil)          ; I use prettier
-        (lsp-enable-links nil)                ; No need since we have `browse-url'
-        ;;(lsp-enable-on-type-formatting nil)   ; Prettier handles this
-        (lsp-enable-suggest-server-download t) ; Useful prompt to download LSP providers
-        (lsp-enable-symbol-highlighting t)     ; Shows usages of symbol at point in the current buffer
-        (lsp-enable-text-document-color nil)   ; This is Treesitter's job
+      ;;   (lsp-ui-sideline-show-hover nil)      ; Sideline used only for diagnostics
+      ;;   (lsp-ui-sideline-diagnostic-max-lines 20) ; 20 lines since typescript errors can be quite big
+      ;;   ;; completion
+      ;;   (lsp-completion-enable t)
+      ;;   (lsp-completion-enable-additional-text-edit t) ; Ex: auto-insert an import for a completion candidate
+      ;;   (lsp-enable-snippet t)                         ; Important to provide full JSX completion
+      ;;   (lsp-completion-show-kind t)                   ; Optional
+      ;;   ;; headerline
+      ;;   (lsp-headerline-breadcrumb-enable t)  ; Optional, I like the breadcrumbs
+      ;;   (lsp-headerline-breadcrumb-enable-diagnostics nil) ; Don't make them red, too noisy
+      ;;   (lsp-headerline-breadcrumb-enable-symbol-numbers nil)
+      ;;   (lsp-headerline-breadcrumb-icons-enable nil)
+      ;;   ;; modeline
+      ;;   (lsp-modeline-code-actions-enable nil) ; Modeline should be relatively clean
+      ;;   (lsp-modeline-diagnostics-enable t);;nil  ; Already supported through `flycheck'
+      ;;   (lsp-modeline-workspace-status-enable nil) ; Modeline displays "LSP" when lsp-mode is enabled
+      ;;   (lsp-signature-doc-lines 1)                ; Don't raise the echo area. It's distracting
+      ;;   (lsp-ui-doc-use-childframe t)              ; Show docs for symbol at point
+      ;;   (lsp-eldoc-render-all nil)            ; This would be very useful if it would respect `lsp-signature-doc-lines', currently it's distracting
+      ;;   ;; lens
+      ;;   (lsp-lens-enable nil)                 ; Optional, I don't need it
+      ;;   ;; semantic
+      ;;   (lsp-semantic-tokens-enable nil)      ; Related to highlighting, and we defer to treesitter
 
-        (lsp-ui-sideline-show-hover nil)      ; Sideline used only for diagnostics
-        (lsp-ui-sideline-diagnostic-max-lines 20) ; 20 lines since typescript errors can be quite big
-        ;; completion
-        (lsp-completion-enable t)
-        (lsp-completion-enable-additional-text-edit t) ; Ex: auto-insert an import for a completion candidate
-        (lsp-enable-snippet t)                         ; Important to provide full JSX completion
-        (lsp-completion-show-kind t)                   ; Optional
-        ;; headerline
-        (lsp-headerline-breadcrumb-enable t)  ; Optional, I like the breadcrumbs
-        (lsp-headerline-breadcrumb-enable-diagnostics nil) ; Don't make them red, too noisy
-        (lsp-headerline-breadcrumb-enable-symbol-numbers nil)
-        (lsp-headerline-breadcrumb-icons-enable nil)
-        ;; modeline
-        (lsp-modeline-code-actions-enable nil) ; Modeline should be relatively clean
-        (lsp-modeline-diagnostics-enable nil)  ; Already supported through `flycheck'
-        (lsp-modeline-workspace-status-enable nil) ; Modeline displays "LSP" when lsp-mode is enabled
-        (lsp-signature-doc-lines 1)                ; Don't raise the echo area. It's distracting
-        (lsp-ui-doc-use-childframe t)              ; Show docs for symbol at point
-        (lsp-eldoc-render-all nil)            ; This would be very useful if it would respect `lsp-signature-doc-lines', currently it's distracting
-        ;; lens
-        (lsp-lens-enable nil)                 ; Optional, I don't need it
-        ;; semantic
-        (lsp-semantic-tokens-enable nil)      ; Related to highlighting, and we defer to treesitter
+      ;;   ;; Error prevention
+      ;;   (lsp-auto-guess-root t)               ; Try to find project root
+      ;;   (lsp-restart 'auto-restart)          ; Auto restart crashed servers
+      ;;   (lsp-enable-on-type-formatting nil)  ; Disable to prevent conflicts
 
-        ;; Error prevention
-        (lsp-auto-guess-root t)               ; Try to find project root
-        (lsp-restart 'auto-restart)          ; Auto restart crashed servers
-        (lsp-enable-on-type-formatting nil)  ; Disable to prevent conflicts
+      ;;   :config
+      ;;   ;; (lsp-enable-which-key-integration t)
+      ;;   :bind (:map lsp-mode-map
+      ;;               ("C-c l t s" . lsp-treemacs-symbols)
+      ;;               ("C-c l d" . consult-lsp-diagnostics)
+      ;;               ("C-c l f s" . consult-lsp-file-symbols)
+      ;;               ("C-c l f q" . consult-lsp-file)
+      ;;               )
+      ;;   :preface
+      ;;   ;; tune lsp mode performance
+      ;;   (setq read-process-output-max (* 10 1024 1024)) ;; 10mb
+      ;;   (setq gc-cons-threshold 200000000)
 
-        :config
-        ;; (lsp-enable-which-key-integration t)
-        :bind (:map lsp-mode-map
-            	      ("C-c l t s" . lsp-treemacs-symbols)
-            	      ("C-c l d" . consult-lsp-diagnostics)
-            	      ("C-c l f s" . consult-lsp-file-symbols)
-            	      ("C-c l f q" . consult-lsp-file)
-            	      )
-        :preface
-        ;; tune lsp mode performance
-        (setq read-process-output-max (* 10 1024 1024)) ;; 10mb
-        (setq gc-cons-threshold 200000000)
+      ;;   (defun lsp-booster--advice-json-parse (old-fn &rest args)
+      ;;     "Try to parse bytecode instead of json."
+      ;;     (or
+      ;;      (when (equal (following-char) ?#)
 
-        (defun lsp-booster--advice-json-parse (old-fn &rest args)
-          "Try to parse bytecode instead of json."
-          (or
-           (when (equal (following-char) ?#)
+      ;;        (let ((bytecode (read (current-buffer))))
+      ;;          (when (byte-code-function-p bytecode)
+      ;;            (funcall bytecode))))
+      ;;      (apply old-fn args)))
+      ;;   (defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+      ;;     "Prepend emacs-lsp-booster command to lsp CMD."
+      ;;     (let ((orig-result (funcall old-fn cmd test?)))
+      ;;       (if (and (not test?)                             ;; for check lsp-server-present?
+      ;;                (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+      ;;                lsp-use-plists
+      ;;                (not (functionp 'json-rpc-connection))  ;; native json-rpc
+      ;;                (executable-find "emacs-lsp-booster"))
+      ;;           (progn
+      ;;             (message "Using emacs-lsp-booster for %s!" orig-result)
+      ;;             (cons "emacs-lsp-booster" orig-result))
+      ;;         orig-result)))
+      ;;   :init
+      ;;   (setq lsp-use-plists t)
+      ;;   ;; Initiate https://github.com/blahgeek/emacs-lsp-booster for performance
+      ;;   (advice-add (if (progn (require 'json)
+      ;;             		 (fboundp 'json-parse-buffer))
+      ;;             	  'json-parse-buffer
+      ;;             	'json-read)
+      ;;               :around
+      ;;               #'lsp-booster--advice-json-parse)
+      ;;   (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
 
-             (let ((bytecode (read (current-buffer))))
-            	 (when (byte-code-function-p bytecode)
-            	   (funcall bytecode))))
-           (apply old-fn args)))
-        (defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
-          "Prepend emacs-lsp-booster command to lsp CMD."
-          (let ((orig-result (funcall old-fn cmd test?)))
-            (if (and (not test?)                             ;; for check lsp-server-present?
-            	       (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
-            	       lsp-use-plists
-            	       (not (functionp 'json-rpc-connection))  ;; native json-rpc
-            	       (executable-find "emacs-lsp-booster"))
-            	  (progn
-            	    (message "Using emacs-lsp-booster for %s!" orig-result)
-            	    (cons "emacs-lsp-booster" orig-result))
-            	orig-result)))
-        :init
-        (setq lsp-use-plists t)
-        ;; Initiate https://github.com/blahgeek/emacs-lsp-booster for performance
-        (advice-add (if (progn (require 'json)
-            			 (fboundp 'json-parse-buffer))
-            		  'json-parse-buffer
-            		'json-read)
-            	      :around
-            	      #'lsp-booster--advice-json-parse)
-        (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
+      ;; ;; Add to your config
+      ;; (advice-remove 'lsp-resolve-final-command #'lsp-booster--advice-final-command)
 
-      ;; Add to your config
-      (advice-remove 'lsp-resolve-final-command #'lsp-booster--advice-final-command)
-
-      ;; Safety check: Remove any malformed LSP clients
-      (with-eval-after-load 'lsp-mode
-        (log-config "Checking LSP client configurations...")
-        ;; Remove any clients that might have malformed commands
-        (setq lsp-clients
-              (cl-remove-if (lambda (client)
-                              (condition-case nil
-                                  (lsp--server-binary-present? client)
-                                (error
-                                 (message "Removing malformed LSP client: %s"
-                                         (lsp--client-server-id client))
-                                 t)))  ; Remove if error occurs
-                            lsp-clients))
-        (log-config "LSP client check completed"))
-
-
+      ;; ;; Safety check: Remove any malformed LSP clients
+      ;; (with-eval-after-load 'lsp-mode
+      ;;   (log-config "Checking LSP client configurations...")
+      ;;   ;; Remove any clients that might have malformed commands
+      ;;   (setq lsp-clients
+      ;;         (cl-remove-if (lambda (client)
+      ;;                         (condition-case nil
+      ;;                             (lsp--server-binary-present? client)
+      ;;                           (error
+      ;;                            (message "Removing malformed LSP client: %s"
+      ;;                                     (lsp--client-server-id client))
+      ;;                            t)))  ; Remove if error occurs
+      ;;                       lsp-clients))
+      ;;   (log-config "LSP client check completed"))
     #+end_src
 
 
@@ -1281,12 +1386,10 @@
      #+end_src
 
 ** TODO Tailwind
-   Cannot use as uses straight.
+
    #+begin_src elisp
-          ;;     (use-package lsp-tailwindcss
-            ;;     :init (slot/vc-install :fetcher "github" :repo "merrickluo/lsp-tailwindcss"))
-          (use-package package-vc
-       :ensure t)
+     ;; (use-package lsp-tailwindcss
+     ;;   :vc (lsp-tailwindcss :url "github.com/merrickluo/lsp-tailwindcss" :branch "main"))
 
      ;;(with-eval-after-load 'package
      ;;  (package-vc-install "https://github.com/merrickluo/lsp-tailwindcss"))
@@ -1379,8 +1482,13 @@
        :config
        (projectile-mode +1)
        :bind (:map projectile-mode-map
-	      ("C-c p" . projectile-command-map)))
+     	      ("C-c p" . projectile-command-map)))
 
+
+     (with-eval-after-load 'projectile
+       ;; Make sure Projectile recognizes .projectile files
+       (setq projectile-indexing-method 'alien)
+       (setq projectile-enable-caching t))
    #+end_src
 ** Treemacs
    #+begin_src elisp
@@ -1390,19 +1498,264 @@
        :ensure t
        :bind
        (:map global-map
-	     ("M-1" . treemacs)          ;; Similar to ALT+1
-	     ("C-c t" . treemacs))
+             ("M-1" . treemacs)          ;; Similar to ALT+1
+             ("C-c t" . treemacs))
        :config
+       
        ;; Enable project integration
        (treemacs-project-follow-mode t)
        ;; Follow the currently selected file
        (treemacs-follow-mode t))
+
+     (defun treemacs--is-treemacs-buffer? (&optional buffer)
+       "Return t if BUFFER is the treemacs buffer."
+       (with-current-buffer (or buffer (current-buffer))
+         (and (boundp 'treemacs-buffer?) treemacs-buffer?)))
+
+
+
+     (defun treemacs--find-treemacs-window (&optional frame)
+       "Find and return the treemacs window.
+        Return nil if no such window exists.
+        When FRAME is nil use the current frame."
+       (let ((frame (or frame (selected-frame))))
+         (cl-find-if
+          (lambda (window)
+            (and (not (window-minibuffer-p window))
+                 (treemacs--is-treemacs-buffer? (window-buffer window))))
+          (window-list frame))))
+
+     (defun my-smart-treemacs-toggle ()
+       "A smart toggle for the treemacs window.
+             If treemacs is not open, it opens it.
+             If treemacs is open but not the current window, it selects it.
+             If treemacs is open and is the current window, it closes it."
+       (interactive)
+       (let ((treemacs-window (treemacs--find-treemacs-window)))
+         (if (null treemacs-window)
+             ;; Condition 1: Treemacs is not open, so open it.
+             (treemacs)
+           (if (eq (selected-window) treemacs-window)
+               ;; Condition 2: Treemacs is open and focused, so close it.
+               (treemacs)
+             ;; Condition 3: Treemacs is open but not focused, so select it.
+             (select-window treemacs-window)))))
+
+     ;; Bind M-1 to your new smart function
+     (global-set-key (kbd "M-1") #'my-smart-treemacs-toggle)
 
      ;; Add treemacs-projectile for better integration
      (use-package treemacs-projectile
        :ensure t)
 
    #+end_src
+
+   #+RESULTS:
+
+** Eglot
+
+   #+begin_src elisp
+     (use-package eglot
+       :config
+       ;; Global server capabilities to ignore
+       (setq eglot-ignored-server-capabilities 
+             '(:documentHighlightProvider
+               :documentFormattingProvider
+               :documentRangeFormattingProvider
+               :documentOnTypeFormattingProvider
+               :colorProvider
+               :foldingRangeProvider
+               :semanticTokensProvider))  ; This should work for both servers
+               
+       ;; TypeScript setup
+       (add-to-list 'eglot-server-programs
+                    '(typescript-mode . ("typescript-language-server" "--stdio")))
+       
+       ;; Vue setup
+       (defun vue-eglot-init-options ()
+         (let ((tsdk-path (expand-file-name 
+                           "lib" 
+                           (string-trim-right 
+                            (shell-command-to-string "npm list --global --parseable typescript | head -n1")))))
+           `(:typescript (:tsdk ,tsdk-path) 
+                         :vue (:hybridMode :json-false))))
+       
+       (add-to-list 'eglot-server-programs
+                    `(vue-mode . ("vue-language-server" "--stdio" 
+                                  :initializationOptions ,(vue-eglot-init-options)))))
+
+
+
+     (with-eval-after-load 'eglot
+       ;; Remove any existing advice first
+       (advice-remove 'eglot--connect #'my/use-parent-eglot-server)
+       
+       (defun my/force-frontend-project ()
+         "Force core files to use frontend project root."
+         (when (and buffer-file-name 
+                    (string-match "/frontend/core/" buffer-file-name))
+           (let ((frontend-root (replace-regexp-in-string 
+                                "\\(/frontend/\\)core/.*" "\\1" buffer-file-name)))
+             ;; Override the project for this buffer
+             (setq-local eglot--cached-project 
+                        `(transient . ,(expand-file-name frontend-root))))))
+       
+       (add-hook 'find-file-hook #'my/force-frontend-project))
+
+
+
+
+
+     ;; (with-eval-after-load 'eglot
+       ;; (defun my/use-parent-eglot-server (managed-major-mode project class contact language-id)
+       ;;   "Use the parent frontend Eglot server instead of starting a new one."
+       ;;   (when (and buffer-file-name 
+       ;;              (string-match "/frontend/core/" buffer-file-name))
+       ;;     (let* ((frontend-root (replace-regexp-in-string 
+       ;;                           "\\(/frontend/\\)core/.*" "\\1" buffer-file-name))
+       ;;            ;; Find existing server for frontend root
+       ;;            (existing-server (cl-find-if 
+       ;;                             (lambda (server)
+       ;;                               (when-let ((proj-root (eglot--project-nickname 
+       ;;                                                     (eglot--server-project server))))
+       ;;                                 (string-prefix-p frontend-root proj-root)))
+       ;;                             (hash-table-values eglot--servers-by-project))))
+       ;;       (when existing-server
+       ;;         (message "Using existing frontend Eglot server")
+       ;;         ;; Return the existing server to prevent new connection
+       ;;         existing-server))))
+       
+       ;; ;; Remove the advice first if it exists
+       ;; (advice-remove 'eglot--connect #'my/use-parent-eglot-server)
+       ;; ;; Add the corrected advice
+       ;; (advice-add 'eglot--connect :before-until #'my/use-parent-eglot-server))
+
+     ;; (defun my/setup-frontend-workspace ()
+     ;;   "Configure language server to include both frontend and core directories."
+     ;;   (when (and buffer-file-name 
+     ;;              (string-match "/frontend/" buffer-file-name))
+     ;;     (let* ((frontend-root (replace-regexp-in-string 
+     ;;                           "\\(/frontend/\\).*" "\\1" buffer-file-name))
+     ;;            (core-root (expand-file-name "core/" frontend-root))
+     ;;            (server (eglot-current-server)))
+     ;;       (when (and server 
+     ;;                  (file-exists-p frontend-root)
+     ;;                  (file-exists-p core-root))
+     ;;         (message "Adding workspace folders: %s and %s" frontend-root core-root)
+     ;;         ;; Add both directories as workspace folders
+     ;;         (jsonrpc-notify
+     ;;          server
+     ;;          :workspace/didChangeWorkspaceFolders
+     ;;          `(:event 
+     ;;            (:added [(:uri ,(eglot--path-to-uri frontend-root) 
+     ;;                      :name "frontend")
+     ;;                     (:uri ,(eglot--path-to-uri core-root) 
+     ;;                      :name "core")])))))))
+
+     ;; ;; Apply after Eglot connects
+     ;; (add-hook 'eglot-managed-mode-hook #'my/setup-frontend-workspace)
+
+     ;; (with-eval-after-load 'eglot
+     ;;   (defun my/find-eglot-project (dir)
+     ;;     "Find project root by looking for .eglot-project file."
+     ;;     (locate-dominating-file dir ".eglot-project"))
+       
+     ;;   (add-to-list 'project-find-functions #'my/find-eglot-project))
+
+     (use-package vue-mode
+       :ensure t
+       :mode "\\.vue\\'"
+       :hook (vue-mode . eglot-ensure))
+
+     ;; TypeScript mode
+     (use-package typescript-mode
+       :mode "\\.ts\\'"
+       :hook (typescript-mode . eglot-ensure))
+
+
+     ;; (use-package eglot
+     ;;   :preface
+     ;;   (defun vue-eglot-init-options ()
+     ;;     (let ((tsdk-path (expand-file-name "lib" (string-trim-right (shell-command-to-string "NODE_NO_WARNINGS=1 npm list --global --parseable typescript | head -n1")))))
+     ;;       `(:typescript (:tsdk ,tsdk-path) :vue (:hybridMode :json-false))))
+     ;;   :config
+     ;;   (add-to-list 'eglot-server-programs
+     ;;    	       `(vue-ts-mode . ("vue-language-server" "--stdio" :initializationOptions ,(vue-eglot-init-options))))
+     ;;   (setq eglot-ignored-server-capabilities '(:documentFormatting :documentFormattingProvider)))
+
+     ;; (load (concat user-emacs-directory "web-mode.el"))
+
+     ;; (require 'web-mode)
+
+     ;; (define-derived-mode pbgc-vue-mode web-mode "pbVue"
+     ;;   "A major mode derived from web-mode, for editing .vue files with LSP support.")
+
+     ;; (add-to-list 'auto-mode-alist '("\\.vue\\'" . pbgc-vue-mode))
+
+     ;; (defun pbgc-vue-custom ()
+     ;;   (flycheck-mode t)
+     ;;   (corfu-mode)
+     ;;   (eglot-ensure))
+     ;; (add-hook 'pbgc-vue-mode-hook 'pbgc-vue-custom)
+
+     ;; (defun vue-eglot-init-options2 ()
+     ;;   (let ((tsdk-path (expand-file-name
+     ;;                     "lib"
+     ;;                     (string-trim-right (shell-command-to-string "npm list --global --parseable typescript | head -n1")))))
+     ;;     `(:typescript (:tsdk ,tsdk-path)
+     ;;                   :vue (:hybridMode :json-false))))
+
+     ;; (put 'pbgc-vue-mode 'eglot-language-id "vue")
+
+     ;; (add-to-list 'eglot-server-programs `(pbgc-vue-mode . ("lspx" "--lsp" "tailwindcss-language-server --stdio" "--lsp" "vue-language-server --stdio" :initializationOptions ,(vue-eglot-init-options2))))
+
+
+     ;; (setq auto-mode-alist 
+     ;;       (remove '("\\.vue\\'" . pbgc-vue-mode) auto-mode-alist))
+
+     ;; (setq eglot-server-programs
+     ;;       (cl-remove-if (lambda (entry)
+     ;;                       (eq (car entry) 'pbgc-vue-mode))
+     ;;                     eglot-server-programs))
+
+
+     ;; (remove-hook 'pbgc-vue-mode-hook 'pbgc-vue-custom)
+
+     ;; (assoc "\\.vue\\'" auto-mode-alist)
+
+     ;; (setq auto-mode-alist 
+     ;;       (remove '("\\.vue\\'" . vue-ts-mode) auto-mode-alist))
+
+     ;; ;; 2. Add vue-mode association  
+     ;; (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
+
+     ;; ;; 3. Check if major-mode-remap-alist is interfering
+     ;; (assoc 'vue-mode major-mode-remap-alist)
+
+     ;; ;; Check what treesit-auto is doing
+     ;; (describe-variable 'treesit-auto-mode-alist)
+
+     ;; ;; Remove vue from treesit-auto management
+     ;; (with-eval-after-load 'treesit-auto
+     ;;   (setq treesit-auto-langs 
+     ;;         (remove 'vue treesit-auto-langs)))
+   #+end_src
+** Aiken
+      #+begin_src elisp
+	(use-package aiken-mode
+	  :ensure t
+	  :load-path "~/.emacs.d/aiken-mode" ; This is only needed if it's not in your default load-path
+	  :hook (aiken-mode . eglot-ensure))
+
+	;; Configure Eglot for aiken-mode.
+	;; This should come after the mode is configured.
+	(with-eval-after-load 'eglot
+	  (add-to-list 'eglot-server-programs '(aiken-mode . ("aiken" "lsp"))))
+
+	;; Ensure the aiken executable is in Emacs' path
+	(setq exec-path (append '("/home/cb0/.aiken/bin") exec-path))
+   #+end_src
+
 * Code Handling
 ** Region expanding
    #+begin_src elisp
@@ -1459,48 +1812,6 @@
      ;; (add-hook 'auto-save-hook 'my-desktop-save)
 
      ;; ;;(desktop-read)
-
-  #+END_SRC
-* Autocomplete
-  #+BEGIN_SRC emacs-lisp
-    (log-config "Setting up Company mode...")
-
-    ;; (use-package company
-    ;;   :ensure t
-    ;;   :init
-    ;;   (log-config "Initializing Company mode globally...")
-    ;;   ;;(global-company-mode 1)
-    ;;   :config
-    ;;   (log-config "Configuring Company settings...")
-    ;;   ;; Trigger completion immediately
-    ;;   (setq company-idle-delay 0.2)
-    ;;   ;; Minimum characters before completion triggers
-    ;;   (setq company-minimum-prefix-length 1)
-    ;;   ;; Show numbers for quick selection
-    ;;   (setq company-show-numbers t)
-    ;;   ;; Make completion case-insensitive
-    ;;   (setq company-dabbrev-downcase nil)
-    ;;   (setq company-dabbrev-ignore-case t)
-    ;;   ;; Align completions nicely
-    ;;   (setq company-tooltip-align-annotations t)
-    ;;   ;; Maximum number of candidates to show
-    ;;   (setq company-tooltip-limit 10)
-    ;;   ;; Enable completion in comments and strings
-    ;;   (setq company-dabbrev-code-everywhere t)
-    ;;   (log-config "Company configuration completed")
-    ;;   :bind
-    ;;   (:map company-active-map
-    ;;         ("C-n" . company-select-next)
-    ;;         ("C-p" . company-select-previous)
-    ;;         ("TAB" . company-complete-selection)
-    ;;         ("<tab>" . company-complete-selection))
-    ;;   ;; Global keybinding to manually trigger completion
-    ;;   :bind
-    ;;   ("M-/" . company-complete))
-
-    ;; (log-config "Company setup completed successfully")
-
-  #+END_SRC
 * Key Management
 ** Set default font size
    #+begin_src elisp
@@ -1780,6 +2091,9 @@
 * consult
   #+begin_src elisp
 
+    (log-config "Setting up consult...")
+
+
     (setq read-file-name-completion-ignore-case t)
 
     (setq consult-async-min-input 1)
@@ -1838,140 +2152,142 @@
    CLOCK: [2024-07-25 Do 22:33]--[2024-07-26 Fr 00:33] =>  2:00
    :END:
    #+BEGIN_SRC emacs-lisp
-						  ; Activate org-mode
-	  (use-package org)
+     (log-config "Setting up org mode...")
+
+     ;; Activate org-mode
+     (use-package org)
 
      ;; (require 'org-install)
-	  ;; (use-package org-habit)
-	  ;; (setq org-habit-preceding-days 7
-	  ;; org-habit-following-days 1
-	  ;; org-habit-graph-column 80
-	  ;; org-habit-show-habits-only-for-today t
-	  ;; org-habit-show-all-today t)
-	  ;;(require 'ess-site)
-	  ;; http://orgmode.org/guide/Activation.html#Activation
+     ;; (use-package org-habit)
+     ;; (setq org-habit-preceding-days 7
+     ;; org-habit-following-days 1
+     ;; org-habit-graph-column 80
+     ;; org-habit-show-habits-only-for-today t
+     ;; org-habit-show-all-today t)
+     ;;(require 'ess-site)
+     ;; http://orgmode.org/guide/Activation.html#Activation
 
-	  ;; The following lines are always needed.  Choose your own keys.
-	  (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+     ;; The following lines are always needed.  Choose your own keys.
+     (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
-	  ;; And add babel inline code execution
-	  ;; babel, for executing code in org-mode.
-	  (org-babel-do-load-languages
-	   'org-babel-load-languages
-	   ;; load all language marked with (lang . t).
-	   '((C . t)
-	     ( http . t)
-	     ;;	(org . t)
-	     (shell . t)))
+     ;; And add babel inline code execution
+     ;; babel, for executing code in org-mode.
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      ;; load all language marked with (lang . t).
+      '((C . t)
+        ( http . t)
+        ;;	(org . t)
+        (shell . t)))
 
-	  ;; turn off "evaluate code question" in org-mode code blocks
-	  (setq org-confirm-babel-evaluate nil)
+     ;; turn off "evaluate code question" in org-mode code blocks
+     (setq org-confirm-babel-evaluate nil)
 
-	  ;; and some more org stuff
-	  (setq org-list-allow-alphabetical t)
+     ;; and some more org stuff
+     (setq org-list-allow-alphabetical t)
 
-	  (define-key global-map "\C-cl" 'org-store-link)
-	  (define-key global-map "\C-ca" 'org-agenda)
-	  ;; add a timestamp when we close an item
-	  (setq org-log-done 'note)
+     (define-key global-map "\C-cl" 'org-store-link)
+     (define-key global-map "\C-ca" 'org-agenda)
+     ;; add a timestamp when we close an item
+     (setq org-log-done 'note)
      (setq org-treat-insert-todo-heading-as-state-change t)
      (setq org-log-into-drawer t)
-	  ;; include a closing note when close an todo item
-	  ;; (setq org-log-done 'note)
+     ;; include a closing note when close an todo item
+     ;; (setq org-log-done 'note)
 
-	  ;;(global-set-key "\C-cl" 'org-store-link)
-	  ;; (global-set-key "\C-cc" 'org-capture)
-	  ;; (global-set-key "\C-ca" 'org-agenda)
-	  ;; (global-set-key "\C-cb" 'org-iswitchb)
-	  ;; (global-set-key (kbd "<S-i>") 'org-clock-in)
-	  ;; (global-set-key (kbd "<S-o>") 'org-clock-out)
-	  ;; (global-set-key (kbd "<S-g>") 'org-clock-goto)
-
-
-
-	  (custom-set-variables
-	   '(org-agenda-files (directory-files-recursively "~/sync/org/" "\\.org$")))
-	   '(org-agenda-ndays 7)
-	   '(org-deadline-warning-days 14)
-	   '(org-agenda-show-all-dates t)
-	   '(org-agenda-skip-deadline-if-done t)
-	   '(org-agenda-skip-scheduled-if-done t)
-	   '(org-agenda-start-on-weekday nil)
-	   '(org-reverse-note-order t)
-	   '(org-fast-tag-selection-single-key (quote expert))
+     ;;(global-set-key "\C-cl" 'org-store-link)
+     ;; (global-set-key "\C-cc" 'org-capture)
+     ;; (global-set-key "\C-ca" 'org-agenda)
+     ;; (global-set-key "\C-cb" 'org-iswitchb)
+     ;; (global-set-key (kbd "<S-i>") 'org-clock-in)
+     ;; (global-set-key (kbd "<S-o>") 'org-clock-out)
+     ;; (global-set-key (kbd "<S-g>") 'org-clock-goto)
 
 
-	  (global-set-key "\C-cr" 'org-capture)
 
-	  ;; Org Capture
-	  ;; (setq org-capture-templates
-	  ;; '(("t" "Todo" entry (file+headline (concat org-directory "/gtd.org") "Tasks")
-	  ;; "* TODO %?\n %i\n")
-	  ;; ("l" "Link" plain (file (concat org-directory "/links.org"))
-	  ;; "- %?\n %x\n")))
+     (custom-set-variables
+      '(org-agenda-files (directory-files-recursively "~/sync/org/" "\\.org$")))
+     '(org-agenda-ndays 7)
+     '(org-deadline-warning-days 14)
+     '(org-agenda-show-all-dates t)
+     '(org-agenda-skip-deadline-if-done t)
+     '(org-agenda-skip-scheduled-if-done t)
+     '(org-agenda-start-on-weekday nil)
+     '(org-reverse-note-order t)
+     '(org-fast-tag-selection-single-key (quote expert))
 
 
-	   ;; '(org-remember-templates
-	     ;; (quote ((116 "* TODO %?\n  %u" "~/todo.org" "Tasks")
-		  ;; (110 "* %u %?" "~/notes.org" "Notes"))))
-	   ;; '(remember-annotation-functions (quote (org-remember-annotation)))
-	  ;;  '(remember-handler-functions (quote (org-remember-handler))))
+     (global-set-key "\C-cr" 'org-capture)
 
-	  ;; (package-require 'org-ac)
-	  ;; (package-require 'org-tempo)
+     ;; Org Capture
+     ;; (setq org-capture-templates
+     ;; '(("t" "Todo" entry (file+headline (concat org-directory "/gtd.org") "Tasks")
+     ;; "* TODO %?\n %i\n")
+     ;; ("l" "Link" plain (file (concat org-directory "/links.org"))
+     ;; "- %?\n %x\n")))
 
-	  ;; To save the clock history across Emacs sessions:
-	  (setq org-clock-persist 'history)
-	  (org-clock-persistence-insinuate)
-	  (setq org-clock-continuously nil)
 
-	  ;; we want some non standard todo types
-	  (setq org-todo-keywords
-		'((sequence
-		   "TODO(t)" "NEED_FEEDBACK(f)" "|" "CANCELED(c)" "DONE(d)")))
+     ;; '(org-remember-templates
+     ;; (quote ((116 "* TODO %?\n  %u" "~/todo.org" "Tasks")
+     ;; (110 "* %u %?" "~/notes.org" "Notes"))))
+     ;; '(remember-annotation-functions (quote (org-remember-annotation)))
+     ;;  '(remember-handler-functions (quote (org-remember-handler))))
 
-	  (setq org-todo-keyword-faces
-		'(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-		  ("NEED_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
-		  ("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
-		  ("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
+     ;; (package-require 'org-ac)
+     ;; (package-require 'org-tempo)
 
-	  ;; dont ask when executing code
-	  (setq org-confirm-babel-evaluate nil)
+     ;; To save the clock history across Emacs sessions:
+     (setq org-clock-persist 'history)
+     (org-clock-persistence-insinuate)
+     (setq org-clock-continuously nil)
 
-	  (defface org-block-begin-line
-	    '((t (:underline "#A7A6AA" :foreground "#040404" :background "#9a9a9a")))
-	    "Face used for the line delimiting the begin of source blocks.")
+     ;; we want some non standard todo types
+     (setq org-todo-keywords
+           '((sequence
+     	 "TODO(t)" "NEED_FEEDBACK(f)" "|" "CANCELED(c)" "DONE(d)")))
 
-	  (defface org-block-background
-	    '((t (:background "#4F4F4F")))
-	    "Face used for the source block background.")
+     (setq org-todo-keyword-faces
+           '(("TODO" :background "red1" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+     	("NEED_FEEDBACK" :background "yellow" :foreground "black" :weight bold :box (:line-width 2 :style released-button))
+     	("DONE" :background "forest green" :weight bold :box (:line-width 2 :style released-button))
+     	("CANCELLED" :background "lime green" :foreground "black" :weight bold :box (:line-width 2 :style released-button))))
 
-	  (defface org-block-end-line
-	    '((t (:overline "#A7A6AA" :foreground "#000000" :background "#9a9a9a")))
-	    "Face used for the line delimiting the end of source blocks.")
+     ;; dont ask when executing code
+     (setq org-confirm-babel-evaluate nil)
 
-	  ;; Use standard completion instead of ido to avoid conflicts with Vertico
-	  (setq org-completion-use-ido nil)
+     (defface org-block-begin-line
+       '((t (:underline "#A7A6AA" :foreground "#040404" :background "#9a9a9a")))
+       "Face used for the line delimiting the begin of source blocks.")
 
-	  (setq exec-path (append exec-path '("/usr/bin/mscgen")))
+     (defface org-block-background
+       '((t (:background "#4F4F4F")))
+       "Face used for the source block background.")
 
-	  (defun do-org-show-all-inline-images ()
-	    (interactive)
-	    (org-display-inline-images t t))
+     (defface org-block-end-line
+       '((t (:overline "#A7A6AA" :foreground "#000000" :background "#9a9a9a")))
+       "Face used for the line delimiting the end of source blocks.")
 
-	  ;; (add-hook 'org-ctrl-c-ctrl-c-hook (lambda () (org-display-inline-images)))
-	  ;;(add-hook 'org-confirm-babel-evaluate-hook (lambda () (org-display-inline-images)))
+     ;; Use standard completion instead of ido to avoid conflicts with Vertico
+     (setq org-completion-use-ido nil)
 
-	  (add-hook 'org-babel-after-execute-hook
-		    (lambda ()
-		      (condition-case nil
-			  (org-display-inline-images)
-			(error nil)))
-		    'append)
+     (setq exec-path (append exec-path '("/usr/bin/mscgen")))
 
-	  ;; set so that each line has correct indent
-	  (setq org-adapt-indentation t)
+     (defun do-org-show-all-inline-images ()
+       (interactive)
+       (org-display-inline-images t t))
+
+     ;; (add-hook 'org-ctrl-c-ctrl-c-hook (lambda () (org-display-inline-images)))
+     ;;(add-hook 'org-confirm-babel-evaluate-hook (lambda () (org-display-inline-images)))
+
+     (add-hook 'org-babel-after-execute-hook
+     	  (lambda ()
+     	    (condition-case nil
+     		(org-display-inline-images)
+     	      (error nil)))
+     	  'append)
+
+     ;; set so that each line has correct indent
+     (setq org-adapt-indentation t)
 
    #+END_SRC
 *** Fixing the insertion of source blocks in emacs org > 9.2
@@ -2179,6 +2495,9 @@
 * Org Roam
 ** Installation
    #+begin_src elisp
+
+     (log-config "Setting up org roam...")
+
      (use-package org-roam
        :ensure t
        :init
@@ -2188,74 +2507,74 @@
        (org-roam-dailies-directory "journal/")
        (org-roam-completion-everywhere t)
        (org-roam-capture-templates
-	'(("d" "default" plain
-	   "%?"
-	   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-	   :unnarrowed t)
-	  ("p" "project" plain "%?"
-	   :if-new
-	   (file+head "project-ideas/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :projectIdea:\n#+created: <%<%Y-%m-%d %a %H:%M>>\n")
-	   :immediate-finish t
-	   :unnarrowed t)))
+     	'(("d" "default" plain
+     	   "%?"
+     	   :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+     	   :unnarrowed t)
+     	  ("p" "project" plain "%?"
+     	   :if-new
+     	   (file+head "project-ideas/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :projectIdea:\n#+created: <%<%Y-%m-%d %a %H:%M>>\n")
+     	   :immediate-finish t
+     	   :unnarrowed t)))
 
        (org-roam-dailies-capture-templates
-	     '(("d" "default" entry "* %<%I:%M %p>: %?"
-		:if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))
-	       ("j" "journal" entry
-		"** <%<%Y-%m-%d %a %H:%M>>: %?"
-		:if-new (file+head "%<%Y-%m-%d>.org"
-				   "#+title: %<%Y-%m-%d>\n\n* <%Y-%m-%d %a %H:%M>\n")
-		:unnarrowed t)
-	       ("w" "work" entry
-		"** %<%H:%M>"
-		:if-new (file+head "work-%<%Y-%m-%d>.org"
-				   "#+title: %<%Y-%m-%d>\n\n* Work journal\n")
-		:unnarrowed t)
-	       ))
+     	     '(("d" "default" entry "* %<%I:%M %p>: %?"
+     		:if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))
+     	       ("j" "journal" entry
+     		"** <%<%Y-%m-%d %a %H:%M>>: %?"
+     		:if-new (file+head "%<%Y-%m-%d>.org"
+     				   "#+title: %<%Y-%m-%d>\n\n* <%Y-%m-%d %a %H:%M>\n")
+     		:unnarrowed t)
+     	       ("w" "work" entry
+     		"** %<%H:%M>"
+     		:if-new (file+head "work-%<%Y-%m-%d>.org"
+     				   "#+title: %<%Y-%m-%d>\n\n* Work journal\n")
+     		:unnarrowed t)
+     	       ))
 
 
        :bind (("C-c n l"   . org-roam-buffer-toggle)
-	      ("C-c n f"   . org-roam-node-find)
-	      ("C-c n i"   . org-roam-node-insert)
-	      ("C-c n _"   . org-id-get-create)
-	      ("C-c n a"   . org-roam-alias-add)
-	      ("C-c n d"   . org-roam-dailies-goto-date)
-	      ("C-c n c"   . org-roam-dailies-capture-today)
-	      ("C-c n C r" . org-roam-dailies-capture-tomorrow)
-	      ("C-c n I"   . org-roam-node-insert-immediate)
-	      ("C-c n t"   . org-roam-dailies-goto-today)
-	      ("C-c n y"   . org-roam-dailies-goto-yesterday)
-	      ("C-c n r"   . org-roam-dailies-goto-tomorrow)
-	      ("C-c n R"   . my/org-roam-refresh-agenda-list)
-	      ("C-c n g"   . org-roam-graph)
-	      :map org-mode-map
-	      ("C-M-i"     . completion-at-point))
+     	      ("C-c n f"   . org-roam-node-find)
+     	      ("C-c n i"   . org-roam-node-insert)
+     	      ("C-c n _"   . org-id-get-create)
+     	      ("C-c n a"   . org-roam-alias-add)
+     	      ("C-c n d"   . org-roam-dailies-goto-date)
+     	      ("C-c n c"   . org-roam-dailies-capture-today)
+     	      ("C-c n C r" . org-roam-dailies-capture-tomorrow)
+     	      ("C-c n I"   . org-roam-node-insert-immediate)
+     	      ("C-c n t"   . org-roam-dailies-goto-today)
+     	      ("C-c n y"   . org-roam-dailies-goto-yesterday)
+     	      ("C-c n r"   . org-roam-dailies-goto-tomorrow)
+     	      ("C-c n R"   . my/org-roam-refresh-agenda-list)
+     	      ("C-c n g"   . org-roam-graph)
+     	      :map org-mode-map
+     	      ("C-M-i"     . completion-at-point))
        :config
 
        (defun org-roam-node-insert-immediate (arg &rest args)
-	 "Insert a ref to a new roam note at buffer position, without jumping to that buffer."
-	 (interactive "P")
-	 (let ((args (cons arg args))
-	       (org-roam-capture-templates (list (append (car org-roam-capture-templates)
-							 '(:immediate-finish t)))))
-	   (apply #'org-roam-node-insert args)))
+     	 "Insert a ref to a new roam note at buffer position, without jumping to that buffer."
+     	 (interactive "P")
+     	 (let ((args (cons arg args))
+     	       (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+     							 '(:immediate-finish t)))))
+     	   (apply #'org-roam-node-insert args)))
 
        (defun my/org-roam-filter-by-tag (tag-name)
-	 "Check if a tag is part of a node tags"
-	 (lambda (node)
-	   (member tag-name (org-roam-node-tags node))))
+     	 "Check if a tag is part of a node tags"
+     	 (lambda (node)
+     	   (member tag-name (org-roam-node-tags node))))
 
        (defun my/org-roam-list-notes-by-tag (tag-name)
-	 "Filter my roam node files by a tag name"
-	 (mapcar #'org-roam-node-file
-		 (seq-filter
-		  (my/org-roam-filter-by-tag tag-name)
-		  (org-roam-node-list))))
+     	 "Filter my roam node files by a tag name"
+     	 (mapcar #'org-roam-node-file
+     		 (seq-filter
+     		  (my/org-roam-filter-by-tag tag-name)
+     		  (org-roam-node-list))))
 
        (defun my/org-roam-refresh-agenda-list ()
-	 "Refresh the org-agenda-files with all my tags that I want to include."
-	 (interactive)
-	 (setq org-agenda-files (directory-files-recursively "~/sync/org/" "\\.org$")))
+     	 "Refresh the org-agenda-files with all my tags that I want to include."
+     	 (interactive)
+     	 (setq org-agenda-files (directory-files-recursively "~/sync/org/" "\\.org$")))
        ;; (setq org-agenda-files (my/org-roam-list-notes-by-tag "work")))
 
        (org-roam-setup)
@@ -2285,37 +2604,45 @@
   The best git client available
 ** init magit
    #+BEGIN_SRC emacs-lisp
-     ;; git and magit (Magit rules!!!!)
-     ;; (require 'git)
-     (use-package magit)
-     (global-set-key (kbd "<f5>") 'magit-status)
-     (global-set-key (kbd "C-x RET m") 'magit-status)
 
-     ;;taken from http://tullo.ch/articles/modern-emacs-setup/
-     ;; (defadvice magit-status (around magit-fullscreen activate)
-     ;;   "Make magit-status run alone in a frame."
-     ;;   (window-configuration-to-register :magit-fullscreen)
-     ;;   ad-do-it
-     ;;   (delete-other-windows))
+          (log-config "Setting up magit mode...")
 
-     (defun magit-quit-session ()
-       "Restore the previous window configuration and kill the magit buffer."
-       (interactive)
-       (kill-buffer)
-       (jump-to-register :magit-fullscreen))
+          ;; git and magit (Magit rules!!!!)
+          ;; (require 'git)
+          (use-package magit)
+          (global-set-key (kbd "<f5>") 'magit-status)
+          (global-set-key (kbd "C-x RET m") 'magit-status)
 
-     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+          ;;taken from http://tullo.ch/articles/modern-emacs-setup/
+          ;; (defadvice magit-status (around magit-fullscreen activate)
+          ;;   "Make magit-status run alone in a frame."
+          ;;   (window-configuration-to-register :magit-fullscreen)
+          ;;   ad-do-it
+          ;;   (delete-other-windows))
 
-     ;;magit update recommendation
-     ;;Note from update: Before running Git, Magit by default reverts all unmodified buffers which visit files tracked in the current repository. This can potentially lead to dataloss so you might want to disable this by adding the following line to your init file:
-     (setq magit-auto-revert-mode nil)
+          (defun magit-quit-session ()
+            "Restore the previous window configuration and kill the magit buffer."
+            (interactive)
+            (kill-buffer)
+            (jump-to-register :magit-fullscreen))
 
-     ;;prevent magit update message 1.4
-     ;;(setq magit-last-seen-setup-instructions "1.4.0")
+          (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
 
-     ;; (setq magit-completing-read-function 'magit-ido-completing-read)
-     ;; (package-require 'ido-ubiquitous)
-     ;; (ido-ubiquitous-mode 1)
+          ;;magit update recommendation
+          ;;Note from update: Before running Git, Magit by default reverts all unmodified buffers which visit files tracked in the current repository. This can potentially lead to dataloss so you might want to disable this by adding the following line to your init file:
+          (setq magit-auto-revert-mode nil)
+
+          (setq magit-log-margin-width 1)
+     ;;     (setq magit-log-margin-width 40)
+
+          ;;prevent magit update message 1.4
+          ;;(setq magit-last-seen-setup-instructions "1.4.0")
+
+          ;; (setq magit-completing-read-function 'magit-ido-completing-read)
+          ;; (package-require 'ido-ubiquitous)
+          ;; (ido-ubiquitous-mode 1)
+
+     (setq diff-hl-flydiff-mode t)
    #+END_SRC
 ** Magit Customization
    #+BEGIN_SRC elisp
@@ -2327,11 +2654,22 @@
      (message "To prevent from dropping all stashes again, this was disabled!"))
    #+END_SRC
 
+* Git-HL
+  Highlight git changes
+  #+BEGIN_SRC emacs-lisp
+    (use-package diff-hl)
+
+    (global-diff-hl-mode)
+
+
+  #+END_SRC
+
 * secretaria
   #+BEGIN_SRC emacs-lisp
     ;; (use-package secretaria
 		 ;; :config
 		 ;; use this for getting a reminder every 30 minutes of those tasks scheduled
+
 		 ;; for today and which have no time of day defined.
 		 ;; (add-hook 'after-init-hook #'secretaria-today-unknown-time-appt-always-remind-me))
   #+END_SRC
@@ -2358,7 +2696,9 @@
      (use-package multiple-cursors)
      (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
      (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+     (global-set-key (kbd "C-S-n") 'mc/mark-next-like-this)
      (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+     (global-set-key (kbd "C-S") 'mc/mark-previous-like-this)
      (global-set-key (kbd "C-c C-<down>") 'mc/mark-all-like-this)
 
 
@@ -2447,6 +2787,9 @@
    #+end_src
 * Final message
    #+begin_src elisp
+
+
+
      (log-config "=== REACHED END OF CONFIG FILE ===")
      (message "Finish loading emacs config")
      (log-config "Config loading completed - switching to log buffer")
